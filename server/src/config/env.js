@@ -15,6 +15,9 @@ export const env = {
   port: parseInt(get('PORT', '5000'), 10),
   postgresUrl: get('POSTGRES_URL', ''),
   mongoUri: get('MONGO_URI', ''),
+  app: {
+    baseUrl: get('APP_BASE_URL', 'http://localhost:3000')
+  },
   jwt: {
     secret: get('JWT_SECRET', ''),
     expiresIn: get('JWT_EXPIRES_IN', '1d')
@@ -25,6 +28,15 @@ export const env = {
     password: get('ADMIN_PASSWORD', ''),
     role: get('ADMIN_ROLE', 'teacher')
   },
+  email: {
+    host: get('SMTP_HOST', ''),
+    port: parseInt(get('SMTP_PORT', '587'), 10),
+    user: get('SMTP_USER', ''),
+    password: get('SMTP_PASSWORD', ''),
+    secure: get('SMTP_SECURE', 'false') === 'true',
+    from: get('SMTP_FROM', '')
+  },
+  supportEmail: get('SUPPORT_EMAIL', ''),
   minio: {
     endpoint: get('MINIO_ENDPOINT', ''),
     port: parseInt(get('MINIO_PORT', '9000'), 10),

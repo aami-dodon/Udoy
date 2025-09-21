@@ -17,6 +17,7 @@ const SignupForm = () => {
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const roleOptions = useMemo(() => [ROLES.STUDENT, ROLES.TEACHER], []);
 
@@ -29,6 +30,7 @@ const SignupForm = () => {
     event.preventDefault();
     setSubmitting(true);
     setError('');
+    setSuccess('');
     if (form.password !== form.confirmPassword) {
       setError('Passwords do not match');
       setSubmitting(false);
@@ -36,13 +38,28 @@ const SignupForm = () => {
     }
 
     try {
-      await signup({
+      const response = await signup({
         name: form.name,
         email: form.email,
         password: form.password,
         role: form.role
       });
-      navigate('/dashboard');
+      if (response?.requiresVerification) {
+        const extra = response.supportEmail
+          ? ` If you do not receive the email within a few minutes, contact us at ${response.supportEmail}.`
+          : '';
+        setSuccess(`Sign up successful! Please check your email to verify your account.${extra}`);
+        setForm({
+          name: '',
+          email: '',
+          password: '',
+          confirmPassword: '',
+          role: ROLES.STUDENT
+        });
+        setTimeout(() => navigate('/login'), 3000);
+      } else {
+        navigate('/login');
+      }
     } catch (err) {
       setError(err.message || 'Failed to sign up');
     } finally {
@@ -53,6 +70,7 @@ const SignupForm = () => {
   return (
     <Stack component="form" spacing={2} onSubmit={handleSubmit}>
       {error && <Alert severity="error">{error}</Alert>}
+      {success && <Alert severity="success">{success}</Alert>}
       <TextField
         label="Name"
         name="name"

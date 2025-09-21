@@ -1,21 +1,23 @@
 import { createTheme } from '@mui/material/styles';
 
+import { BRAND_COLORS, BRAND_TYPOGRAPHY } from '@shared/theme/brand.js';
+
 const theme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#1976d2'
+      main: BRAND_COLORS.primary
     },
     secondary: {
-      main: '#ff4081'
+      main: BRAND_COLORS.secondary
     },
     background: {
-      default: '#f5f7fb',
-      paper: '#ffffff'
+      default: BRAND_COLORS.background,
+      paper: BRAND_COLORS.surface
     }
   },
   typography: {
-    fontFamily: ['"Roboto"', '"Helvetica"', '"Arial"', 'sans-serif'].join(','),
+    fontFamily: BRAND_TYPOGRAPHY.fontFamily,
     h4: {
       fontWeight: 600
     },

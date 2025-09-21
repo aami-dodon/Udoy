@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.0 - User management lifecycle
+- Added email-verification workflow with hashed tokens, resend support, and gated login for unverified accounts.
+- Implemented password-reset, profile update, and admin account management endpoints backed by Postgres.
+- Delivered eight transactional email templates powered by a shared brand theme and SMTP configuration.
+- Expanded client auth flows with verification, recovery, profile, and admin dashboards plus reusable notifications.
+- Documented new environment variables, repositories, services, and routes introduced in Phase 3.
+
 ## 0.2.0 - Auth basics
 - Added JWT-based signup, login, and profile endpoints backed by Postgres.
 - Implemented credential validation for MongoDB and MinIO during server bootstrap.

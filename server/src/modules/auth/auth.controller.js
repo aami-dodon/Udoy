@@ -1,5 +1,14 @@
 import { ApplicationError } from '../../utils/errors.js';
-import { signUp, login, getUserProfile } from './auth.service.js';
+import {
+  signUp,
+  login,
+  getUserProfile,
+  verifyEmailToken,
+  requestPasswordReset,
+  resetPasswordWithToken,
+  getSupportEmail,
+  resendVerificationEmail
+} from './auth.service.js';
 
 const validateSignupInput = (body) => {
   const { name, email, password, role } = body;
@@ -25,8 +34,8 @@ const validateLoginInput = (body) => {
 export const signupController = async (req, res, next) => {
   try {
     const payload = validateSignupInput(req.body);
-    const { user, token } = await signUp(payload);
-    res.status(201).json({ token, user });
+    const result = await signUp(payload);
+    res.status(201).json(result);
   } catch (error) {
     next(error);
   }
@@ -46,6 +55,58 @@ export const meController = async (req, res, next) => {
   try {
     const user = await getUserProfile(req.user.id);
     res.json({ user });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const verifyEmailController = async (req, res, next) => {
+  try {
+    const { token } = req.params;
+    const user = await verifyEmailToken(token);
+    res.json({ user, message: 'Email verified successfully.' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const forgotPasswordController = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      throw new ApplicationError('Email is required', 400);
+    }
+    await requestPasswordReset(email);
+    res.json({
+      message: 'If the account exists, a password reset email has been sent.',
+      supportEmail: getSupportEmail()
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const resetPasswordController = async (req, res, next) => {
+  try {
+    const { token, password } = req.body;
+    if (!token || !password) {
+      throw new ApplicationError('Token and new password are required', 400);
+    }
+    const user = await resetPasswordWithToken({ token, newPassword: password });
+    res.json({ message: 'Password updated successfully.', user });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const resendVerificationController = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      throw new ApplicationError('Email is required', 400);
+    }
+    const response = await resendVerificationEmail(email);
+    res.json(response);
   } catch (error) {
     next(error);
   }

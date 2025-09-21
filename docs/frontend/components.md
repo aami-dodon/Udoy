@@ -1,6 +1,6 @@
 # Components
 
-- Common components (navbar, footer, loaders) live in `src/common` and now include `Navbar` and `ProtectedRoute`.
+- Common components (navbar, footer, loaders) live in `src/common` and now include `Navbar`, `ProtectedRoute`, and shared layout helpers.
 - Feature-specific UI lives in `src/features/<feature>/components`.
 - `HelloMessage` is the baseline example component that renders API data.
-- `LoginForm` and `SignupForm` handle the authentication flows with form validation and error handling using Material UI (signup currently exposes Student/Teacher roles; admin accounts are seeded via environment variables). Signup validates password confirmation before calling the backend.
+- `LoginForm` handles authentication (with inline resend verification support), `SignupForm` manages learner/teacher registration, and new forms power forgot/reset password, profile updates, and admin user management tables.

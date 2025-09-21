@@ -18,7 +18,8 @@
     "mongoose": "^8.5.2",
     "morgan": "^1.10.0",
     "pg": "^8.11.5",
-    "bcryptjs": "^2.4.3"
+    "bcryptjs": "^2.4.3",
+    "nodemailer": "^6.9.13"
   },
   "devDependencies": {
     "nodemon": "^3.1.0",

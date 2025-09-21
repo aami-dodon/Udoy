@@ -23,12 +23,17 @@ export const seedAdminUser = async () => {
   const passwordHash = await bcrypt.hash(password, 10);
   const targetRole = role || 'admin';
 
+  const now = new Date();
+
   if (existing) {
     await updateUserByEmailNormalized({
       emailNormalized: normalizedEmail,
       name,
       role: targetRole,
-      passwordHash
+      passwordHash,
+      passwordUpdatedAt: now,
+      isVerified: true,
+      isActive: true
     });
     log(`Refreshed admin account for ${email}`);
     return;
@@ -41,7 +46,10 @@ export const seedAdminUser = async () => {
     emailNormalized: normalizedEmail,
     passwordHash,
     role: targetRole,
-    createdAt: new Date()
+    isVerified: true,
+    isActive: true,
+    createdAt: now,
+    passwordUpdatedAt: now
   });
 
   log(`Seeded admin account for ${email}`);
