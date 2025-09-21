@@ -21,6 +21,51 @@ export const createUser = async ({ id, name, email, emailNormalized, passwordHas
   return mapUser(rows[0]);
 };
 
+export const updateUserByEmailNormalized = async ({
+  emailNormalized,
+  name,
+  role,
+  passwordHash
+}) => {
+  const client = getPostgresClient();
+  const updates = [];
+  const values = [];
+
+  if (name) {
+    updates.push(`name = $${updates.length + 2}`);
+    values.push(name);
+  }
+
+  if (role) {
+    updates.push(`role = $${updates.length + 2}`);
+    values.push(role);
+  }
+
+  if (passwordHash) {
+    updates.push(`password_hash = $${updates.length + 2}`);
+    values.push(passwordHash);
+  }
+
+  if (updates.length === 0) {
+    return null;
+  }
+
+  const query = `
+    UPDATE users
+    SET ${updates.join(', ')}
+    WHERE email_normalized = $1
+    RETURNING id, name, email, role, created_at
+  `;
+
+  const { rows } = await client.query(query, [emailNormalized, ...values]);
+
+  if (rows.length === 0) {
+    return null;
+  }
+
+  return mapUser(rows[0]);
+};
+
 export const findUserByEmail = async (email) => {
   const client = getPostgresClient();
   const { rows } = await client.query(

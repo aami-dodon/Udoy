@@ -1,3 +1,4 @@
 # React Context
 
-No global contexts are defined yet. Introduce them under `src/context` when global state is needed.
+- `AuthContext` (in `src/context/AuthContext.jsx`) stores the authenticated user, JWT token, and helper methods for login, signup, and logout.
+- Additional contexts can be introduced under `src/context` as new global concerns emerge.

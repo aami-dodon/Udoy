@@ -1,3 +1,4 @@
 # Hooks
 
-Custom hooks should live in `src/hooks` (to be created when required). The Hello World feature fetches data directly within the page component for simplicity.
+- `useAuth` consumes the `AuthContext` and exposes auth state plus helper methods.
+- Additional hooks should live in `src/hooks` as shared behaviours are extracted.

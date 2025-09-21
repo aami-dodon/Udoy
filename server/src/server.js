@@ -3,10 +3,16 @@ import { env } from './config/env.js';
 import { log } from './utils/logger.js';
 import { connectPostgres, connectMongo, closeConnections } from './config/db.js';
 import { createMinioClient } from './config/minio.js';
+import { seedAdminUser } from './setup/admin.seed.js';
 
 const start = async () => {
+  if (!env.jwt.secret) {
+    throw new Error('JWT_SECRET environment variable is required');
+  }
+
   await Promise.all([connectPostgres(), connectMongo()]);
   await createMinioClient();
+  await seedAdminUser();
 
   const port = env.port;
 

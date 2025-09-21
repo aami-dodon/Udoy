@@ -1,3 +1,3 @@
 # Theme
 
-Material UI theme configuration should live in `src/theme`. Add a `createTheme` definition and wrap the app with `ThemeProvider` when the design system solidifies.
+Material UI theme configuration lives in `src/theme`. The `theme.js` file centralises palette, typography, and component overrides so shared styling decisions stay consistent across features. The app mounts the theme in `index.jsx` via `ThemeProvider` and `CssBaseline`.

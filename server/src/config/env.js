@@ -15,6 +15,16 @@ export const env = {
   port: parseInt(get('PORT', '5000'), 10),
   postgresUrl: get('POSTGRES_URL', ''),
   mongoUri: get('MONGO_URI', ''),
+  jwt: {
+    secret: get('JWT_SECRET', ''),
+    expiresIn: get('JWT_EXPIRES_IN', '1d')
+  },
+  adminSeed: {
+    name: get('ADMIN_NAME', ''),
+    email: get('ADMIN_EMAIL', ''),
+    password: get('ADMIN_PASSWORD', ''),
+    role: get('ADMIN_ROLE', 'teacher')
+  },
   minio: {
     endpoint: get('MINIO_ENDPOINT', ''),
     port: parseInt(get('MINIO_PORT', '9000'), 10),
