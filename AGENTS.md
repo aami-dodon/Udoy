@@ -35,7 +35,7 @@ These rules apply to **all aegnts** working on the LMS project. Follow them stri
 ### 5. Database & Models  
 - **Postgres**: Use **Prisma ORM** for relational data (courses, enrollments).  
 - **MongoDB**: Use **Mongoose** for flexible data (progress tracking, events).  
-- Every schema change must update `/docs/backend/models.md`.  
+- Every schema change must update `/docs/server/models.md`.  
 
 ### 6. Frontend Guidelines  
 - Use **Material UI** for all components.  
