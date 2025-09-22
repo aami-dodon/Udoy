@@ -45,7 +45,19 @@ export const getEmailTransporter = () => {
   return transporter;
 };
 
-export const sendEmail = async ({ to, subject, html, text }) => {
+const getRecipientCount = (to) => {
+  if (!to) {
+    return 0;
+  }
+
+  if (Array.isArray(to)) {
+    return to.length;
+  }
+
+  return 1;
+};
+
+export const sendEmail = async ({ to, subject, html, text, context = {} }) => {
   const message = {
     from: resolveFromAddress(),
     to,
@@ -56,17 +68,35 @@ export const sendEmail = async ({ to, subject, html, text }) => {
 
   const activeTransporter = getEmailTransporter();
 
+  const recipientCount = getRecipientCount(to);
+
   if (!activeTransporter) {
-    logInfo('Email preview (transport disabled)', { to, subject, hasHtml: Boolean(html), hasText: Boolean(text) });
+    logInfo('Email preview (transport disabled)', {
+      subject,
+      hasHtml: Boolean(html),
+      hasText: Boolean(text),
+      recipientCount,
+      context
+    });
     return;
   }
 
   try {
-    await activeTransporter.sendMail(message);
+    const info = await activeTransporter.sendMail(message);
+    logInfo('Email dispatched', {
+      subject,
+      hasHtml: Boolean(html),
+      hasText: Boolean(text),
+      recipientCount,
+      messageId: info?.messageId,
+      transport: 'smtp',
+      context
+    });
   } catch (error) {
     const errorMeta = {
-      to,
       subject,
+      recipientCount,
+      context,
       error: {
         message: error.message
       }

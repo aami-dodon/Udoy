@@ -26,6 +26,7 @@ import {
   sendPasswordResetConfirmationEmail
 } from '../notifications/email.service.js';
 import { env } from '../../config/env.js';
+import { logInfo } from '../../utils/logger.js';
 
 const allowedSignupRoles = new Set([ROLES.STUDENT, ROLES.TEACHER]);
 const VERIFY_EMAIL_TOKEN_TTL_MS = 1000 * 60 * 60 * 24; // 24 hours
@@ -49,15 +50,21 @@ const supportContactInstruction = () => {
 const issueVerificationEmail = async (user, metadata = { intent: 'signup' }) => {
   await deleteTokensForUserByType({ userId: user.id, type: 'verify_email' });
   const rawToken = generateRawToken();
+  const tokenId = randomUUID();
   await createUserToken({
-    id: randomUUID(),
+    id: tokenId,
     userId: user.id,
     tokenHash: hashToken(rawToken),
     type: 'verify_email',
     metadata,
     expiresAt: addDurationToNow(VERIFY_EMAIL_TOKEN_TTL_MS)
   });
-  await sendVerificationEmail({ user, token: rawToken });
+  await sendVerificationEmail({ user, token: rawToken, metadata, tokenId });
+  logInfo('Issued verification email token', {
+    userId: user.id,
+    tokenId,
+    intent: metadata?.intent || 'signup'
+  });
   return rawToken;
 };
 
@@ -116,6 +123,7 @@ export const signUp = async ({ name, email, password, role }) => {
   });
 
   await issueVerificationEmail(user);
+  logInfo('User signed up', { userId: user.id, role });
 
   return {
     user: toSafeUser(user),
@@ -150,6 +158,7 @@ export const login = async ({ email, password }) => {
   }
 
   const token = generateToken({ sub: userRecord.id, role: userRecord.role });
+  logInfo('User logged in', { userId: userRecord.id, role: userRecord.role });
 
   return { user: toSafeUser(userRecord), token };
 };
@@ -232,6 +241,12 @@ export const verifyEmailToken = async (rawToken) => {
     excludeTokenId: tokenRecord.id
   });
   await markTokenAsUsed(tokenRecord.id);
+  logInfo('Email verification token consumed', {
+    userId: user.id,
+    tokenId: tokenRecord.id,
+    intent: metadata.intent || 'verify_email',
+    emailChanged: Boolean(metadata.nextEmail)
+  });
 
   return toSafeUser(updatedUser);
 };
@@ -247,9 +262,10 @@ export const requestPasswordReset = async (email) => {
   }
 
   const rawToken = generateRawToken();
+  const tokenId = randomUUID();
   await deleteTokensForUserByType({ userId: user.id, type: 'reset_password' });
   await createUserToken({
-    id: randomUUID(),
+    id: tokenId,
     userId: user.id,
     tokenHash: hashToken(rawToken),
     type: 'reset_password',
@@ -257,7 +273,8 @@ export const requestPasswordReset = async (email) => {
     expiresAt: addDurationToNow(RESET_PASSWORD_TOKEN_TTL_MS)
   });
 
-  await sendPasswordResetEmail({ user, token: rawToken });
+  await sendPasswordResetEmail({ user, token: rawToken, tokenId });
+  logInfo('Password reset email issued', { userId: user.id, tokenId });
 };
 
 export const resetPasswordWithToken = async ({ token, newPassword }) => {
@@ -297,6 +314,7 @@ export const resetPasswordWithToken = async ({ token, newPassword }) => {
   await deleteTokensForUserByType({ userId: user.id, type: 'reset_password' });
 
   await sendPasswordResetConfirmationEmail({ user: updatedUser });
+  logInfo('Password reset completed', { userId: user.id, tokenId: tokenRecord.id });
 
   return toSafeUser(updatedUser);
 };
@@ -317,6 +335,7 @@ export const resendVerificationEmail = async (email) => {
   }
 
   await issueVerificationEmail(user, { intent: 'resend_verification' });
+  logInfo('Verification email resent', { userId: user.id });
 
   return {
     message: 'If your account exists, a verification email will be sent shortly.',

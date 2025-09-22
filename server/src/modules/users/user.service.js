@@ -19,6 +19,7 @@ import {
   sendProfileUpdatedEmail
 } from '../notifications/email.service.js';
 import { env } from '../../config/env.js';
+import { logInfo } from '../../utils/logger.js';
 
 const EMAIL_CHANGE_TOKEN_TTL_MS = 1000 * 60 * 60 * 24; // 24 hours
 
@@ -120,9 +121,10 @@ export const updateProfile = async (userId, payload) => {
     }
 
     const rawToken = generateRawToken();
+    const tokenId = randomUUID();
     await deleteTokensForUserByType({ userId: user.id, type: 'verify_email' });
     await createUserToken({
-      id: randomUUID(),
+      id: tokenId,
       userId: user.id,
       tokenHash: hashToken(rawToken),
       type: 'verify_email',
@@ -141,8 +143,10 @@ export const updateProfile = async (userId, payload) => {
       user,
       previousEmail: user.email,
       nextEmail: newEmail,
-      token: rawToken
+      token: rawToken,
+      tokenId
     });
+    logInfo('User email change requested', { userId: user.id, tokenId });
   }
 
   if (Object.keys(nextFields).length > 0) {
@@ -156,6 +160,13 @@ export const updateProfile = async (userId, payload) => {
   if (passwordChanged) {
     await sendPasswordChangedEmail({ user: updatedUser });
   }
+
+  logInfo('User profile updated', {
+    userId: updatedUser.id,
+    nameChanged,
+    passwordChanged,
+    emailChangeRequested
+  });
 
   return {
     user: toSafeUser(updatedUser),

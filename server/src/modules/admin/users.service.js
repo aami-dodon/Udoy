@@ -15,6 +15,7 @@ import {
   sendAccountDeletedEmail,
   sendProfileUpdatedEmail
 } from '../notifications/email.service.js';
+import { logInfo } from '../../utils/logger.js';
 
 const toAdminSafeUser = (user) => ({
   id: user.id,
@@ -164,6 +165,13 @@ export const updateUserByAdmin = async (targetUserId, updates, options = {}) => 
     });
   }
 
+  logInfo('Admin updated user', {
+    actorId,
+    targetUserId: user.id,
+    changes: Object.keys(changes),
+    deactivated
+  });
+
   return toAdminSafeUser(updatedUser);
 };
 
@@ -197,6 +205,8 @@ export const deleteUserByAdmin = async (targetUserId, options = {}) => {
       previous: toAdminSafeUser(user)
     }
   });
+
+  logInfo('Admin deleted user', { actorId, targetUserId: user.id });
 
   return toAdminSafeUser(deletedUser);
 };

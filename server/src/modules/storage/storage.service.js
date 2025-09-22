@@ -1,6 +1,7 @@
 import { ApplicationError } from '../../utils/errors.js';
 import { createMinioClient } from '../../config/minio.js';
 import { env } from '../../config/env.js';
+import { logInfo } from '../../utils/logger.js';
 
 export const MAX_PRESIGNED_EXPIRY_SECONDS = 7 * 24 * 60 * 60; // 7 days
 
@@ -52,6 +53,11 @@ export const getPresignedUploadUrl = async (
     headers
   );
 
+  logInfo('Generated presigned upload URL', {
+    expirySeconds: expiry,
+    hasContentType: Boolean(contentType)
+  });
+
   return {
     url,
     method: 'PUT',
@@ -65,6 +71,10 @@ export const getPresignedDownloadUrl = async ({ objectKey, expiresIn }, client) 
   const minioClient = client || (await createMinioClient());
 
   const url = await minioClient.presignedGetObject(env.minio.bucket, key, expiry);
+
+  logInfo('Generated presigned download URL', {
+    expirySeconds: expiry
+  });
 
   return {
     url,

@@ -40,18 +40,25 @@ const buildVerificationContent = ({ name, verifyUrl }) =>
     `
   );
 
-export const sendVerificationEmail = async ({ user, token }) => {
+export const sendVerificationEmail = async ({ user, token, metadata = {}, tokenId }) => {
   const verifyUrl = buildAppUrl(
     `/verify-email?token=${token}&email=${encodeURIComponent(user.email)}`
   );
   await sendEmail({
     to: user.email,
     subject: 'Verify your Udoy account',
-    html: buildVerificationContent({ name: user.name, verifyUrl })
+    html: buildVerificationContent({ name: user.name, verifyUrl }),
+    context: {
+      template: 'auth.verify_email',
+      userId: user.id,
+      intent: metadata.intent,
+      tokenType: 'verify_email',
+      tokenId
+    }
   });
 };
 
-export const sendPasswordResetEmail = async ({ user, token }) => {
+export const sendPasswordResetEmail = async ({ user, token, tokenId }) => {
   const resetUrl = buildAppUrl(`/reset-password?token=${token}`);
   const html = wrapEmail(
     'Reset Your Password',
@@ -65,7 +72,13 @@ export const sendPasswordResetEmail = async ({ user, token }) => {
   await sendEmail({
     to: user.email,
     subject: 'Udoy password reset instructions',
-    html
+    html,
+    context: {
+      template: 'auth.password_reset',
+      userId: user.id,
+      tokenType: 'reset_password',
+      tokenId
+    }
   });
 };
 
@@ -82,7 +95,11 @@ export const sendPasswordResetConfirmationEmail = async ({ user }) => {
   await sendEmail({
     to: user.email,
     subject: 'Udoy password reset confirmation',
-    html
+    html,
+    context: {
+      template: 'auth.password_reset_confirmation',
+      userId: user.id
+    }
   });
 };
 
@@ -99,11 +116,21 @@ export const sendPasswordChangedEmail = async ({ user }) => {
   await sendEmail({
     to: user.email,
     subject: 'Udoy password changed',
-    html
+    html,
+    context: {
+      template: 'account.password_changed',
+      userId: user.id
+    }
   });
 };
 
-export const sendEmailChangeNotifications = async ({ user, previousEmail, nextEmail, token }) => {
+export const sendEmailChangeNotifications = async ({
+  user,
+  previousEmail,
+  nextEmail,
+  token,
+  tokenId
+}) => {
   if (previousEmail) {
     const html = wrapEmail(
       'Your email address changed',
@@ -116,7 +143,12 @@ export const sendEmailChangeNotifications = async ({ user, previousEmail, nextEm
     await sendEmail({
       to: previousEmail,
       subject: 'Udoy email address changed',
-      html
+      html,
+      context: {
+        template: 'account.email_changed_notice',
+        userId: user.id,
+        recipient: 'previous_email'
+      }
     });
   }
 
@@ -136,7 +168,14 @@ export const sendEmailChangeNotifications = async ({ user, previousEmail, nextEm
     await sendEmail({
       to: nextEmail,
       subject: 'Verify your new Udoy email address',
-      html
+      html,
+      context: {
+        template: 'account.email_change_confirmation',
+        userId: user.id,
+        recipient: 'new_email',
+        tokenType: 'verify_email',
+        tokenId
+      }
     });
   }
 };
@@ -153,7 +192,11 @@ export const sendProfileUpdatedEmail = async ({ user }) => {
   await sendEmail({
     to: user.email,
     subject: 'Udoy profile updated',
-    html
+    html,
+    context: {
+      template: 'account.profile_updated',
+      userId: user.id
+    }
   });
 };
 
@@ -170,7 +213,11 @@ export const sendAccountDeactivatedEmail = async ({ user }) => {
   await sendEmail({
     to: user.email,
     subject: 'Udoy account deactivated',
-    html
+    html,
+    context: {
+      template: 'account.deactivated',
+      userId: user.id
+    }
   });
 };
 
@@ -187,6 +234,10 @@ export const sendAccountDeletedEmail = async ({ user }) => {
   await sendEmail({
     to: user.email,
     subject: 'Udoy account deleted',
-    html
+    html,
+    context: {
+      template: 'account.deleted',
+      userId: user.id
+    }
   });
 };
