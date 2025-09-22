@@ -1,6 +1,33 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import dotenv from 'dotenv';
 
-dotenv.config();
+const moduleDir = path.dirname(fileURLToPath(import.meta.url));
+const serverDir = path.resolve(moduleDir, '../..');
+const projectRoot = path.resolve(serverDir, '..');
+
+const envFileCandidates = [
+  path.resolve(process.cwd(), '.env'),
+  path.resolve(serverDir, '.env'),
+  path.resolve(projectRoot, '.env')
+];
+
+const loadedEnvFiles = new Set();
+
+for (const candidate of envFileCandidates) {
+  if (!candidate || loadedEnvFiles.has(candidate)) {
+    continue;
+  }
+
+  if (!fs.existsSync(candidate)) {
+    continue;
+  }
+
+  dotenv.config({ path: candidate, override: false });
+  loadedEnvFiles.add(candidate);
+}
 
 const get = (key, defaultValue) => {
   const value = process.env[key];
