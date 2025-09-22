@@ -1,6 +1,6 @@
 import app from './app.js';
 import { env } from './config/env.js';
-import { log } from './utils/logger.js';
+import { logInfo, logError } from './utils/logger.js';
 import { connectPostgres, connectMongo, closeConnections } from './config/db.js';
 import { createMinioClient } from './config/minio.js';
 import { seedAdminUser } from './setup/admin.seed.js';
@@ -17,11 +17,11 @@ const start = async () => {
   const port = env.port;
 
   const server = app.listen(port, () => {
-    log(`Server listening on http://localhost:${port}`);
+    logInfo('Server listening', { port });
   });
 
   const shutdown = async (signal) => {
-    log(`Received ${signal}. Shutting down gracefully.`);
+    logInfo('Received shutdown signal', { signal });
     await closeConnections();
     await new Promise((resolve) => server.close(resolve));
     process.exit(0);
@@ -32,7 +32,16 @@ const start = async () => {
 };
 
 start().catch((error) => {
-  log('Failed to start the server');
-  console.error(error);
+  const errorMeta = {
+    error: {
+      message: error.message
+    }
+  };
+
+  if (env.nodeEnv !== 'production' && error.stack) {
+    errorMeta.error.stack = error.stack;
+  }
+
+  logError('Failed to start the server', errorMeta);
   process.exit(1);
 });

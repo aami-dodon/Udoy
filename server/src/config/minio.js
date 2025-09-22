@@ -1,7 +1,7 @@
 import * as Minio from 'minio';
 
 import { env } from './env.js';
-import { log, logError } from '../utils/logger.js';
+import { logInfo, logError } from '../utils/logger.js';
 
 const ensureValue = (value, name) => {
   if (!value && value !== 0) {
@@ -47,11 +47,24 @@ export const createMinioClient = async () => {
     if (!exists) {
       throw new Error(`MinIO bucket ${bucket} not found`);
     }
-    log(`MinIO bucket '${bucket}' verified at ${endpoint}:${port}`);
+    logInfo('MinIO bucket verified', { bucket, endpoint, port });
     minioClient = client;
     return minioClient;
   } catch (error) {
-    logError('Failed to validate MinIO connection or bucket', error);
+    const errorMeta = {
+      endpoint,
+      port,
+      bucket,
+      error: {
+        message: error.message
+      }
+    };
+
+    if (env.nodeEnv !== 'production' && error.stack) {
+      errorMeta.error.stack = error.stack;
+    }
+
+    logError('Failed to validate MinIO connection or bucket', errorMeta);
     throw error;
   }
 };

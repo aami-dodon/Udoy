@@ -2,7 +2,7 @@ import { Client } from 'pg';
 import mongoose from 'mongoose';
 
 import { env } from './env.js';
-import { log, logError } from '../utils/logger.js';
+import { logInfo, logError } from '../utils/logger.js';
 
 const ensureValue = (value, name) => {
   if (!value) {
@@ -228,11 +228,21 @@ export const connectPostgres = async () => {
     await client.query('SELECT 1');
     await ensureUserTable(client);
     await ensureUserTokensTable(client);
-    log('Connected to Postgres successfully.');
+    logInfo('Connected to Postgres successfully.');
     postgresClient = client;
     return postgresClient;
   } catch (error) {
-    logError('Failed to connect to Postgres');
+    const errorMeta = {
+      error: {
+        message: error.message
+      }
+    };
+
+    if (env.nodeEnv !== 'production' && error.stack) {
+      errorMeta.error.stack = error.stack;
+    }
+
+    logError('Failed to connect to Postgres', errorMeta);
     await client.end().catch(() => {});
     throw error;
   }
@@ -255,11 +265,21 @@ export const connectMongo = async () => {
   try {
     await mongoose.connect(uri, { serverSelectionTimeoutMS: 5000 });
     await mongoose.connection.db.admin().ping();
-    log('Connected to MongoDB successfully.');
+    logInfo('Connected to MongoDB successfully.');
     mongoConnection = mongoose.connection;
     return mongoConnection;
   } catch (error) {
-    logError('Failed to connect to MongoDB');
+    const errorMeta = {
+      error: {
+        message: error.message
+      }
+    };
+
+    if (env.nodeEnv !== 'production' && error.stack) {
+      errorMeta.error.stack = error.stack;
+    }
+
+    logError('Failed to connect to MongoDB', errorMeta);
     await mongoose.connection.close().catch(() => {});
     throw error;
   }

@@ -8,7 +8,7 @@ import {
   normalizeEmail,
   updateUserByEmailNormalized
 } from '../models/user.repository.js';
-import { log } from '../utils/logger.js';
+import { logInfo } from '../utils/logger.js';
 
 export const seedAdminUser = async () => {
   const { name, email, password, role } = env.adminSeed;
@@ -35,7 +35,7 @@ export const seedAdminUser = async () => {
       isVerified: true,
       isActive: true
     });
-    log(`Refreshed admin account for ${email}`);
+    logInfo('Refreshed admin account', { email });
     return;
   }
 
@@ -52,5 +52,5 @@ export const seedAdminUser = async () => {
     passwordUpdatedAt: now
   });
 
-  log(`Seeded admin account for ${email}`);
+  logInfo('Seeded admin account', { email });
 };

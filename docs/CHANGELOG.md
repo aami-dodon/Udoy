@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.0 - Logging and API documentation
+- Integrated Winston with Morgan to deliver structured JSON request, response, and error logs including request IDs.
+- Added centralized error-handling middleware with sanitized production responses and richer diagnostic metadata in development.
+- Enabled log-level configuration via `LOG_LEVEL` and refreshed `.env.example` guidance for new operational settings.
+- Exposed auto-generated Swagger UI at `/api/docs` and `/api/docs.json`, documenting auth, user, admin, and health-check routes.
+- Added regression tests confirming logging output and OpenAPI paths to prevent coverage regressions.
+
 ## 0.3.0 - User management lifecycle
 - Added email-verification workflow with hashed tokens, resend support, and gated login for unverified accounts.
 - Implemented password-reset, profile update, and admin account management endpoints backed by Postgres.

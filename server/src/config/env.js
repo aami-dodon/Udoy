@@ -15,6 +15,9 @@ export const env = {
   port: parseInt(get('PORT', '5000'), 10),
   postgresUrl: get('POSTGRES_URL', ''),
   mongoUri: get('MONGO_URI', ''),
+  logging: {
+    level: get('LOG_LEVEL')
+  },
   app: {
     baseUrl: get('APP_BASE_URL', 'http://localhost:3000')
   },

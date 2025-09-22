@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer';
 
 import { env } from './env.js';
-import { log, logError } from '../utils/logger.js';
+import { logInfo, logError } from '../utils/logger.js';
 
 let transporter;
 let emailConfigured;
@@ -14,7 +14,7 @@ const isEmailConfigured = () => {
     const hasAuth = Boolean(env.email.user) && Boolean(env.email.password);
     emailConfigured = hasHost && hasAuth;
     if (!emailConfigured) {
-      log('Email transport not fully configured. Emails will be logged to console.');
+      logInfo('Email transport not fully configured; falling back to console log.');
     }
   }
   return emailConfigured;
@@ -57,19 +57,26 @@ export const sendEmail = async ({ to, subject, html, text }) => {
   const activeTransporter = getEmailTransporter();
 
   if (!activeTransporter) {
-    log(`Email to ${to} (${subject})`);
-    if (html) {
-      log(html);
-    } else if (text) {
-      log(text);
-    }
+    logInfo('Email preview (transport disabled)', { to, subject, hasHtml: Boolean(html), hasText: Boolean(text) });
     return;
   }
 
   try {
     await activeTransporter.sendMail(message);
   } catch (error) {
-    logError('Failed to send email');
+    const errorMeta = {
+      to,
+      subject,
+      error: {
+        message: error.message
+      }
+    };
+
+    if (env.nodeEnv !== 'production' && error.stack) {
+      errorMeta.error.stack = error.stack;
+    }
+
+    logError('Failed to send email', errorMeta);
     throw error;
   }
 };
