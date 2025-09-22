@@ -215,6 +215,31 @@ const ensureUserTokensTable = async (client) => {
   `);
 };
 
+const ensureAuditLogsTable = async (client) => {
+  await client.query(`
+    CREATE TABLE IF NOT EXISTS audit_logs (
+      id UUID PRIMARY KEY,
+      actor_id UUID,
+      target_user_id UUID,
+      action TEXT NOT NULL,
+      metadata JSONB NOT NULL DEFAULT '{}',
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+
+  await client.query(`
+    CREATE INDEX IF NOT EXISTS audit_logs_actor_id_idx ON audit_logs(actor_id);
+  `);
+
+  await client.query(`
+    CREATE INDEX IF NOT EXISTS audit_logs_target_user_id_idx ON audit_logs(target_user_id);
+  `);
+
+  await client.query(`
+    CREATE INDEX IF NOT EXISTS audit_logs_created_at_idx ON audit_logs(created_at);
+  `);
+};
+
 export const connectPostgres = async () => {
   if (postgresClient) {
     return postgresClient;
@@ -228,6 +253,7 @@ export const connectPostgres = async () => {
     await client.query('SELECT 1');
     await ensureUserTable(client);
     await ensureUserTokensTable(client);
+    await ensureAuditLogsTable(client);
     logInfo('Connected to Postgres successfully.');
     postgresClient = client;
     return postgresClient;

@@ -1,12 +1,17 @@
 import { Router } from 'express';
 
 import { authorizeRoles, authenticate } from '../../middlewares/auth.js';
+import { validate } from '../../middlewares/validate.js';
 import { ROLES } from '../../../../shared/constants/index.js';
 import {
   deleteUserController,
   listUsersController,
   updateUserController
 } from './users.controller.js';
+import {
+  deleteAdminUserValidation,
+  updateAdminUserValidation
+} from './users.validation.js';
 
 const router = Router();
 
@@ -141,7 +146,7 @@ router.get('/', listUsersController);
  *       404:
  *         description: User not found
  */
-router.put('/:id', updateUserController);
+router.put('/:id', validate(updateAdminUserValidation), updateUserController);
 
 /**
  * @openapi
@@ -192,6 +197,6 @@ router.put('/:id', updateUserController);
  *       404:
  *         description: User not found
  */
-router.delete('/:id', deleteUserController);
+router.delete('/:id', validate(deleteAdminUserValidation), deleteUserController);
 
 export const adminUserRoutes = router;

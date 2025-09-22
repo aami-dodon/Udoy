@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.0 - Security hardening groundwork
+- Added centralized request validation with `express-validator` across auth, user, and admin APIs, including consistent error payloads.
+- Protected authentication endpoints with environment-configurable rate limits using `express-rate-limit`.
+- Introduced reusable presigned MinIO URL helpers to keep uploads/downloads behind time-bound signatures.
+- Implemented role-aware admin audit logging backed by Postgres with regression coverage for update and delete flows.
+- Configured an environment-driven CORS whitelist supporting multiple trusted frontend origins.
+- Hardened defaults with IPv6-safe rate limit keys, stricter error responses, and secure Express proxy settings.
+
 ## 0.4.0 - Logging and API documentation
 - Integrated Winston with Morgan to deliver structured JSON request, response, and error logs including request IDs.
 - Added centralized error-handling middleware with sanitized production responses and richer diagnostic metadata in development.

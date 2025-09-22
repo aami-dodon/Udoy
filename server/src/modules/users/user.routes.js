@@ -1,7 +1,9 @@
 import { Router } from 'express';
 
 import { authenticate } from '../../middlewares/auth.js';
+import { validate } from '../../middlewares/validate.js';
 import { updateProfileController } from './user.controller.js';
+import { updateProfileValidation } from './user.validation.js';
 
 const router = Router();
 
@@ -37,6 +39,6 @@ const router = Router();
  *       401:
  *         description: Unauthorized
  */
-router.put('/me', authenticate, updateProfileController);
+router.put('/me', authenticate, validate(updateProfileValidation), updateProfileController);
 
 export const userRoutes = router;

@@ -1,4 +1,5 @@
-import { ApplicationError } from '../../utils/errors.js';
+import { matchedData } from 'express-validator';
+
 import {
   signUp,
   login,
@@ -10,30 +11,9 @@ import {
   resendVerificationEmail
 } from './auth.service.js';
 
-const validateSignupInput = (body) => {
-  const { name, email, password, role } = body;
-  if (!name || !email || !password || !role) {
-    throw new ApplicationError('Missing required fields', 400);
-  }
-
-  if (password.length < 6) {
-    throw new ApplicationError('Password must be at least 6 characters long', 400);
-  }
-
-  return { name: name.trim(), email, password, role };
-};
-
-const validateLoginInput = (body) => {
-  const { email, password } = body;
-  if (!email || !password) {
-    throw new ApplicationError('Email and password are required', 400);
-  }
-  return { email, password };
-};
-
 export const signupController = async (req, res, next) => {
   try {
-    const payload = validateSignupInput(req.body);
+    const payload = matchedData(req, { locations: ['body'] });
     const result = await signUp(payload);
     res.status(201).json(result);
   } catch (error) {
@@ -43,7 +23,7 @@ export const signupController = async (req, res, next) => {
 
 export const loginController = async (req, res, next) => {
   try {
-    const credentials = validateLoginInput(req.body);
+    const credentials = matchedData(req, { locations: ['body'] });
     const { user, token } = await login(credentials);
     res.json({ token, user });
   } catch (error) {
@@ -72,10 +52,7 @@ export const verifyEmailController = async (req, res, next) => {
 
 export const forgotPasswordController = async (req, res, next) => {
   try {
-    const { email } = req.body;
-    if (!email) {
-      throw new ApplicationError('Email is required', 400);
-    }
+    const { email } = matchedData(req, { locations: ['body'] });
     await requestPasswordReset(email);
     res.json({
       message: 'If the account exists, a password reset email has been sent.',
@@ -88,10 +65,7 @@ export const forgotPasswordController = async (req, res, next) => {
 
 export const resetPasswordController = async (req, res, next) => {
   try {
-    const { token, password } = req.body;
-    if (!token || !password) {
-      throw new ApplicationError('Token and new password are required', 400);
-    }
+    const { token, password } = matchedData(req, { locations: ['body'] });
     const user = await resetPasswordWithToken({ token, newPassword: password });
     res.json({ message: 'Password updated successfully.', user });
   } catch (error) {
@@ -101,10 +75,7 @@ export const resetPasswordController = async (req, res, next) => {
 
 export const resendVerificationController = async (req, res, next) => {
   try {
-    const { email } = req.body;
-    if (!email) {
-      throw new ApplicationError('Email is required', 400);
-    }
+    const { email } = matchedData(req, { locations: ['body'] });
     const response = await resendVerificationEmail(email);
     res.json(response);
   } catch (error) {

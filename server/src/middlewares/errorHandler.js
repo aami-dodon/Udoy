@@ -15,7 +15,9 @@ export const errorHandler = (err, req, res, next) => {
     requestId: req.id,
     error: {
       name: err.name,
-      message: err.message
+      message: err.message,
+      code: err.code,
+      details: err.details
     }
   };
 
@@ -32,6 +34,10 @@ export const errorHandler = (err, req, res, next) => {
 
   if (!isServerError && err.code) {
     responsePayload.code = err.code;
+  }
+
+  if (!isServerError && err.details) {
+    responsePayload.details = err.details;
   }
 
   if (env.nodeEnv !== 'production' && err.stack) {

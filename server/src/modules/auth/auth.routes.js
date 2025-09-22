@@ -2,6 +2,13 @@ import { Router } from 'express';
 
 import { authenticate } from '../../middlewares/auth.js';
 import {
+  forgotPasswordRateLimiter,
+  loginRateLimiter,
+  resetPasswordRateLimiter,
+  signupRateLimiter
+} from '../../middlewares/rateLimiter.js';
+import { validate } from '../../middlewares/validate.js';
+import {
   forgotPasswordController,
   loginController,
   meController,
@@ -10,6 +17,12 @@ import {
   signupController,
   verifyEmailController
 } from './auth.controller.js';
+import {
+  emailOnlyValidation,
+  loginValidation,
+  resetPasswordValidation,
+  signupValidation
+} from './auth.validation.js';
 
 const router = Router();
 
@@ -45,7 +58,7 @@ const router = Router();
  *       400:
  *         description: Validation error
  */
-router.post('/signup', signupController);
+router.post('/signup', signupRateLimiter, validate(signupValidation), signupController);
 
 /**
  * @openapi
@@ -76,7 +89,7 @@ router.post('/signup', signupController);
  *       401:
  *         description: Invalid credentials
  */
-router.post('/login', loginController);
+router.post('/login', loginRateLimiter, validate(loginValidation), loginController);
 
 /**
  * @openapi
@@ -122,7 +135,12 @@ router.get('/verify/:token', verifyEmailController);
  *       200:
  *         description: Reset email sent if the account exists
  */
-router.post('/forgot-password', forgotPasswordController);
+router.post(
+  '/forgot-password',
+  forgotPasswordRateLimiter,
+  validate(emailOnlyValidation),
+  forgotPasswordController
+);
 
 /**
  * @openapi
@@ -152,7 +170,12 @@ router.post('/forgot-password', forgotPasswordController);
  *       400:
  *         description: Invalid reset token
  */
-router.post('/reset-password', resetPasswordController);
+router.post(
+  '/reset-password',
+  resetPasswordRateLimiter,
+  validate(resetPasswordValidation),
+  resetPasswordController
+);
 
 /**
  * @openapi
@@ -177,7 +200,12 @@ router.post('/reset-password', resetPasswordController);
  *       200:
  *         description: Verification email resent if account exists
  */
-router.post('/resend-verification', resendVerificationController);
+router.post(
+  '/resend-verification',
+  forgotPasswordRateLimiter,
+  validate(emailOnlyValidation),
+  resendVerificationController
+);
 
 /**
  * @openapi

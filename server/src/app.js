@@ -7,6 +7,7 @@ import { requestContext } from './middlewares/requestContext.js';
 import { requestLogger } from './middlewares/requestLogger.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { swaggerSpec } from './config/swagger.js';
+import { buildCorsOptions } from './config/cors.js';
 import { adminUserRoutes } from './modules/admin/users.routes.js';
 import { authRoutes } from './modules/auth/auth.routes.js';
 import { helloRoutes } from './modules/hello/hello.routes.js';
@@ -14,8 +15,13 @@ import { userRoutes } from './modules/users/user.routes.js';
 
 const app = express();
 
+app.set('trust proxy', 1);
+app.disable('x-powered-by');
+
 app.use(helmet());
-app.use(cors());
+const corsOptions = buildCorsOptions();
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(requestContext);

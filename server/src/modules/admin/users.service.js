@@ -1,3 +1,5 @@
+import { randomUUID } from 'crypto';
+
 import { ApplicationError } from '../../utils/errors.js';
 import {
   findUserById,
@@ -7,6 +9,7 @@ import {
   softDeleteUser
 } from '../../models/user.repository.js';
 import { deleteTokensForUserByType } from '../../models/token.repository.js';
+import { createAuditLog } from '../../models/auditLog.repository.js';
 import {
   sendAccountDeactivatedEmail,
   sendAccountDeletedEmail,
@@ -26,13 +29,56 @@ const toAdminSafeUser = (user) => ({
   passwordUpdatedAt: user.passwordUpdatedAt
 });
 
+const defaultDependencies = {
+  userRepository: {
+    findUserById,
+    listUsers,
+    updateUserById,
+    setUserActiveState,
+    softDeleteUser
+  },
+  tokenRepository: {
+    deleteTokensForUserByType
+  },
+  auditLogRepository: {
+    createAuditLog
+  },
+  emailService: {
+    sendAccountDeactivatedEmail,
+    sendAccountDeletedEmail,
+    sendProfileUpdatedEmail
+  }
+};
+
+const mergeDependencies = (overrides = {}) => ({
+  userRepository: {
+    ...defaultDependencies.userRepository,
+    ...(overrides.userRepository || {})
+  },
+  tokenRepository: {
+    ...defaultDependencies.tokenRepository,
+    ...(overrides.tokenRepository || {})
+  },
+  auditLogRepository: {
+    ...defaultDependencies.auditLogRepository,
+    ...(overrides.auditLogRepository || {})
+  },
+  emailService: {
+    ...defaultDependencies.emailService,
+    ...(overrides.emailService || {})
+  }
+});
+
 export const listAllUsers = async () => {
-  const users = await listUsers({ includeDeleted: true });
+  const users = await defaultDependencies.userRepository.listUsers({ includeDeleted: true });
   return users.map(toAdminSafeUser);
 };
 
-export const updateUserByAdmin = async (targetUserId, updates) => {
-  const user = await findUserById(targetUserId, { includeDeleted: true });
+export const updateUserByAdmin = async (targetUserId, updates, options = {}) => {
+  const { actorId, dependencies } = options;
+  const deps = mergeDependencies(dependencies);
+  const { userRepository: userRepo, emailService: emails, auditLogRepository: auditRepo } = deps;
+  const user = await userRepo.findUserById(targetUserId, { includeDeleted: true });
 
   if (!user) {
     throw new ApplicationError('User not found', 404);
@@ -43,26 +89,43 @@ export const updateUserByAdmin = async (targetUserId, updates) => {
   }
 
   const nextFields = {};
+  const changes = {};
   let didChange = false;
   let deactivated = false;
 
   if (Object.prototype.hasOwnProperty.call(updates, 'name') && updates.name && updates.name.trim() !== user.name) {
     nextFields.name = updates.name.trim();
+    changes.name = {
+      from: user.name,
+      to: nextFields.name
+    };
     didChange = true;
   }
 
   if (Object.prototype.hasOwnProperty.call(updates, 'role') && updates.role && updates.role !== user.role) {
     nextFields.role = updates.role;
+    changes.role = {
+      from: user.role,
+      to: nextFields.role
+    };
     didChange = true;
   }
 
   if (Object.prototype.hasOwnProperty.call(updates, 'isVerified') && updates.isVerified !== user.isVerified) {
     nextFields.isVerified = Boolean(updates.isVerified);
+    changes.isVerified = {
+      from: user.isVerified,
+      to: nextFields.isVerified
+    };
     didChange = true;
   }
 
   if (Object.prototype.hasOwnProperty.call(updates, 'isActive') && updates.isActive !== user.isActive) {
     nextFields.isActive = Boolean(updates.isActive);
+    changes.isActive = {
+      from: user.isActive,
+      to: nextFields.isActive
+    };
     didChange = true;
     if (nextFields.isActive === false) {
       deactivated = true;
@@ -76,24 +139,39 @@ export const updateUserByAdmin = async (targetUserId, updates) => {
   let updatedUser;
 
   if (Object.prototype.hasOwnProperty.call(nextFields, 'isActive') && Object.keys(nextFields).length === 1) {
-    updatedUser = await setUserActiveState(user.id, nextFields.isActive);
+    updatedUser = await userRepo.setUserActiveState(user.id, nextFields.isActive);
   } else {
-    updatedUser = await updateUserById(user.id, nextFields);
+    updatedUser = await userRepo.updateUserById(user.id, nextFields);
   }
 
   if (deactivated) {
-    await sendAccountDeactivatedEmail({ user: updatedUser });
+    await emails.sendAccountDeactivatedEmail({ user: updatedUser });
   } else if (nextFields.isActive === true && user.isActive === false) {
-    await sendProfileUpdatedEmail({ user: updatedUser });
+    await emails.sendProfileUpdatedEmail({ user: updatedUser });
   } else {
-    await sendProfileUpdatedEmail({ user: updatedUser });
+    await emails.sendProfileUpdatedEmail({ user: updatedUser });
+  }
+
+  if (Object.keys(changes).length > 0) {
+    await auditRepo.createAuditLog({
+      id: randomUUID(),
+      actorId,
+      targetUserId: user.id,
+      action: 'admin.user.update',
+      metadata: {
+        changes
+      }
+    });
   }
 
   return toAdminSafeUser(updatedUser);
 };
 
-export const deleteUserByAdmin = async (targetUserId) => {
-  const user = await findUserById(targetUserId, { includeDeleted: true });
+export const deleteUserByAdmin = async (targetUserId, options = {}) => {
+  const { actorId, dependencies } = options;
+  const deps = mergeDependencies(dependencies);
+  const { userRepository: userRepo, tokenRepository: tokenRepo, emailService: emails, auditLogRepository: auditRepo } = deps;
+  const user = await userRepo.findUserById(targetUserId, { includeDeleted: true });
 
   if (!user) {
     throw new ApplicationError('User not found', 404);
@@ -103,11 +181,22 @@ export const deleteUserByAdmin = async (targetUserId) => {
     return toAdminSafeUser(user);
   }
 
-  await sendAccountDeletedEmail({ user });
-  await softDeleteUser(user.id, new Date());
-  await deleteTokensForUserByType({ userId: user.id, type: 'verify_email' });
-  await deleteTokensForUserByType({ userId: user.id, type: 'reset_password' });
+  await emails.sendAccountDeletedEmail({ user });
+  await userRepo.softDeleteUser(user.id, new Date());
+  await tokenRepo.deleteTokensForUserByType({ userId: user.id, type: 'verify_email' });
+  await tokenRepo.deleteTokensForUserByType({ userId: user.id, type: 'reset_password' });
 
-  const deletedUser = await findUserById(user.id, { includeDeleted: true });
+  const deletedUser = await userRepo.findUserById(user.id, { includeDeleted: true });
+
+  await auditRepo.createAuditLog({
+    id: randomUUID(),
+    actorId,
+    targetUserId: user.id,
+    action: 'admin.user.delete',
+    metadata: {
+      previous: toAdminSafeUser(user)
+    }
+  });
+
   return toAdminSafeUser(deletedUser);
 };

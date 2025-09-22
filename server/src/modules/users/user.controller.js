@@ -1,20 +1,18 @@
-import { ApplicationError } from '../../utils/errors.js';
+import { matchedData } from 'express-validator';
+
 import { updateProfile } from './user.service.js';
 
 export const updateProfileController = async (req, res, next) => {
   try {
-    const { name, email, currentPassword, newPassword, password } = req.body;
+    const data = matchedData(req, { locations: ['body'], includeOptionals: true });
+    const payload = {
+      name: data.name,
+      email: data.email,
+      currentPassword: data.currentPassword,
+      newPassword: data.newPassword || data.password
+    };
 
-    if (!name && !email && !newPassword && !password) {
-      throw new ApplicationError('No profile changes supplied', 400);
-    }
-
-    const result = await updateProfile(req.user.id, {
-      name,
-      email,
-      currentPassword,
-      newPassword: newPassword || password
-    });
+    const result = await updateProfile(req.user.id, payload);
 
     res.json(result);
   } catch (error) {
