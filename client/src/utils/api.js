@@ -17,7 +17,7 @@ export const fetchJson = async (path, options = {}) => {
   if (!response.ok) {
     let message = 'Failed to fetch API resource';
     try {
-      const errorBody = await response.json();
+      const errorBody = await response.clone().json();
       message = errorBody.message || message;
     } catch (error) {
       const errorText = await response.text();
