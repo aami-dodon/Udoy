@@ -4,6 +4,7 @@
 - Added centralized request validation with `express-validator` across auth, user, and admin APIs, including consistent error payloads.
 - Protected authentication endpoints with environment-configurable rate limits using `express-rate-limit`.
 - Introduced reusable presigned MinIO URL helpers to keep uploads/downloads behind time-bound signatures.
+- Connected the frontend storage utilities to request MinIO presigned URLs and stream uploads through the signed endpoints.
 - Implemented role-aware admin audit logging backed by Postgres with regression coverage for update and delete flows.
 - Configured an environment-driven CORS whitelist supporting multiple trusted frontend origins.
 - Hardened defaults with IPv6-safe rate limit keys, stricter error responses, and secure Express proxy settings.
