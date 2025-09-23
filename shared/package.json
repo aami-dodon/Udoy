@@ -1,0 +1,20 @@
+{
+  "name": "@udoy/shared",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "scripts": {
+    "lint": "eslint \"src/**/*.{js,jsx}\"",
+    "test": "echo 'No shared tests yet'"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.0",
+    "prettier": "^3.3.2"
+  }
+}

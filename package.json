@@ -1,0 +1,15 @@
+{
+  "name": "udoy",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "client",
+    "server",
+    "shared"
+  ],
+  "scripts": {
+    "lint": "npm run lint --workspaces",
+    "test": "npm run test --workspaces"
+  }
+}

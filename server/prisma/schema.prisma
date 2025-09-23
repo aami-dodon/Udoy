@@ -1,0 +1,129 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String           @id @default(uuid())
+  email          String           @unique
+  password       String
+  firstName      String
+  lastName       String
+  role           Role
+  classLevel     Int?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  teacherProfile TeacherProfile?
+  studentProfile StudentProfile?
+  courses        Course[]         @relation("CourseOwner")
+  assignments    Assignment[]     @relation("AssignedBy")
+  enrollments    Enrollment[]
+}
+
+enum Role {
+  student
+  teacher
+  admin
+}
+
+model TeacherProfile {
+  id        String  @id @default(uuid())
+  bio       String?
+  expertise String?
+  userId    String  @unique
+  user      User    @relation(fields: [userId], references: [id])
+}
+
+model StudentProfile {
+  id              String  @id @default(uuid())
+  guardianName    String?
+  guardianContact String?
+  userId          String  @unique
+  user            User    @relation(fields: [userId], references: [id])
+}
+
+model Topic {
+  id          String    @id @default(uuid())
+  title       String
+  description String?
+  chapters    Chapter[]
+  createdById String
+  createdBy   User      @relation(fields: [createdById], references: [id])
+}
+
+model Chapter {
+  id       String   @id @default(uuid())
+  title    String
+  topicId  String
+  topic    Topic    @relation(fields: [topicId], references: [id])
+  subjects Subject[]
+}
+
+model Subject {
+  id        String   @id @default(uuid())
+  title     String
+  chapterId String
+  chapter   Chapter  @relation(fields: [chapterId], references: [id])
+  courses   Course[]
+}
+
+model Course {
+  id             String         @id @default(uuid())
+  title          String
+  description    String
+  classLevel     Int
+  subjectId      String
+  subject        Subject        @relation(fields: [subjectId], references: [id])
+  createdById    String
+  createdBy      User           @relation("CourseOwner", fields: [createdById], references: [id])
+  modules        CourseModule[]
+  enrollments    Enrollment[]
+  assignments    Assignment[]
+}
+
+model CourseModule {
+  id        String @id @default(uuid())
+  title     String
+  content   String
+  order     Int
+  courseId  String
+  course    Course @relation(fields: [courseId], references: [id])
+}
+
+model Enrollment {
+  id        String   @id @default(uuid())
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id])
+  studentId String
+  student   User     @relation(fields: [studentId], references: [id])
+  status    EnrollmentStatus @default(pending)
+  createdAt DateTime @default(now())
+}
+
+enum EnrollmentStatus {
+  pending
+  active
+  completed
+}
+
+model Assignment {
+  id          String   @id @default(uuid())
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id])
+  studentId   String
+  student     User     @relation(fields: [studentId], references: [id])
+  assignedById String
+  assignedBy   User     @relation("AssignedBy", fields: [assignedById], references: [id])
+  createdAt    DateTime @default(now())
+}
+
+model SystemSetting {
+  key         String @id
+  value       String
+  description String?
+  updatedAt   DateTime @updatedAt
+}
