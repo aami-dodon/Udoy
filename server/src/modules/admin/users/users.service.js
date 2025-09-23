@@ -1,21 +1,26 @@
 import { randomUUID } from 'crypto';
 
-import { ApplicationError } from '../../utils/errors.js';
+import { ApplicationError } from '../../../utils/errors.js';
 import {
   findUserById,
   listUsers,
   updateUserById,
   setUserActiveState,
   softDeleteUser
-} from '../../models/user.repository.js';
-import { deleteTokensForUserByType } from '../../models/token.repository.js';
-import { createAuditLog } from '../../models/auditLog.repository.js';
+} from '../../../models/user.repository.js';
+import { deleteTokensForUserByType } from '../../../models/token.repository.js';
+import { createAuditLog } from '../../../models/auditLog.repository.js';
 import {
   sendAccountDeactivatedEmail,
   sendAccountDeletedEmail,
   sendProfileUpdatedEmail
-} from '../notifications/email.service.js';
-import { logInfo } from '../../utils/logger.js';
+} from '../../../integrations/notifications/email.service.js';
+import { logInfo } from '../../../utils/logger.js';
+
+/**
+ * @typedef {import('../../../../../shared/types/admin').AdminUserCollectionResponse} AdminUserCollectionResponse
+ * @typedef {import('../../../../../shared/types/admin').AdminUserResponse} AdminUserResponse
+ */
 
 const toAdminSafeUser = (user) => ({
   id: user.id,
@@ -70,11 +75,22 @@ const mergeDependencies = (overrides = {}) => ({
   }
 });
 
+/**
+ * Returns every user for administrative views, including soft-deleted accounts.
+ * @returns {Promise<AdminUserCollectionResponse['users']>}
+ */
 export const listAllUsers = async () => {
   const users = await defaultDependencies.userRepository.listUsers({ includeDeleted: true });
   return users.map(toAdminSafeUser);
 };
 
+/**
+ * Applies administrative updates to a user.
+ * @param {string} targetUserId
+ * @param {{ name?: string; role?: string; isVerified?: boolean; isActive?: boolean }} updates
+ * @param {{ actorId?: string; dependencies?: Partial<typeof defaultDependencies> }} [options]
+ * @returns {Promise<AdminUserResponse['user']>}
+ */
 export const updateUserByAdmin = async (targetUserId, updates, options = {}) => {
   const { actorId, dependencies } = options;
   const deps = mergeDependencies(dependencies);
@@ -175,6 +191,12 @@ export const updateUserByAdmin = async (targetUserId, updates, options = {}) => 
   return toAdminSafeUser(updatedUser);
 };
 
+/**
+ * Soft deletes a user account and records an audit log entry.
+ * @param {string} targetUserId
+ * @param {{ actorId?: string; dependencies?: Partial<typeof defaultDependencies> }} [options]
+ * @returns {Promise<AdminUserResponse['user']>}
+ */
 export const deleteUserByAdmin = async (targetUserId, options = {}) => {
   const { actorId, dependencies } = options;
   const deps = mergeDependencies(dependencies);

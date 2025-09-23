@@ -5,7 +5,7 @@ import {
   getPresignedDownloadUrl,
   getPresignedUploadUrl,
   MAX_PRESIGNED_EXPIRY_SECONDS
-} from '../src/modules/storage/storage.service.js';
+} from '../src/integrations/storage/storage.service.js';
 import { env } from '../src/config/env.js';
 import { ApplicationError } from '../src/utils/errors.js';
 

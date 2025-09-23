@@ -10,7 +10,7 @@
 | POST   | `/api/auth/forgot-password` | Creates a reset token and mails instructions (response is intentionally generic) |
 | POST   | `/api/auth/reset-password` | Resets the password using a valid token |
 | POST   | `/api/auth/resend-verification` | Issues a fresh verification email for pending accounts |
-| PUT    | `/api/users/me` | Updates profile fields; supports name, email change (with re-verification), and password rotation |
+| PUT    | `/api/account/profile` | Updates profile fields; supports name, email change (with re-verification), and password rotation |
 | GET    | `/api/admin/users` | Lists all users for admin dashboards |
 | PUT    | `/api/admin/users/:id` | Allows admins to edit name, role, verification, or activation state |
 | DELETE | `/api/admin/users/:id` | Performs a soft delete/deactivation and notifies the user |

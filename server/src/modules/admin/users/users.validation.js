@@ -1,6 +1,6 @@
 import { body, param } from 'express-validator';
 
-import { ROLES } from '../../../../shared/constants/index.js';
+import { ROLES } from '../../../../../shared/constants/index.js';
 
 export const updateAdminUserValidation = [
   param('id').isUUID().withMessage('User id must be a valid UUID'),

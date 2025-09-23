@@ -8,10 +8,10 @@ import { requestLogger } from './middlewares/requestLogger.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { swaggerSpec } from './config/swagger.js';
 import { buildCorsOptions } from './config/cors.js';
-import { adminUserRoutes } from './modules/admin/users.routes.js';
+import { adminUserRoutes } from './modules/admin/users/users.routes.js';
 import { authRoutes } from './modules/auth/auth.routes.js';
 import { helloRoutes } from './modules/hello/hello.routes.js';
-import { userRoutes } from './modules/users/user.routes.js';
+import { accountRoutes } from './modules/account/account.routes.js';
 
 const app = express();
 
@@ -33,7 +33,7 @@ app.get('/api/docs.json', (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
+app.use('/api/account', accountRoutes);
 app.use('/api/admin/users', adminUserRoutes);
 app.use('/api/hello', helloRoutes);
 

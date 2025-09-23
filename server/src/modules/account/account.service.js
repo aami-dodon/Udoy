@@ -17,9 +17,13 @@ import {
   sendEmailChangeNotifications,
   sendPasswordChangedEmail,
   sendProfileUpdatedEmail
-} from '../notifications/email.service.js';
+} from '../../integrations/notifications/email.service.js';
 import { env } from '../../config/env.js';
 import { logInfo } from '../../utils/logger.js';
+
+/**
+ * @typedef {import('../../../../shared/types/account').AccountProfileUpdateResponse} AccountProfileUpdateResponse
+ */
 
 const EMAIL_CHANGE_TOKEN_TTL_MS = 1000 * 60 * 60 * 24; // 24 hours
 
@@ -52,6 +56,12 @@ const toSafeUser = (user) => ({
   deletedAt: user.deletedAt
 });
 
+/**
+ * Updates profile credentials for the authenticated user.
+ * @param {string} userId
+ * @param {{ name?: string; email?: string; currentPassword?: string; newPassword?: string }} payload
+ * @returns {Promise<AccountProfileUpdateResponse>}
+ */
 export const updateProfile = async (userId, payload) => {
   const user = await findUserById(userId, { includePasswordHash: true });
 

@@ -7,7 +7,9 @@ These rules apply to **all aegnts** working on the LMS project. Follow them stri
 ### 1. Code & Project Structure  
 - Follow **feature-based folder structure** (no dumping everything into `/utils`).  
 - Always separate **frontend, backend, shared** code.  
-- Keep documentation updated in `/docs` after each feature.  
+- Mirror slices: every `client/src/features/<feature>` must have a matching `server/src/modules/<feature>` (same name, docs, and routes).  
+- House cross-cutting adapters (email, storage, external APIs) under `server/src/integrations` and inject them into features.  
+- Keep documentation updated in `/docs` after each feature; add a short README inside each feature/module describing owned UI and APIs.  
 - Every new feature = new folder under `/modules` (backend) or `/features` (frontend).  
 
 
@@ -30,12 +32,13 @@ These rules apply to **all aegnts** working on the LMS project. Follow them stri
 - Every API must be documented in **Swagger (OpenAPI)**.  
 - Log all requests/responses with **Winston + Morgan**.  
 - Use structured JSON logs only.  
+- Export shared request/response shapes from `shared/types` and reference them in controller/service JSDoc.  
 - Error handling via central middleware (`/middlewares/errorHandler.js`).  
 
 ### 5. Database & Models  
-- **Postgres**: Use **Prisma ORM** for relational data (courses, enrollments).  
+- **Postgres**: Use **Prisma ORM** for relational data (courses, enrollments). Prisma schema lives in `server/prisma/schema.prisma`; run `npm run prisma:migrate` when altering it.  
 - **MongoDB**: Use **Mongoose** for flexible data (progress tracking, events).  
-- Every schema change must update `/docs/server/models.md`.  
+- Every schema change must update `/docs/server/models.md` and the relevant entries in `shared/types`.  
 
 ### 6. Frontend Guidelines  
 - Use **Material UI** for all components.  
@@ -64,7 +67,7 @@ These rules apply to **all aegnts** working on the LMS project. Follow them stri
 
 
 ## 10. Documentation & Communication  
-- Update relevant `/docs` files whenever a feature is built.  
+- Update relevant `/docs` files whenever a feature is built (mirror updates in both `docs/client` and `docs/server`).  
 - Update `CHANGELOG.md` for every release.  
 - Document roles & responsibilities in `AGENTS.md`.  
 - If unclear, ask questions in **issues/discussions**, not in code comments.  

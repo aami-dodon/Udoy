@@ -1,5 +1,5 @@
-import { Client } from 'pg';
 import mongoose from 'mongoose';
+import { PrismaClient } from '@prisma/client';
 
 import { env } from './env.js';
 import { logInfo, logError } from '../utils/logger.js';
@@ -11,252 +11,34 @@ const ensureValue = (value, name) => {
   return value;
 };
 
-let postgresClient;
+let prismaClient;
 let mongoConnection;
 
-const ensureUserTable = async (client) => {
-  await client.query(`
-    CREATE TABLE IF NOT EXISTS users (
-      id UUID PRIMARY KEY,
-      name TEXT NOT NULL,
-      email TEXT NOT NULL,
-      email_normalized TEXT NOT NULL,
-      password_hash TEXT NOT NULL,
-      role TEXT NOT NULL,
-      is_verified BOOLEAN NOT NULL DEFAULT FALSE,
-      is_active BOOLEAN NOT NULL DEFAULT TRUE,
-      created_at TIMESTAMPTZ NOT NULL,
-      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-      password_updated_at TIMESTAMPTZ,
-      deleted_at TIMESTAMPTZ
-    )
-  `);
-
-  await client.query(`
-    DO $$
-    BEGIN
-      IF NOT EXISTS (
-        SELECT 1 FROM information_schema.columns
-        WHERE table_name = 'users' AND column_name = 'email_normalized'
-      ) THEN
-        ALTER TABLE users ADD COLUMN email_normalized TEXT;
-      END IF;
-    END $$;
-  `);
-
-  await client.query(`
-    UPDATE users
-    SET email_normalized = lower(trim(email))
-    WHERE email IS NOT NULL AND (email_normalized IS NULL OR email_normalized = '');
-  `);
-
-  await client.query(`
-    ALTER TABLE users
-    ALTER COLUMN email_normalized SET NOT NULL;
-  `);
-
-  await client.query(`
-    CREATE UNIQUE INDEX IF NOT EXISTS users_email_normalized_idx
-    ON users(email_normalized);
-  `);
-
-  await client.query(`
-    CREATE UNIQUE INDEX IF NOT EXISTS users_email_idx
-    ON users(email);
-  `);
-
-  await client.query(`
-    DO $$
-    BEGIN
-      IF EXISTS (
-        SELECT 1
-        FROM information_schema.table_constraints
-        WHERE table_name = 'users'
-          AND constraint_name = 'users_role_check'
-      ) THEN
-        ALTER TABLE users DROP CONSTRAINT users_role_check;
-      END IF;
-    END $$;
-  `);
-
-  await client.query(`
-    UPDATE users
-    SET role = lower(role)
-    WHERE role IS NOT NULL;
-  `);
-
-  await client.query(`
-    UPDATE users
-    SET role = 'student'
-    WHERE role IS NULL OR role NOT IN ('student', 'teacher', 'admin');
-  `);
-
-  await client.query(`
-    ALTER TABLE users
-    ADD CONSTRAINT users_role_check CHECK (role IN ('student', 'teacher', 'admin'));
-  `);
-
-  await client.query(`
-    DO $$
-    BEGIN
-      IF NOT EXISTS (
-        SELECT 1 FROM information_schema.columns
-        WHERE table_name = 'users' AND column_name = 'is_verified'
-      ) THEN
-        ALTER TABLE users ADD COLUMN is_verified BOOLEAN DEFAULT FALSE;
-        UPDATE users SET is_verified = TRUE WHERE role = 'admin';
-        ALTER TABLE users ALTER COLUMN is_verified SET DEFAULT FALSE;
-        ALTER TABLE users ALTER COLUMN is_verified SET NOT NULL;
-      END IF;
-    END $$;
-  `);
-
-  await client.query(`
-    DO $$
-    BEGIN
-      IF NOT EXISTS (
-        SELECT 1 FROM information_schema.columns
-        WHERE table_name = 'users' AND column_name = 'is_active'
-      ) THEN
-        ALTER TABLE users ADD COLUMN is_active BOOLEAN DEFAULT TRUE;
-        UPDATE users SET is_active = TRUE WHERE is_active IS NULL;
-        ALTER TABLE users ALTER COLUMN is_active SET DEFAULT TRUE;
-        ALTER TABLE users ALTER COLUMN is_active SET NOT NULL;
-      END IF;
-    END $$;
-  `);
-
-  await client.query(`
-    DO $$
-    BEGIN
-      IF NOT EXISTS (
-        SELECT 1 FROM information_schema.columns
-        WHERE table_name = 'users' AND column_name = 'updated_at'
-      ) THEN
-        ALTER TABLE users ADD COLUMN updated_at TIMESTAMPTZ;
-        UPDATE users SET updated_at = created_at WHERE updated_at IS NULL;
-        ALTER TABLE users ALTER COLUMN updated_at SET DEFAULT NOW();
-        ALTER TABLE users ALTER COLUMN updated_at SET NOT NULL;
-      END IF;
-    END $$;
-  `);
-
-  await client.query(`
-    DO $$
-    BEGIN
-      IF NOT EXISTS (
-        SELECT 1 FROM information_schema.columns
-        WHERE table_name = 'users' AND column_name = 'password_updated_at'
-      ) THEN
-        ALTER TABLE users ADD COLUMN password_updated_at TIMESTAMPTZ;
-      END IF;
-    END $$;
-  `);
-
-  await client.query(`
-    DO $$
-    BEGIN
-      IF NOT EXISTS (
-        SELECT 1 FROM information_schema.columns
-        WHERE table_name = 'users' AND column_name = 'deleted_at'
-      ) THEN
-        ALTER TABLE users ADD COLUMN deleted_at TIMESTAMPTZ;
-      END IF;
-    END $$;
-  `);
-};
-
-const ensureUserTokensTable = async (client) => {
-  await client.query(`
-    CREATE TABLE IF NOT EXISTS user_tokens (
-      id UUID PRIMARY KEY,
-      user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-      token_hash TEXT NOT NULL,
-      type TEXT NOT NULL,
-      metadata JSONB NOT NULL DEFAULT '{}',
-      expires_at TIMESTAMPTZ NOT NULL,
-      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-      used_at TIMESTAMPTZ
-    )
-  `);
-
-  await client.query(`
-    CREATE UNIQUE INDEX IF NOT EXISTS user_tokens_token_hash_idx
-    ON user_tokens(token_hash);
-  `);
-
-  await client.query(`
-    CREATE INDEX IF NOT EXISTS user_tokens_user_id_idx
-    ON user_tokens(user_id);
-  `);
-
-  await client.query(`
-    CREATE INDEX IF NOT EXISTS user_tokens_expires_at_idx
-    ON user_tokens(expires_at);
-  `);
-
-  await client.query(`
-    DO $$
-    BEGIN
-      IF EXISTS (
-        SELECT 1
-        FROM information_schema.table_constraints
-        WHERE table_name = 'user_tokens'
-          AND constraint_name = 'user_tokens_type_check'
-      ) THEN
-        ALTER TABLE user_tokens DROP CONSTRAINT user_tokens_type_check;
-      END IF;
-    END $$;
-  `);
-
-  await client.query(`
-    ALTER TABLE user_tokens
-    ADD CONSTRAINT user_tokens_type_check CHECK (type IN ('verify_email', 'reset_password'));
-  `);
-};
-
-const ensureAuditLogsTable = async (client) => {
-  await client.query(`
-    CREATE TABLE IF NOT EXISTS audit_logs (
-      id UUID PRIMARY KEY,
-      actor_id UUID,
-      target_user_id UUID,
-      action TEXT NOT NULL,
-      metadata JSONB NOT NULL DEFAULT '{}',
-      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    )
-  `);
-
-  await client.query(`
-    CREATE INDEX IF NOT EXISTS audit_logs_actor_id_idx ON audit_logs(actor_id);
-  `);
-
-  await client.query(`
-    CREATE INDEX IF NOT EXISTS audit_logs_target_user_id_idx ON audit_logs(target_user_id);
-  `);
-
-  await client.query(`
-    CREATE INDEX IF NOT EXISTS audit_logs_created_at_idx ON audit_logs(created_at);
-  `);
-};
-
-export const connectPostgres = async () => {
-  if (postgresClient) {
-    return postgresClient;
+const createPrismaClient = () => {
+  if (prismaClient) {
+    return prismaClient;
   }
 
   const url = ensureValue(env.postgresUrl, 'POSTGRES_URL');
-  const client = new Client({ connectionString: url });
+  prismaClient = new PrismaClient({
+    datasources: {
+      db: {
+        url
+      }
+    }
+  });
+
+  return prismaClient;
+};
+
+export const connectPostgres = async () => {
+  const client = createPrismaClient();
 
   try {
-    await client.connect();
-    await client.query('SELECT 1');
-    await ensureUserTable(client);
-    await ensureUserTokensTable(client);
-    await ensureAuditLogsTable(client);
-    logInfo('Connected to Postgres successfully.');
-    postgresClient = client;
-    return postgresClient;
+    await client.$connect();
+    await client.$queryRaw`SELECT 1`;
+    logInfo('Connected to Postgres via Prisma.');
+    return client;
   } catch (error) {
     const errorMeta = {
       error: {
@@ -268,17 +50,18 @@ export const connectPostgres = async () => {
       errorMeta.error.stack = error.stack;
     }
 
-    logError('Failed to connect to Postgres', errorMeta);
-    await client.end().catch(() => {});
+    logError('Failed to connect to Postgres via Prisma', errorMeta);
+    await client.$disconnect().catch(() => {});
+    prismaClient = undefined;
     throw error;
   }
 };
 
-export const getPostgresClient = () => {
-  if (!postgresClient) {
-    throw new Error('Postgres client not initialised');
+export const getPrismaClient = () => {
+  if (!prismaClient) {
+    return createPrismaClient();
   }
-  return postgresClient;
+  return prismaClient;
 };
 
 export const connectMongo = async () => {
@@ -312,9 +95,9 @@ export const connectMongo = async () => {
 };
 
 export const closeConnections = async () => {
-  if (postgresClient) {
-    await postgresClient.end().catch(() => {});
-    postgresClient = undefined;
+  if (prismaClient) {
+    await prismaClient.$disconnect().catch(() => {});
+    prismaClient = undefined;
   }
 
   if (mongoConnection) {

@@ -2,18 +2,18 @@ import { Router } from 'express';
 
 import { authenticate } from '../../middlewares/auth.js';
 import { validate } from '../../middlewares/validate.js';
-import { updateProfileController } from './user.controller.js';
-import { updateProfileValidation } from './user.validation.js';
+import { updateProfileController } from './account.controller.js';
+import { updateProfileValidation } from './account.validation.js';
 
 const router = Router();
 
 /**
  * @openapi
- * /api/users/me:
+ * /api/account/profile:
  *   put:
  *     summary: Update authenticated user profile
  *     tags:
- *       - Users
+ *       - Account
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -39,6 +39,6 @@ const router = Router();
  *       401:
  *         description: Unauthorized
  */
-router.put('/me', authenticate, validate(updateProfileValidation), updateProfileController);
+router.put('/profile', authenticate, validate(updateProfileValidation), updateProfileController);
 
-export const userRoutes = router;
+export const accountRoutes = router;

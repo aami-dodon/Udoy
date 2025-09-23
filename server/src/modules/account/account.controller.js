@@ -1,6 +1,6 @@
 import { matchedData } from 'express-validator';
 
-import { updateProfile } from './user.service.js';
+import { updateProfile } from './account.service.js';
 
 export const updateProfileController = async (req, res, next) => {
   try {

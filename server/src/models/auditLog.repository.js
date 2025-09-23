@@ -1,12 +1,12 @@
-import { getPostgresClient } from '../config/db.js';
+import { getPrismaClient } from '../config/db.js';
 
-const mapAuditLog = (row) => ({
-  id: row.id,
-  actorId: row.actor_id,
-  targetUserId: row.target_user_id,
-  action: row.action,
-  metadata: row.metadata ?? {},
-  createdAt: row.created_at
+const mapAuditLog = (log) => ({
+  id: log.id,
+  actorId: log.actorId,
+  targetUserId: log.targetUserId,
+  action: log.action,
+  metadata: log.metadata ?? {},
+  createdAt: log.createdAt
 });
 
 export const createAuditLog = async ({
@@ -17,30 +17,27 @@ export const createAuditLog = async ({
   metadata = {},
   createdAt = new Date()
 }) => {
-  const client = getPostgresClient();
-  const { rows } = await client.query(
-    `
-      INSERT INTO audit_logs (id, actor_id, target_user_id, action, metadata, created_at)
-      VALUES ($1, $2, $3, $4, $5, $6)
-      RETURNING id, actor_id, target_user_id, action, metadata, created_at
-    `,
-    [id, actorId ?? null, targetUserId ?? null, action, metadata, createdAt]
-  );
+  const prisma = getPrismaClient();
+  const log = await prisma.auditLog.create({
+    data: {
+      id,
+      actorId,
+      targetUserId,
+      action,
+      metadata,
+      createdAt
+    }
+  });
 
-  return mapAuditLog(rows[0]);
+  return mapAuditLog(log);
 };
 
 export const findAuditLogsByTargetUser = async (targetUserId) => {
-  const client = getPostgresClient();
-  const { rows } = await client.query(
-    `
-      SELECT id, actor_id, target_user_id, action, metadata, created_at
-      FROM audit_logs
-      WHERE target_user_id = $1
-      ORDER BY created_at DESC
-    `,
-    [targetUserId]
-  );
+  const prisma = getPrismaClient();
+  const logs = await prisma.auditLog.findMany({
+    where: { targetUserId },
+    orderBy: { createdAt: 'desc' }
+  });
 
-  return rows.map(mapAuditLog);
+  return logs.map(mapAuditLog);
 };

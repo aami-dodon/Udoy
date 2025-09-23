@@ -1,7 +1,7 @@
 import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { getProfile, loginRequest, signupRequest } from '../features/auth/services/authService.js';
-import { updateProfileRequest } from '../features/profile/services/profileService.js';
+import { updateProfileRequest } from '../features/account/services/accountService.js';
 
 const TOKEN_KEY = 'udoy_token';
 

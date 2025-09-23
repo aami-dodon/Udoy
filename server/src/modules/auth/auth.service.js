@@ -24,9 +24,17 @@ import {
   sendVerificationEmail,
   sendPasswordResetEmail,
   sendPasswordResetConfirmationEmail
-} from '../notifications/email.service.js';
+} from '../../integrations/notifications/email.service.js';
 import { env } from '../../config/env.js';
 import { logInfo } from '../../utils/logger.js';
+
+/**
+ * @typedef {import('../../../../shared/types/user').UserRole} UserRole
+ * @typedef {import('../../../../shared/types/auth').SignupResponse} SignupResponse
+ * @typedef {import('../../../../shared/types/auth').LoginResponse} LoginResponse
+ * @typedef {import('../../../../shared/types/auth').ProfileResponse} ProfileResponse
+ * @typedef {import('../../../../shared/types/auth').VerifyEmailResult} VerifyEmailResult
+ */
 
 const allowedSignupRoles = new Set([ROLES.STUDENT, ROLES.TEACHER]);
 const VERIFY_EMAIL_TOKEN_TTL_MS = 1000 * 60 * 60 * 24; // 24 hours
@@ -90,6 +98,11 @@ const ensureUserActive = (user) => {
   }
 };
 
+/**
+ * Registers a new learner or teacher and triggers a verification email.
+ * @param {{ name: string; email: string; password: string; role: UserRole }} params
+ * @returns {Promise<SignupResponse>}
+ */
 export const signUp = async ({ name, email, password, role }) => {
   const normalizedEmail = normalizeEmail(email);
 
@@ -132,6 +145,11 @@ export const signUp = async ({ name, email, password, role }) => {
   };
 };
 
+/**
+ * Authenticates a verified user and returns a signed JWT.
+ * @param {{ email: string; password: string }} credentials
+ * @returns {Promise<LoginResponse>}
+ */
 export const login = async ({ email, password }) => {
   const normalizedEmail = normalizeEmail(email);
   assertValidEmail(normalizedEmail);
@@ -163,6 +181,11 @@ export const login = async ({ email, password }) => {
   return { user: toSafeUser(userRecord), token };
 };
 
+/**
+ * Resolves the currently authenticated profile.
+ * @param {string} userId
+ * @returns {Promise<ProfileResponse>}
+ */
 export const getUserProfile = async (userId) => {
   const user = await findUserById(userId);
 
@@ -175,6 +198,11 @@ export const getUserProfile = async (userId) => {
   return toSafeUser(user);
 };
 
+/**
+ * Confirms a verification token and optionally applies queued email changes.
+ * @param {string} rawToken
+ * @returns {Promise<ProfileResponse>}
+ */
 export const verifyEmailToken = async (rawToken) => {
   if (!rawToken) {
     throw new ApplicationError('Verification token is required', 400);
@@ -251,6 +279,11 @@ export const verifyEmailToken = async (rawToken) => {
   return toSafeUser(updatedUser);
 };
 
+/**
+ * Issues a password reset token if the account is eligible.
+ * @param {string} email
+ * @returns {Promise<void>}
+ */
 export const requestPasswordReset = async (email) => {
   const normalizedEmail = normalizeEmail(email);
   assertValidEmail(normalizedEmail);
@@ -277,6 +310,11 @@ export const requestPasswordReset = async (email) => {
   logInfo('Password reset email issued', { userId: user.id, tokenId });
 };
 
+/**
+ * Resets a password using a previously issued reset token.
+ * @param {{ token: string; newPassword: string }} params
+ * @returns {Promise<ProfileResponse>}
+ */
 export const resetPasswordWithToken = async ({ token, newPassword }) => {
   if (!token) {
     throw new ApplicationError('Reset token is required', 400);
@@ -319,8 +357,16 @@ export const resetPasswordWithToken = async ({ token, newPassword }) => {
   return toSafeUser(updatedUser);
 };
 
+/**
+ * @returns {string}
+ */
 export const getSupportEmail = resolveSupportEmail;
 
+/**
+ * Resends a verification email when the account is pending verification.
+ * @param {string} email
+ * @returns {Promise<import('../../../../shared/types/auth').ResendVerificationResponse>}
+ */
 export const resendVerificationEmail = async (email) => {
   const normalizedEmail = normalizeEmail(email);
   assertValidEmail(normalizedEmail);

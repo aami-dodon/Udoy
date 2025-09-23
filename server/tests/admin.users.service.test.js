@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mock } from 'node:test';
 
-import { updateUserByAdmin, deleteUserByAdmin } from '../src/modules/admin/users.service.js';
+import { updateUserByAdmin, deleteUserByAdmin } from '../src/modules/admin/users/users.service.js';
 
 test('updateUserByAdmin records an audit log entry when changes occur', async () => {
   const baseUser = {

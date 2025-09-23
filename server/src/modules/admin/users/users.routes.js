@@ -1,8 +1,8 @@
 import { Router } from 'express';
 
-import { authorizeRoles, authenticate } from '../../middlewares/auth.js';
-import { validate } from '../../middlewares/validate.js';
-import { ROLES } from '../../../../shared/constants/index.js';
+import { authorizeRoles, authenticate } from '../../../middlewares/auth.js';
+import { validate } from '../../../middlewares/validate.js';
+import { ROLES } from '../../../../../shared/constants/index.js';
 import {
   deleteUserController,
   listUsersController,
