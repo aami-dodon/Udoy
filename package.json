@@ -1,0 +1,15 @@
+{
+  "name": "udoy-monorepo",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "build": "npm run build -w client",
+    "dev": "npm run dev -w client",
+    "test": "npm run test -w client && npm run test -w server",
+    "lint": "npm run lint -w client && npm run lint -w server"
+  }
+}

@@ -1,0 +1,16 @@
+node_modules
+pnpm-lock.yaml
+yarn.lock
+dist
+build
+.env
+.env.*
+coverage
+.DS_Store
+*.log
+.tmp
+.vscode
+.idea
+.prisma
+server/prisma/dev.db
+
