@@ -1,8 +1,8 @@
 import { matchedData } from 'express-validator';
 
-import { updateProfile } from './account.service.js';
+import { updateAccountDetails } from './account.service.js';
 
-export const updateProfileController = async (req, res, next) => {
+export const updateAccountController = async (req, res, next) => {
   try {
     const data = matchedData(req, { locations: ['body'], includeOptionals: true });
     const payload = {
@@ -12,7 +12,7 @@ export const updateProfileController = async (req, res, next) => {
       newPassword: data.newPassword || data.password
     };
 
-    const result = await updateProfile(req.user.id, payload);
+    const result = await updateAccountDetails(req.user.id, payload);
 
     res.json(result);
   } catch (error) {

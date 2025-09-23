@@ -3,7 +3,7 @@ import { matchedData } from 'express-validator';
 import {
   signUp,
   login,
-  getUserProfile,
+  getAuthenticatedAccount,
   verifyEmailToken,
   requestPasswordReset,
   resetPasswordWithToken,
@@ -33,7 +33,7 @@ export const loginController = async (req, res, next) => {
 
 export const meController = async (req, res, next) => {
   try {
-    const user = await getUserProfile(req.user.id);
+    const user = await getAuthenticatedAccount(req.user.id);
     res.json({ user });
   } catch (error) {
     next(error);

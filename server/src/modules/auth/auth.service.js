@@ -32,7 +32,7 @@ import { logInfo } from '../../utils/logger.js';
  * @typedef {import('../../../../shared/types/user').UserRole} UserRole
  * @typedef {import('../../../../shared/types/auth').SignupResponse} SignupResponse
  * @typedef {import('../../../../shared/types/auth').LoginResponse} LoginResponse
- * @typedef {import('../../../../shared/types/auth').ProfileResponse} ProfileResponse
+ * @typedef {import('../../../../shared/types/auth').AuthenticatedUserResponse} AuthenticatedUserResponse
  * @typedef {import('../../../../shared/types/auth').VerifyEmailResult} VerifyEmailResult
  */
 
@@ -182,11 +182,11 @@ export const login = async ({ email, password }) => {
 };
 
 /**
- * Resolves the currently authenticated profile.
+ * Resolves the currently authenticated account details.
  * @param {string} userId
- * @returns {Promise<ProfileResponse>}
+ * @returns {Promise<AuthenticatedUserResponse>}
  */
-export const getUserProfile = async (userId) => {
+export const getAuthenticatedAccount = async (userId) => {
   const user = await findUserById(userId);
 
   if (!user) {
@@ -201,7 +201,7 @@ export const getUserProfile = async (userId) => {
 /**
  * Confirms a verification token and optionally applies queued email changes.
  * @param {string} rawToken
- * @returns {Promise<ProfileResponse>}
+ * @returns {Promise<AuthenticatedUserResponse>}
  */
 export const verifyEmailToken = async (rawToken) => {
   if (!rawToken) {
@@ -313,7 +313,7 @@ export const requestPasswordReset = async (email) => {
 /**
  * Resets a password using a previously issued reset token.
  * @param {{ token: string; newPassword: string }} params
- * @returns {Promise<ProfileResponse>}
+ * @returns {Promise<AuthenticatedUserResponse>}
  */
 export const resetPasswordWithToken = async ({ token, newPassword }) => {
   if (!token) {

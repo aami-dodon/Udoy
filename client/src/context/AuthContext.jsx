@@ -1,7 +1,7 @@
 import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react';
 
-import { getProfile, loginRequest, signupRequest } from '../features/auth/services/authService.js';
-import { updateProfileRequest } from '../features/account/services/accountService.js';
+import { getAccount, loginRequest, signupRequest } from '../features/auth/services/authService.js';
+import { updateAccountRequest } from '../features/account/services/accountService.js';
 
 const TOKEN_KEY = 'udoy_token';
 
@@ -14,7 +14,7 @@ export const AuthContext = createContext({
   signup: async () => {},
   logout: () => {},
   refreshUser: async () => {},
-  updateProfile: async () => ({})
+  updateAccount: async () => ({})
 });
 
 export const AuthProvider = ({ children }) => {
@@ -31,8 +31,8 @@ export const AuthProvider = ({ children }) => {
 
     const bootstrap = async () => {
       try {
-        const profile = await getProfile(token);
-        setUser(profile);
+        const account = await getAccount(token);
+        setUser(account);
       } catch (error) {
         localStorage.removeItem(TOKEN_KEY);
         setToken('');
@@ -76,17 +76,17 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
       return null;
     }
-    const profile = await getProfile(token);
-    setUser(profile);
-    return profile;
+    const account = await getAccount(token);
+    setUser(account);
+    return account;
   }, [token]);
 
-  const updateProfile = useCallback(
+  const updateAccount = useCallback(
     async (payload) => {
       if (!token) {
         throw new Error('Not authenticated');
       }
-      const result = await updateProfileRequest(token, payload);
+      const result = await updateAccountRequest(token, payload);
       if (result.user) {
         setUser(result.user);
       }
@@ -105,9 +105,9 @@ export const AuthProvider = ({ children }) => {
       signup,
       logout,
       refreshUser,
-      updateProfile
+      updateAccount
     }),
-    [loading, login, logout, refreshUser, signup, token, updateProfile, user]
+    [loading, login, logout, refreshUser, signup, token, updateAccount, user]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

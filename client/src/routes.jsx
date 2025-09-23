@@ -9,7 +9,7 @@ import ForgotPasswordPage from './features/auth/pages/ForgotPasswordPage.jsx';
 import ResetPasswordPage from './features/auth/pages/ResetPasswordPage.jsx';
 import VerifyEmailPage from './features/auth/pages/VerifyEmailPage.jsx';
 import DashboardPage from './features/dashboard/pages/DashboardPage.jsx';
-import ProfilePage from './features/account/pages/ProfilePage.jsx';
+import AccountPage from './features/account/pages/AccountPage.jsx';
 import AdminUsersPage from './features/admin/pages/AdminUsersPage.jsx';
 import { ROLES } from '@shared/constants/index.js';
 
@@ -28,8 +28,8 @@ const AppRoutes = () => (
       element={<ProtectedRoute roles={allowedRoles} element={<DashboardPage />} />}
     />
     <Route
-      path="/profile"
-      element={<ProtectedRoute roles={allowedRoles} element={<ProfilePage />} />}
+      path="/account"
+      element={<ProtectedRoute roles={allowedRoles} element={<AccountPage />} />}
     />
     <Route
       path="/admin/users"

@@ -1,6 +1,6 @@
 import type { UserSummary } from './user';
 
-export interface AccountProfileUpdateResponse {
+export interface AccountUpdateResponse {
   user: UserSummary;
   emailChangePending: boolean;
   message: string;

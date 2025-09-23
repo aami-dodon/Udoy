@@ -1,16 +1,16 @@
 import { fetchJson } from '../../../utils/api.js';
 
 /**
- * @typedef {import('@shared/types/account').AccountProfileUpdateResponse} AccountProfileUpdateResponse
+ * @typedef {import('@shared/types/account').AccountUpdateResponse} AccountUpdateResponse
  */
 
 /**
  * @param {string} token
  * @param {{ name?: string; email?: string; currentPassword?: string; newPassword?: string }} payload
- * @returns {Promise<AccountProfileUpdateResponse>}
+ * @returns {Promise<AccountUpdateResponse>}
  */
-export const updateProfileRequest = (token, payload) =>
-  fetchJson('/api/account/profile', {
+export const updateAccountRequest = (token, payload) =>
+  fetchJson('/api/account', {
     method: 'PUT',
     body: JSON.stringify(payload),
     headers: {

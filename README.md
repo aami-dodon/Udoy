@@ -5,6 +5,6 @@ A lightweight, community-driven learning app built for kids and young learners. 
 
 - Feature-based React frontend with Material UI and protected routing.
 - Express backend with real connectivity checks for Postgres, MongoDB, and MinIO.
-- JWT authentication for students and teachers, including signup, login, and profile inspection.
+- JWT authentication for students and teachers, including signup, login, and account overviews.
 
 Run `docker compose up --build` (after configuring `.env`) to start both apps together.

@@ -17,7 +17,7 @@ export interface LoginResponse {
   token: string;
 }
 
-export interface ProfileResponse extends UserSummary {}
+export interface AuthenticatedUserResponse extends UserSummary {}
 
 export interface VerifyEmailResult {
   user: UserSummary;

@@ -211,7 +211,7 @@ router.post(
  * @openapi
  * /api/auth/me:
  *   get:
- *     summary: Get authenticated user profile
+ *     summary: Get authenticated account details
  *     tags:
  *       - Auth
  *     security:

@@ -13,7 +13,7 @@ import { createAuditLog } from '../../../models/auditLog.repository.js';
 import {
   sendAccountDeactivatedEmail,
   sendAccountDeletedEmail,
-  sendProfileUpdatedEmail
+  sendAccountSettingsUpdatedEmail
 } from '../../../integrations/notifications/email.service.js';
 import { logInfo } from '../../../utils/logger.js';
 
@@ -52,7 +52,7 @@ const defaultDependencies = {
   emailService: {
     sendAccountDeactivatedEmail,
     sendAccountDeletedEmail,
-    sendProfileUpdatedEmail
+    sendAccountSettingsUpdatedEmail
   }
 };
 
@@ -164,9 +164,9 @@ export const updateUserByAdmin = async (targetUserId, updates, options = {}) => 
   if (deactivated) {
     await emails.sendAccountDeactivatedEmail({ user: updatedUser });
   } else if (nextFields.isActive === true && user.isActive === false) {
-    await emails.sendProfileUpdatedEmail({ user: updatedUser });
+    await emails.sendAccountSettingsUpdatedEmail({ user: updatedUser });
   } else {
-    await emails.sendProfileUpdatedEmail({ user: updatedUser });
+    await emails.sendAccountSettingsUpdatedEmail({ user: updatedUser });
   }
 
   if (Object.keys(changes).length > 0) {

@@ -3,7 +3,7 @@ import { fetchJson } from '../../../utils/api.js';
 /**
  * @typedef {import('@shared/types/auth').SignupResponse} SignupResponse
  * @typedef {import('@shared/types/auth').LoginResponse} LoginResponse
- * @typedef {import('@shared/types/auth').ProfileResponse} ProfileResponse
+ * @typedef {import('@shared/types/auth').AuthenticatedUserResponse} AuthenticatedUserResponse
  * @typedef {import('@shared/types/auth').VerifyEmailResult} VerifyEmailResult
  * @typedef {import('@shared/types/auth').ResetPasswordResult} ResetPasswordResult
  * @typedef {import('@shared/types/auth').ResendVerificationResponse} ResendVerificationResponse
@@ -31,9 +31,9 @@ export const loginRequest = (payload) =>
 
 /**
  * @param {string} token
- * @returns {Promise<ProfileResponse>}
+ * @returns {Promise<AuthenticatedUserResponse>}
  */
-export const getProfile = (token) =>
+export const getAccount = (token) =>
   fetchJson('/api/auth/me', {
     headers: {
       Authorization: `Bearer ${token}`

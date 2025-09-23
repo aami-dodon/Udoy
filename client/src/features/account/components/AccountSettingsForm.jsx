@@ -3,8 +3,8 @@ import { Alert, Button, Divider, Stack, TextField, Typography } from '@mui/mater
 
 import { useAuth } from '../../../hooks/useAuth.js';
 
-const ProfileForm = () => {
-  const { user, updateProfile } = useAuth();
+const AccountSettingsForm = () => {
+  const { user, updateAccount } = useAuth();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [currentPassword, setCurrentPassword] = useState('');
@@ -63,17 +63,17 @@ const ProfileForm = () => {
     }
 
     try {
-      const response = await updateProfile(payload);
+      const response = await updateAccount(payload);
       if (response.emailChangePending) {
-        setSuccess(response.message || 'Profile updated. Please verify your new email.');
+        setSuccess(response.message || 'Account settings updated. Please verify your new email.');
       } else {
-        setSuccess(response.message || 'Profile updated successfully.');
+        setSuccess(response.message || 'Account settings updated successfully.');
       }
       setEmail('');
       setCurrentPassword('');
       setNewPassword('');
     } catch (err) {
-      setError(err.message || 'Failed to update profile');
+      setError(err.message || 'Failed to update account settings');
     } finally {
       setLoading(false);
     }
@@ -120,4 +120,4 @@ const ProfileForm = () => {
   );
 };
 
-export default ProfileForm;
+export default AccountSettingsForm;

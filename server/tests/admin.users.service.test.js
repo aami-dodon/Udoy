@@ -38,7 +38,7 @@ test('updateUserByAdmin records an audit log entry when changes occur', async ()
       createAuditLog: mock.fn(async () => ({ id: 'audit-1' }))
     },
     emailService: {
-      sendProfileUpdatedEmail: mock.fn(async () => {}),
+      sendAccountSettingsUpdatedEmail: mock.fn(async () => {}),
       sendAccountDeactivatedEmail: mock.fn(async () => {}),
       sendAccountDeletedEmail: mock.fn(async () => {})
     }
@@ -57,7 +57,7 @@ test('updateUserByAdmin records an audit log entry when changes occur', async ()
   assert.equal(dependencies.userRepository.updateUserById.mock.calls.length, 1);
   assert.equal(dependencies.userRepository.setUserActiveState.mock.calls.length, 0);
   assert.equal(dependencies.auditLogRepository.createAuditLog.mock.calls.length, 1);
-  assert.equal(dependencies.emailService.sendProfileUpdatedEmail.mock.calls.length, 1);
+  assert.equal(dependencies.emailService.sendAccountSettingsUpdatedEmail.mock.calls.length, 1);
 
   const auditPayload = dependencies.auditLogRepository.createAuditLog.mock.calls[0].arguments[0];
   assert.equal(auditPayload.action, 'admin.user.update');
@@ -107,7 +107,7 @@ test('deleteUserByAdmin records audit log for deletions', async () => {
       createAuditLog: mock.fn(async () => ({ id: 'audit-2' }))
     },
     emailService: {
-      sendProfileUpdatedEmail: mock.fn(async () => {}),
+      sendAccountSettingsUpdatedEmail: mock.fn(async () => {}),
       sendAccountDeactivatedEmail: mock.fn(async () => {}),
       sendAccountDeletedEmail: mock.fn(async () => {})
     }

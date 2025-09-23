@@ -4,11 +4,11 @@ const requireAtLeastOneField = body()
   .custom((value, { req }) => {
     const { name, email, newPassword, password } = req.body;
     if (!name && !email && !newPassword && !password) {
-      throw new Error('No profile changes supplied');
+      throw new Error('No account changes supplied');
     }
     return true;
   })
-  .withMessage('No profile changes supplied');
+  .withMessage('No account changes supplied');
 
 const nameValidation = body('name')
   .optional({ checkFalsy: true })
@@ -53,7 +53,7 @@ const currentPasswordValidation = body('currentPassword')
   .isLength({ min: 6, max: 128 })
   .withMessage('Current password must be between 6 and 128 characters long');
 
-export const updateProfileValidation = [
+export const updateAccountValidation = [
   requireAtLeastOneField,
   nameValidation,
   emailValidation,

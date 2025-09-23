@@ -27,8 +27,8 @@ const DashboardPage = () => {
             {message}
           </Typography>
           <Stack direction="row" spacing={2}>
-            <Button component={RouterLink} to="/profile" variant="outlined">
-              Manage Profile
+            <Button component={RouterLink} to="/account" variant="outlined">
+              Account Settings
             </Button>
             {user.role === ROLES.ADMIN && (
               <Button component={RouterLink} to="/admin/users" variant="contained">

@@ -108,7 +108,7 @@ export const sendPasswordChangedEmail = async ({ user }) => {
     'Password Updated',
     `
       <p>Hi ${user.name},</p>
-      <p>Your Udoy password was updated from your profile page.</p>
+      <p>Your Udoy password was updated from your account settings.</p>
       <p>If you did not perform this update, please reset your password immediately.</p>
     `
   );
@@ -180,21 +180,21 @@ export const sendEmailChangeNotifications = async ({
   }
 };
 
-export const sendProfileUpdatedEmail = async ({ user }) => {
+export const sendAccountSettingsUpdatedEmail = async ({ user }) => {
   const html = wrapEmail(
-    'Profile Updated',
+    'Account Settings Updated',
     `
       <p>Hi ${user.name},</p>
-      <p>Your Udoy profile details were updated successfully.</p>
+      <p>Your Udoy account settings were updated successfully.</p>
     `
   );
 
   await sendEmail({
     to: user.email,
-    subject: 'Udoy profile updated',
+    subject: 'Udoy account settings updated',
     html,
     context: {
-      template: 'account.profile_updated',
+      template: 'account.settings_updated',
       userId: user.id
     }
   });

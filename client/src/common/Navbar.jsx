@@ -31,8 +31,8 @@ const Navbar = () => {
               <Button color="inherit" component={RouterLink} to="/dashboard">
                 Dashboard
               </Button>
-              <Button color="inherit" component={RouterLink} to="/profile">
-                Profile
+              <Button color="inherit" component={RouterLink} to="/account">
+                Account
               </Button>
               {user?.role === ROLES.ADMIN && (
                 <Button color="inherit" component={RouterLink} to="/admin/users">

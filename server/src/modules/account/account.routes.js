@@ -2,16 +2,16 @@ import { Router } from 'express';
 
 import { authenticate } from '../../middlewares/auth.js';
 import { validate } from '../../middlewares/validate.js';
-import { updateProfileController } from './account.controller.js';
-import { updateProfileValidation } from './account.validation.js';
+import { updateAccountController } from './account.controller.js';
+import { updateAccountValidation } from './account.validation.js';
 
 const router = Router();
 
 /**
  * @openapi
- * /api/account/profile:
+ * /api/account:
  *   put:
- *     summary: Update authenticated user profile
+ *     summary: Update authenticated account settings
  *     tags:
  *       - Account
  *     security:
@@ -33,12 +33,12 @@ const router = Router();
  *                 format: password
  *     responses:
  *       200:
- *         description: Profile updated successfully
+ *         description: Account settings updated successfully
  *       400:
  *         description: Validation error
  *       401:
  *         description: Unauthorized
  */
-router.put('/profile', authenticate, validate(updateProfileValidation), updateProfileController);
+router.put('/', authenticate, validate(updateAccountValidation), updateAccountController);
 
 export const accountRoutes = router;
