@@ -102,6 +102,50 @@ Component classes live in the preset (`@layer components`). Compose them with ut
 - LMS-specific shells: `course-card`, `lesson-module`, `dashboard-widget`, `certificate-card`, `discussion-thread`.
 - Data display: `table-card`, `progress-bar` + `progress-bar__value`, `timeline`, `calendar-grid`, `accordion`, `rating`.
 
+### Data Tables
+
+- `data-table` wraps interactive datasets with muted chrome and hover affordances.
+- `data-table__toolbar` pairs headings (`data-table__title`, `data-table__meta`) with global actions.
+- Row-level quick actions share the same visual language via `data-table__action` plus the semantic modifiers `--edit`, `--modify`, and `--delete`.
+
+```html
+<div class="data-table">
+  <div class="data-table__toolbar">
+    <div class="data-table__heading">
+      <h3 class="data-table__title">Courses</h3>
+      <p class="data-table__meta">3 active cohorts</p>
+    </div>
+    <button class="btn btn--primary btn--sm">Add</button>
+  </div>
+  <table class="data-table__table">
+    <thead>
+      <tr>
+        <th>Course</th>
+        <th>Mentor</th>
+        <th>Updated</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Design Systems</td>
+        <td class="data-table__cell--muted">Anita Rao</td>
+        <td class="data-table__cell--muted">Today</td>
+        <td><span class="badge badge--success">Active</span></td>
+        <td>
+          <div class="data-table__actions">
+            <button class="data-table__action data-table__action--edit">Edit</button>
+            <button class="data-table__action data-table__action--modify">Modify</button>
+            <button class="data-table__action data-table__action--delete">Delete</button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+```
+
 ### Navigation & Layout Helpers
 
 - Top level: `navbar`, `navbar__brand`, `navbar__menu`.
