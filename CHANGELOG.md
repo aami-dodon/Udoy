@@ -1,5 +1,11 @@
 # Changelog
 
+## 2025-10-28 09:15 IST
+- Removed the marketing landing, health dashboard, and theme showcase routes from the client.
+- Replaced the home experience with a minimal "hello world" placeholder for future development.
+- Updated the documented route catalog to reflect the streamlined navigation footprint.
+
+
 ## 2025-10-20 04:19 IST
 - Fixed shared button typography by resolving Tailwind font-size tokens so CTA labels render correctly across the site.
 
