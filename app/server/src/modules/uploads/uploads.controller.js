@@ -1,9 +1,5 @@
-import {
-  MinioConfigError,
-  getPresignedPutUrl,
-  getPresignedGetUrl,
-  getMinioPublicUrl,
-} from '../../integrations/minio/index.js';
+import { getPresignedPutUrl, getPresignedGetUrl, getMinioPublicUrl } from '../../integrations/minio/index.js';
+import AppError from '../../utils/appError.js';
 
 function sanitizeObjectKey(value) {
   if (typeof value !== 'string') {
@@ -48,10 +44,12 @@ export async function createPresignedUrl(req, res, next) {
     const sanitizedKey = sanitizeObjectKey(objectKey);
 
     if (!sanitizedKey) {
-      return res.status(400).json({
-        status: 'error',
-        message: 'A valid objectKey is required for presigned URL requests.',
-      });
+      return next(
+        AppError.badRequest(
+          'A valid objectKey is required for presigned URL requests.',
+          { code: 'UPLOAD_OBJECT_KEY_REQUIRED' }
+        )
+      );
     }
 
     const normalizedOperation = normalizeOperation(operation);
@@ -91,13 +89,6 @@ export async function createPresignedUrl(req, res, next) {
       },
     });
   } catch (error) {
-    if (error instanceof MinioConfigError) {
-      return res.status(503).json({
-        status: 'error',
-        message: error.message,
-      });
-    }
-
     return next(error);
   }
 }

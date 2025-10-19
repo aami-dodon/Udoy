@@ -3,6 +3,7 @@ import {
   sendVerificationEmail,
   sendPasswordResetEmail,
 } from '../../services/emailService.js';
+import AppError from '../../utils/appError.js';
 
 export async function sendTestEmail(req, res, next) {
   try {
@@ -28,10 +29,11 @@ export async function sendTestEmail(req, res, next) {
         : {};
 
     if (!to) {
-      return res.status(400).json({
-        status: 'error',
-        message: 'Recipient email address (to) is required.',
-      });
+      return next(
+        AppError.badRequest('Recipient email address (to) is required.', {
+          code: 'EMAIL_RECIPIENT_REQUIRED',
+        })
+      );
     }
 
     const token = crypto.randomBytes(20).toString('hex');

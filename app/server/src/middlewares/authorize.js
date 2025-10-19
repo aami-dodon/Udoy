@@ -1,3 +1,4 @@
+import AppError from '../utils/appError.js';
 import logger from '../utils/logger.js';
 import getEnforcer from '../integrations/casbin/enforcer.js';
 
@@ -22,11 +23,18 @@ export default function authorize({
     throw new Error('authorize middleware requires both "resource" and "action" options');
   }
 
-  return async function authorizeMiddleware(req, res, next) {
+  return async function authorizeMiddleware(req, _res, next) {
     try {
       if (!req.user) {
         logger.warn('Authorization attempted without user context');
-        return res.status(401).json({ status: 'error', message: 'Unauthorized' });
+        const requestedResource = resolveValue(resource, req);
+        const requestedAction = resolveValue(action, req);
+        return next(
+          AppError.unauthorized('Unauthorized', {
+            code: 'AUTHORIZATION_REQUIRES_AUTHENTICATION',
+            details: { resource: requestedResource, action: requestedAction },
+          })
+        );
       }
 
       const sub = subjectExtractor(req);
@@ -39,7 +47,12 @@ export default function authorize({
           obj,
           act,
         });
-        return res.status(403).json({ status: 'error', message: 'Forbidden' });
+        return next(
+          AppError.forbidden('Forbidden', {
+            code: 'AUTHORIZATION_PARAMETERS_MISSING',
+            details: { sub, obj, act },
+          })
+        );
       }
 
       const enforcer = await getEnforcer();
@@ -53,7 +66,12 @@ export default function authorize({
           path: req.originalUrl,
           method: req.method,
         });
-        return res.status(403).json({ status: 'error', message: 'Forbidden' });
+        return next(
+          AppError.forbidden('Forbidden', {
+            code: 'AUTHORIZATION_DENIED',
+            details: { sub, obj, act },
+          })
+        );
       }
 
       return next();
