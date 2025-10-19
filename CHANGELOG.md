@@ -1,5 +1,10 @@
 # Changelog
 
+## 2025-10-21 18:30 IST
+- Secured the `/api/email/test` endpoint with JWT authentication and Casbin enforcement using the new `email:test` resource mapping HTTP verbs to RBAC actions.
+- Granted the admin role permission to invoke the email testing endpoint and documented the requirement in the Casbin policy file.
+- Updated Swagger and `API-SPECS.md` entries to describe the authentication, authorization, and error semantics for the test email route.
+
 ## 2025-10-19 23:43 IST
 - Removed the client-wide `body` overrides so Tailwind preflight and theme utilities govern fonts and spacing.
 - Introduced a shared app root layout utility and applied it in the React entry point for consistent typography/background.

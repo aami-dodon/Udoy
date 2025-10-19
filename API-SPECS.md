@@ -16,7 +16,7 @@
 | POST   | /api/auth/login      | Placeholder login endpoint.                            | No   |
 | POST   | /api/auth/refresh    | Placeholder refresh endpoint requiring a valid token.  | Yes  |
 | GET    | /api/admin/overview  | Placeholder admin dashboard overview payload.          | Yes  |
-| POST   | /api/email/test      | Sends a verification or password reset template.       | No   |
+| POST   | /api/email/test      | Sends a verification or password reset template.       | Yes  |
 | POST   | /api/uploads/presign | Generates a MinIO presigned URL for uploads/downloads. | Yes  |
 
 ## Endpoints
@@ -175,7 +175,11 @@ Accept: application/json
 ### POST /api/email/test
 **Description:** Dispatches either the verification or password reset email template using the configured Nodemailer transport. Useful for manually validating template rendering and merge variables.
 
-**Authentication:** Not required.
+**Authentication:** Required via either of the following mechanisms:
+- `Authorization: Bearer <token>` header containing a valid access token.
+- `x-refresh-token: <token>` header when using a refresh token exchange.
+
+**Authorization:** Casbin must permit `resource = "email:test"` with `action = "write"` for POST requests (mapped from the HTTP verb).
 
 **Headers:**
 - `Content-Type: application/json`
@@ -208,6 +212,22 @@ Accept: application/json
 {
   "status": "error",
   "message": "Recipient email address (to) is required."
+}
+```
+
+**Error Response — 401 Unauthorized**
+```json
+{
+  "status": "error",
+  "message": "Unauthorized"
+}
+```
+
+**Error Response — 403 Forbidden**
+```json
+{
+  "status": "error",
+  "message": "Forbidden"
 }
 ```
 
