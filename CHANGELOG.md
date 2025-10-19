@@ -1,5 +1,10 @@
 # Changelog
 
+## 2025-10-19 23:43 IST
+- Removed the client-wide `body` overrides so Tailwind preflight and theme utilities govern fonts and spacing.
+- Introduced a shared app root layout utility and applied it in the React entry point for consistent typography/background.
+- Verified the Vite client renders correctly with Tailwind-driven styles via the dev server.
+
 ## 2025-10-21 15:45 IST
 - Extended the MinIO integration with presigned URL helpers, configuration guards, and a dedicated integration index for reuse.
 - Added secured `/api/uploads/presign` routing that issues upload/download URLs via JWT + Casbin checks with expiry metadata.
