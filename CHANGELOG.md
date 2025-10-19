@@ -1,5 +1,11 @@
 # Changelog
 
+## 2025-10-19 16:45 IST
+- Added shared Tiptap editor configuration (extensions, defaults, styling tokens) under `app/shared/editor/` for reuse across apps.
+- Implemented a reusable `RichTextEditor` React component that consumes the shared preset and exposes asset upload callbacks.
+- Documented integration guidelines and component usage in the shared editor README.
+- Installed Tiptap dependencies and PropTypes in the client package to support the new editor component.
+
 ## 2025-10-19 08:11 IST
 - Realigned the server code to use module-based routing and dedicated integrations, and added project scaffolding directories to match the prescribed structure guidelines.
 
