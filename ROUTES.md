@@ -1,4 +1,10 @@
-# Client Routes
+# Client Route Catalog
 
-## 2025-10-19 05:39 IST
-- `/` – Homepage health screen that calls the backend `/api/health` endpoint and renders "OK" when successful.
+## Overview
+- All SPA routes must be listed in the table below.
+- Add new rows when introducing routes and ensure descriptions stay in sync with the implementation.
+
+## Routes
+| Path | Feature | Description |
+| --- | --- | --- |
+| `/` | Health Check | Homepage that pings `/api/health` and renders `OK` on success. |
