@@ -1,0 +1,5 @@
+p, admin, admin:dashboard, read
+p, admin, admin:settings, write
+p, auditor, admin:dashboard, read
+g, admin@example.com, admin
+g, auditor@example.com, auditor

@@ -1,5 +1,10 @@
 # Changelog
 
+## 2025-10-19 17:24 IST
+- Added Casbin with a file-backed policy and enforcer singleton under `server/src/integrations/casbin/`.
+- Created authorization middleware and an admin overview route gated by JWT + Casbin checks.
+- Documented the admin API endpoint, policy structure, and installed the RBAC dependency.
+
 ## 2025-10-21 09:45 IST
 - Introduced JWT configuration, utilities, and authentication middleware scaffolding on the server.
 - Added placeholder auth routes with documentation updates to outline login and refresh flows.

@@ -12,6 +12,7 @@
 | GET    | /api/health      | Returns service health, uptime, and dependency status. | No   |
 | POST   | /api/auth/login  | Placeholder login endpoint.                            | No   |
 | POST   | /api/auth/refresh| Placeholder refresh endpoint requiring a valid token.  | Yes  |
+| GET    | /api/admin/overview | Placeholder admin overview protected by Casbin. | Yes  |
 
 ## Endpoints
 
@@ -129,3 +130,40 @@ Accept: application/json
 
 **Notes:**
 - The middleware attempts to validate access tokens first, then refresh tokens. Future implementations can use the attached `req.user` and `req.auth` context to issue new tokens.
+
+### GET /api/admin/overview
+**Description:** Demonstrates a protected admin route that requires both JWT authentication and Casbin authorization. Returns placeholder data along with the authenticated user payload when permitted.
+
+**Authentication:** Required. Uses the `authenticate` middleware to populate `req.user` before enforcing Casbin policies.
+
+**Headers:**
+- `Accept: application/json`
+- `Authorization: Bearer <token>`
+
+**Sample Response — 200 OK**
+```json
+{
+  "status": "success",
+  "message": "Admin overview placeholder",
+  "user": {
+    "email": "admin@example.com",
+    "role": "admin"
+  },
+  "permissions": {
+    "resource": "admin:dashboard",
+    "action": "read"
+  }
+}
+```
+
+**Error Response — 403 Forbidden**
+```json
+{
+  "status": "error",
+  "message": "Forbidden"
+}
+```
+
+**Notes:**
+- Authorization decisions are delegated to Casbin using the subject (role/email), object (resource), and action parameters defined in `policy.csv`.
+- Update the policy or switch to a database adapter when introducing dynamic role assignments.
