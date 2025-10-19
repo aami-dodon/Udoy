@@ -14,7 +14,8 @@ services:
 
   client:
     build:
-      context: ./app/client
+      context: .
+      dockerfile: app/client/Dockerfile
     env_file:
       - .env
     environment:
