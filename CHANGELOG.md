@@ -1,5 +1,10 @@
 # Changelog
 
+## 2025-10-21 09:45 IST
+- Introduced JWT configuration, utilities, and authentication middleware scaffolding on the server.
+- Added placeholder auth routes with documentation updates to outline login and refresh flows.
+- Installed JWT and hashing dependencies to support future auth implementation work.
+
 ## 2025-10-20 12:10 IST
 - Expanded the shared Tailwind preset with an earthy blue brand palette, golden accents, typography scale, spacing tokens, and shared shadows.
 - Registered `@tailwindcss/forms` across apps and documented how to consume the new design tokens.

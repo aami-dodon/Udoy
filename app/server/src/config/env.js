@@ -11,6 +11,12 @@ const {
   SERVER_PORT = 6005,
   API_PREFIX = '/api',
   CORS_ALLOWED_ORIGINS = 'http://localhost:6004',
+  JWT_ACCESS_SECRET,
+  JWT_ACCESS_EXPIRES_IN = '15m',
+  JWT_ACCESS_COOKIE_NAME = 'udoy_at',
+  JWT_REFRESH_SECRET,
+  JWT_REFRESH_EXPIRES_IN = '7d',
+  JWT_REFRESH_COOKIE_NAME = 'udoy_rt',
   MINIO_ENDPOINT,
   MINIO_PORT,
   MINIO_USE_SSL = 'true',
@@ -48,10 +54,24 @@ const minioConfig = hasMinioConfig
     }
   : null;
 
+const jwtConfig = {
+  access: {
+    secret: JWT_ACCESS_SECRET || null,
+    expiresIn: JWT_ACCESS_EXPIRES_IN,
+    cookieName: JWT_ACCESS_COOKIE_NAME,
+  },
+  refresh: {
+    secret: JWT_REFRESH_SECRET || null,
+    expiresIn: JWT_REFRESH_EXPIRES_IN,
+    cookieName: JWT_REFRESH_COOKIE_NAME,
+  },
+};
+
 export default {
   nodeEnv: NODE_ENV,
   port: Number(SERVER_PORT) || 6005,
   apiPrefix: API_PREFIX.startsWith('/') ? API_PREFIX : `/${API_PREFIX}`,
   corsAllowedOrigins,
   minio: minioConfig,
+  jwt: jwtConfig,
 };
