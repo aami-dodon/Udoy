@@ -1,5 +1,9 @@
 # Changelog
 
+## 2025-10-20 01:59 IST
+- Introduced a `/theme` client route that renders the centralized token and component catalog, replacing the standalone HTML preview.
+- Documented the new showcase path in the theme README and updated the route registry for developer discovery.
+
 ## 2025-10-20 01:43 IST
 - Rebuilt the shared Tailwind preset with expanded design tokens, base resets, component classes, LMS patterns, and layout utilities for the centralized Udoy theme.
 - Updated the client health dashboard and root layout to rely on the new theme primitives (`app-shell`, `card`, `badge`, `btn`, `field`, and `alert` classes).

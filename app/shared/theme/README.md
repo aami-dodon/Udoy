@@ -175,17 +175,16 @@ styles.
 
 ## 6. Theme Documentation & Visual Regression
 
-A living HTML sample (`app/shared/theme/theme-preview.html`) demonstrates every token and component in one place. Regenerate or open
-it locally to validate new additions:
+The `/theme` route in the client app renders a living catalog of every token and component. Launch the Vite dev server and open the
+page locally to validate new additions:
 
 ```bash
-# from repository root
-npx tailwindcss -c app/client/tailwind.config.js -i app/client/src/index.css \
-  -o app/shared/theme/theme-preview.css --content app/shared/theme/theme-preview.html
+# from app/client
+npm run dev
 ```
 
-Open `theme-preview.html` in a browser (optionally include the generated CSS file) to review typography, components, and LMS
-patterns side-by-side.
+Then visit `http://localhost:5173/theme` (or the port shown in the terminal). The page lives at
+`app/client/src/features/theme/ThemeShowcasePage.jsx` and consumes the same shared utilities used across the product.
 
 ---
 
@@ -194,7 +193,7 @@ patterns side-by-side.
 Whenever the preset changes:
 
 1. Update this README with any new tokens or components.
-2. Regenerate or tweak `theme-preview.html` so designers can visually inspect updates.
+2. Review `/theme` to ensure designers can visually inspect updates.
 3. Note the change in `CHANGELOG.md` with an IST timestamp (see repository root instructions).
 
 Following this flow keeps Udoy’s learning experience coherent while allowing rapid feature delivery.

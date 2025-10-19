@@ -8,3 +8,4 @@
 | Path | Feature | Description |
 | --- | --- | --- |
 | `/` | Health Check | Homepage that pings `/api/health` and renders `OK` on success. |
+| `/theme` | Theme Showcase | Central theme catalog displaying shared tokens and components for developers. |
