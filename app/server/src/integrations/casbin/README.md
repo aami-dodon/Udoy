@@ -2,6 +2,12 @@
 
 This document captures the initial role-based access control (RBAC) policy enforced by Casbin within the Udoy server.
 
+## Files
+
+- `enforcer.js` – Provides an async `getEnforcer()` loader that initializes Casbin with the bundled model and policy files.
+- `model.conf` – Defines the RBAC request, policy, and role models.
+- `policy.csv` – Seeds the default policy and role assignments.
+
 ## Request Model
 - **Subject (`sub`)** – resolved from the authenticated JWT payload (`req.user.role`, `req.user.email`, or `req.user.id`).
 - **Object (`obj`)** – logical resource identifier supplied when attaching the authorization middleware (for example, `admin:dashboard`).
@@ -12,6 +18,7 @@ This document captures the initial role-based access control (RBAC) policy enfor
 | --- | --- | --- | --- |
 | `admin` | `admin:dashboard` | `read` | Allows administrators to load the admin overview endpoint. |
 | `admin` | `admin:settings` | `write` | Reserves administrative settings mutations for admins. |
+| `admin` | `email:test` | `write` | Enables admins to execute the email test endpoint. |
 | `auditor` | `admin:dashboard` | `read` | Permits auditors to inspect dashboard data without modification privileges. |
 
 ## Role Assignments
