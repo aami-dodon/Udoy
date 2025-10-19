@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Udoy Theme Preview</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="theme-preview.css" />
+    <style>
+      body {
+        background: #050b16;
+        color: #e2e8f0;
+        font-family: 'Inter', system-ui, sans-serif;
+        margin: 0;
+      }
+      .fallback-warning {
+        display: none;
+        background: #312e81;
+        color: #fcd34d;
+        padding: 1rem;
+        text-align: center;
+        font-weight: 600;
+      }
+      body:not(.app-shell) .fallback-warning {
+        display: block;
+      }
+    </style>
+  </head>
+  <body class="app-shell">
+    <noscript>
+      <p class="fallback-warning">
+        JavaScript is disabled. Compile Tailwind with the shared preset to view the fully themed preview.
+      </p>
+    </noscript>
+    <main class="page-container stack-xl">
+      <header class="card hero-gradient shadow-raised stack-lg text-balance">
+        <div class="stack-sm">
+          <span class="badge badge--info w-fit">Udoy central theme</span>
+          <h1 class="text-display-lg text-on-surface font-semibold">Design system showcase</h1>
+          <p class="text-body-sm text-subdued">
+            Each block below uses the Tailwind classes bundled with `app/shared/theme/tailwind.preset.js`. Compile `theme-preview.css`
+            using the README instructions to see the full styling.
+          </p>
+        </div>
+      </header>
+
+      <section class="stack-lg">
+        <div class="card card--muted stack-md">
+          <div class="card__header">
+            <h2 class="card__title">Foundations</h2>
+            <p class="card__subtitle">Brand, accent, neutral, and semantic colors.</p>
+          </div>
+          <div class="grid-fit-md">
+            <div class="card card--inset stack-sm">
+              <p class="text-body-sm text-subdued">Brand spectrum</p>
+              <div class="grid grid-cols-5 gap-2 text-body-xs text-center">
+                <div class="rounded-lg bg-brand-500 py-3">500</div>
+                <div class="rounded-lg bg-brand-600 py-3">600</div>
+                <div class="rounded-lg bg-brand-700 py-3">700</div>
+                <div class="rounded-lg bg-brand-800 py-3">800</div>
+                <div class="rounded-lg bg-brand-900 py-3">900</div>
+              </div>
+            </div>
+            <div class="card card--inset stack-sm">
+              <p class="text-body-sm text-subdued">Accent spectrum</p>
+              <div class="grid grid-cols-5 gap-2 text-body-xs text-center">
+                <div class="rounded-lg bg-accent-400 py-3">400</div>
+                <div class="rounded-lg bg-accent-500 py-3">500</div>
+                <div class="rounded-lg bg-accent-600 py-3">600</div>
+                <div class="rounded-lg bg-accent-700 py-3">700</div>
+                <div class="rounded-lg bg-accent-800 py-3">800</div>
+              </div>
+            </div>
+            <div class="card card--inset stack-sm">
+              <p class="text-body-sm text-subdued">Surface tokens</p>
+              <div class="grid grid-cols-2 gap-3 text-body-xs text-center">
+                <div class="rounded-lg bg-surface-base py-4">base</div>
+                <div class="rounded-lg bg-surface-muted py-4">muted</div>
+                <div class="rounded-lg bg-surface-raised py-4">raised</div>
+                <div class="rounded-lg bg-surface-subtle py-4">subtle</div>
+              </div>
+            </div>
+            <div class="card card--inset stack-sm">
+              <p class="text-body-sm text-subdued">Feedback</p>
+              <div class="grid grid-cols-4 gap-3 text-body-xs text-center">
+                <div class="rounded-lg bg-success-500 py-3">success</div>
+                <div class="rounded-lg bg-warning-500 py-3">warning</div>
+                <div class="rounded-lg bg-info-500 py-3">info</div>
+                <div class="rounded-lg bg-danger-500 py-3">danger</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="stack-lg">
+        <div class="card card--muted stack-md">
+          <div class="card__header">
+            <h2 class="card__title">Typography</h2>
+            <p class="card__subtitle">Display, heading, and body scales.</p>
+          </div>
+          <div class="stack-md">
+            <p class="text-display-lg text-on-surface font-semibold">Display Large — Learning that feels premium.</p>
+            <p class="text-heading-lg text-on-surface font-semibold">Heading Large — Instructor insights</p>
+            <p class="text-heading-sm text-on-surface font-semibold">Heading Small — Module overview</p>
+            <p class="text-body-base text-subdued">
+              Body Base — Course descriptions, announcements, and discussion replies rely on this default body style with comfortable
+              line-height for long-form reading.
+            </p>
+            <p class="text-body-sm text-subdued">Body Small — Secondary metadata, captions, and helper text.</p>
+            <p class="text-body-xs text-subdued uppercase">Body Extra Small — Tags, counters, and UI chrome.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="stack-lg">
+        <div class="card card--muted stack-md">
+          <div class="card__header">
+            <h2 class="card__title">Buttons & Tags</h2>
+            <p class="card__subtitle">Primary CTAs and supporting actions.</p>
+          </div>
+          <div class="flex flex-wrap gap-4">
+            <button class="btn btn--primary">Primary action</button>
+            <button class="btn btn--accent">Secondary action</button>
+            <button class="btn btn--secondary">Surface button</button>
+            <button class="btn btn--ghost">Ghost button</button>
+            <button class="btn btn--danger">Destructive</button>
+          </div>
+          <div class="flex flex-wrap gap-3">
+            <span class="badge badge--info">Info</span>
+            <span class="badge badge--success">Success</span>
+            <span class="badge badge--warning">Warning</span>
+            <span class="badge badge--danger">Danger</span>
+            <span class="badge badge--neutral">Neutral</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="stack-lg">
+        <div class="card card--muted stack-md">
+          <div class="card__header">
+            <h2 class="card__title">Forms</h2>
+            <p class="card__subtitle">Inputs, selects, alerts, and helper text.</p>
+          </div>
+          <form class="stack-md max-w-content-sm">
+            <label class="field" for="preview-email">
+              <span class="field__label">Email address</span>
+              <input id="preview-email" type="email" class="input" placeholder="mentor@udoy.academy" />
+              <span class="field__hint">We will never share your email.</span>
+            </label>
+            <label class="field" for="preview-select">
+              <span class="field__label">Course type</span>
+              <select id="preview-select" class="select">
+                <option>Self-paced</option>
+                <option>Instructor-led</option>
+                <option>Bootcamp</option>
+              </select>
+            </label>
+            <div class="alert alert--info">
+              <p class="text-body-sm text-on-surface">Use `alert--success`, `alert--warning`, or `alert--danger` for status messaging.</p>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section class="stack-lg">
+        <div class="card card--muted stack-md">
+          <div class="card__header">
+            <h2 class="card__title">Cards & LMS Patterns</h2>
+            <p class="card__subtitle">Reusable building blocks for the learning experience.</p>
+          </div>
+          <div class="grid-fit-md">
+            <article class="course-card">
+              <header class="card__header">
+                <span class="badge badge--info">Course</span>
+                <h3 class="card__title">Design Systems Mastery</h3>
+                <p class="card__subtitle">12 lessons • Updated 2 days ago</p>
+              </header>
+              <div class="progress-bar">
+                <div class="progress-bar__value" style="width: 65%"></div>
+              </div>
+              <div class="flex flex-wrap gap-3">
+                <button class="btn btn--primary btn--sm">Continue</button>
+                <button class="btn btn--ghost btn--sm">Syllabus</button>
+              </div>
+            </article>
+
+            <div class="lesson-module stack-md">
+              <div class="stack-sm">
+                <h3 class="card__title">Module outline</h3>
+                <p class="card__subtitle">Students progress through each lesson in sequence.</p>
+              </div>
+              <div class="timeline">
+                <div class="timeline__item">
+                  <h4 class="text-heading-sm text-on-surface">Lesson 1 — Foundations</h4>
+                  <p class="text-body-sm text-subdued">Overview of Udoy pedagogy and navigation patterns.</p>
+                </div>
+                <div class="timeline__item">
+                  <h4 class="text-heading-sm text-on-surface">Lesson 2 — Component Library</h4>
+                  <p class="text-body-sm text-subdued">Hands-on with cards, badges, and quizzes.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="discussion-thread">
+              <header class="flex items-center gap-3">
+                <span class="profile-avatar">AR</span>
+                <div class="stack-sm">
+                  <p class="text-body-base text-on-surface font-semibold">Anita Rao</p>
+                  <p class="text-body-xs text-subdued">Mentor • 5 minutes ago</p>
+                </div>
+              </header>
+              <div class="discussion-thread__message">
+                <p class="text-body-base text-on-surface">
+                  Remember to use the shared `btn` and `card` classes so new features automatically adopt refreshed branding.
+                </p>
+                <div class="flex flex-wrap gap-2">
+                  <span class="badge badge--neutral">#design</span>
+                  <span class="badge badge--neutral">#coaching</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="stack-lg">
+        <div class="card card--muted stack-md">
+          <div class="card__header">
+            <h2 class="card__title">Navigation & Feedback</h2>
+            <p class="card__subtitle">Navbar, sidebar, tabs, pagination, and toasts.</p>
+          </div>
+          <nav class="navbar card--inset">
+            <div class="navbar__brand">
+              <span class="profile-avatar">U</span>
+              <span class="text-body-base text-on-surface font-semibold">Udoy LMS</span>
+            </div>
+            <div class="navbar__menu">
+              <button class="btn btn--ghost btn--sm">Courses</button>
+              <button class="btn btn--ghost btn--sm">Schedule</button>
+              <button class="btn btn--accent btn--sm">Launch class</button>
+            </div>
+          </nav>
+          <div class="flex flex-wrap gap-6">
+            <aside class="sidebar max-w-sm">
+              <div class="sidebar__section">
+                <span class="text-body-xs text-subdued uppercase">Navigation</span>
+                <a class="sidebar__item sidebar__item--active" href="#">Dashboard</a>
+                <a class="sidebar__item" href="#">Assignments</a>
+                <a class="sidebar__item" href="#">Discussions</a>
+              </div>
+            </aside>
+            <div class="stack-md flex-1 min-w-[18rem]">
+              <div class="tabs">
+                <button class="tab tab--active">Overview</button>
+                <button class="tab">Curriculum</button>
+                <button class="tab">Resources</button>
+              </div>
+              <div class="pagination">
+                <button class="pagination__item">1</button>
+                <button class="pagination__item pagination__item--active">2</button>
+                <button class="pagination__item">3</button>
+              </div>
+              <div class="toast">
+                <p class="text-body-sm text-on-surface">Saved! Learners will see the new course card immediately.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
