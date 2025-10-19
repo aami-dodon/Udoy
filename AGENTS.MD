@@ -29,8 +29,6 @@ The .env.local file is already set up with a working public database, SMTP, and 
 | Winston + Morgan         | Structured JSON logging for server monitoring and debugging.                               |
 | Swagger (OpenAPI)        | API documentation for all backend routes.                                                  |
 | MinIO                    | **Externally hosted** object storage for **all file uploads including video**, using presigned URLs. |
-| Meilisearch              | Lightweight full-text search with typo tolerance (courses, lessons, instructors).          |
-| Socket.io                | Real-time communication for live classes, chat, Q&A, and notifications.                     |
 
 ---
 
