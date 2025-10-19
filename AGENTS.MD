@@ -97,7 +97,7 @@ npm run prisma:migrate
 
 ## 6. Client Guidelines
 
-- Use **TailwindCSS with centralized theme** (`shared/theme`). No local overrides allowed.  
+- Use **TailwindCSS with centralized theme** (`app/shared/theme`). No local overrides allowed.  
 - Routes must be defined only in `routes.js`.  
 - Use **utility classes** and reusable components — no inline CSS.  
 - **Tiptap** is the single WYSIWYG editor:  
