@@ -64,7 +64,7 @@ The preset injects Tailwind `@layer base` styles so HTML defaults feel on-brand:
 - Lists, blockquotes, tables, images, code, and scrollbars receive consistent padding, borders, and colors.
 - Accessibility: `:focus-visible` outlines, reduced-motion fallbacks, and keyboard-friendly states.
 
-Use `appRootClassName` from `app/client/src/shared/theme/layout.js` to wrap each app: it simply returns `"app-shell"`.
+Wrap each app's root element with the `.app-shell` class to inherit the document-level styling.
 
 ---
 
@@ -144,10 +144,8 @@ styles.
    ```
 2. **Wrap your root** component with the shared layout class:
    ```jsx
-   import { appRootClassName } from './shared/theme/layout';
-
    export default function App() {
-     return <div className={appRootClassName}>{/* routes */}</div>;
+     return <div className="app-shell">{/* routes */}</div>;
    }
    ```
 3. **Compose UI** using the shared classes. Example card with CTA:
