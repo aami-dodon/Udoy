@@ -25,6 +25,14 @@ const {
   MINIO_REGION,
   MINIO_BUCKET,
   MINIO_PUBLIC_BASE_URL,
+  EMAIL_FROM,
+  EMAIL_VERIFICATION_URL,
+  PASSWORD_RESET_URL,
+  EMAIL_SMTP_HOST,
+  EMAIL_SMTP_PORT,
+  EMAIL_SMTP_SECURE = 'true',
+  EMAIL_SMTP_USER,
+  EMAIL_SMTP_PASS,
 } = process.env;
 
 const corsAllowedOrigins = CORS_ALLOWED_ORIGINS.split(',')
@@ -54,6 +62,35 @@ const minioConfig = hasMinioConfig
     }
   : null;
 
+const parsedSmtpPort = EMAIL_SMTP_PORT ? Number(EMAIL_SMTP_PORT) : undefined;
+const hasValidSmtpPort =
+  parsedSmtpPort !== undefined && !Number.isNaN(parsedSmtpPort);
+
+const hasSmtpConfig = Boolean(
+  EMAIL_SMTP_HOST &&
+  EMAIL_SMTP_USER &&
+  EMAIL_SMTP_PASS
+);
+
+const smtpConfig = hasSmtpConfig
+  ? {
+      host: EMAIL_SMTP_HOST,
+      secure: String(EMAIL_SMTP_SECURE).toLowerCase() === 'true',
+      auth: {
+        user: EMAIL_SMTP_USER,
+        pass: EMAIL_SMTP_PASS,
+      },
+      ...(hasValidSmtpPort ? { port: parsedSmtpPort } : {}),
+    }
+  : null;
+
+const emailConfig = {
+  from: EMAIL_FROM || null,
+  verificationUrl: EMAIL_VERIFICATION_URL || null,
+  passwordResetUrl: PASSWORD_RESET_URL || null,
+  smtp: smtpConfig,
+};
+
 const jwtConfig = {
   access: {
     secret: JWT_ACCESS_SECRET || null,
@@ -73,5 +110,6 @@ export default {
   apiPrefix: API_PREFIX.startsWith('/') ? API_PREFIX : `/${API_PREFIX}`,
   corsAllowedOrigins,
   minio: minioConfig,
+  email: emailConfig,
   jwt: jwtConfig,
 };

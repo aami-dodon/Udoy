@@ -8,10 +8,32 @@ const STATUS = {
   error: 'error',
 };
 
+const EMAIL_STATUS = {
+  idle: 'idle',
+  sending: 'sending',
+  success: 'success',
+  error: 'error',
+};
+
 function HomePage() {
   const [status, setStatus] = useState(STATUS.idle);
   const [errorMessage, setErrorMessage] = useState('');
   const [healthData, setHealthData] = useState(null);
+  const [emailForm, setEmailForm] = useState({
+    to: '',
+    type: 'verification',
+    name: '',
+  });
+  const [emailStatus, setEmailStatus] = useState(EMAIL_STATUS.idle);
+  const [emailError, setEmailError] = useState('');
+  const [emailMessage, setEmailMessage] = useState('');
+
+  const buildApiUrl = (path) => {
+    const baseUrl = import.meta.env.VITE_API_URL || '/api';
+    const normalizedBase = baseUrl.replace(/\/$/, '');
+    const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+    return `${normalizedBase}${normalizedPath}`;
+  };
 
   const formatUptime = (seconds) => {
     if (typeof seconds !== 'number' || Number.isNaN(seconds)) {
@@ -39,8 +61,7 @@ function HomePage() {
     async function fetchHealth() {
       setStatus(STATUS.loading);
       try {
-        const baseUrl = import.meta.env.VITE_API_URL || '/api';
-        const url = `${baseUrl.replace(/\/$/, '')}/health`;
+        const url = buildApiUrl('/health');
         const { data } = await axios.get(url, { signal: controller.signal });
         setHealthData(data);
         setStatus(STATUS.success);
@@ -86,6 +107,49 @@ function HomePage() {
 
   const checks = healthData?.checks ?? {};
   const corsInfo = healthData?.cors;
+
+  const handleEmailFieldChange = (event) => {
+    const { name, value } = event.target;
+    setEmailForm((prev) => ({ ...prev, [name]: value }));
+    if (emailStatus !== EMAIL_STATUS.idle) {
+      setEmailStatus(EMAIL_STATUS.idle);
+      setEmailError('');
+      setEmailMessage('');
+    }
+  };
+
+  const handleSendTestEmail = async (event) => {
+    event.preventDefault();
+    if (!emailForm.to) {
+      setEmailStatus(EMAIL_STATUS.error);
+      setEmailError('Please enter a recipient email address.');
+      return;
+    }
+
+    setEmailStatus(EMAIL_STATUS.sending);
+    setEmailError('');
+    setEmailMessage('');
+
+    try {
+      const url = buildApiUrl('/email/test');
+      const payload = {
+        to: emailForm.to,
+        type: emailForm.type,
+        name: emailForm.name || undefined,
+      };
+
+      const { data } = await axios.post(url, payload);
+      setEmailStatus(EMAIL_STATUS.success);
+      setEmailMessage(data?.message || 'Test email sent successfully.');
+    } catch (error) {
+      setEmailStatus(EMAIL_STATUS.error);
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        'Failed to send test email.';
+      setEmailError(message);
+    }
+  };
 
   const statusBadgeClasses = {
     up: 'border-success-400/60 bg-success-500/15 text-success-100',
@@ -152,6 +216,83 @@ function HomePage() {
               );
             })}
           </ul>
+        </section>
+
+        <section className="rounded-2xl border border-brand-800/60 bg-brand-950/50 p-6">
+          <h2 className="text-heading-md font-semibold text-clay-50">Send a test email</h2>
+          <p className="mt-2 text-body-sm text-clay-300">
+            Use your SMTP configuration to send either a verification or password reset email.
+          </p>
+
+          <form className="mt-6 space-y-4" onSubmit={handleSendTestEmail}>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="space-y-2 text-body-sm font-medium text-clay-200" htmlFor="email-to">
+                Recipient email
+                <input
+                  id="email-to"
+                  name="to"
+                  type="email"
+                  required
+                  value={emailForm.to}
+                  onChange={handleEmailFieldChange}
+                  className="w-full rounded-xl border border-brand-700/60 bg-brand-900/80 px-4 py-3 text-body-sm text-clay-100 placeholder:text-clay-500 focus:border-accent-400 focus:outline-none focus:ring-2 focus:ring-accent-500/40"
+                  placeholder="name@example.com"
+                />
+              </label>
+
+              <label className="space-y-2 text-body-sm font-medium text-clay-200" htmlFor="email-name">
+                Recipient name (optional)
+                <input
+                  id="email-name"
+                  name="name"
+                  type="text"
+                  value={emailForm.name}
+                  onChange={handleEmailFieldChange}
+                  className="w-full rounded-xl border border-brand-700/60 bg-brand-900/80 px-4 py-3 text-body-sm text-clay-100 placeholder:text-clay-500 focus:border-accent-400 focus:outline-none focus:ring-2 focus:ring-accent-500/40"
+                  placeholder="Udoy Tester"
+                />
+              </label>
+            </div>
+
+            <label className="block space-y-2 text-body-sm font-medium text-clay-200" htmlFor="email-type">
+              Email type
+              <select
+                id="email-type"
+                name="type"
+                value={emailForm.type}
+                onChange={handleEmailFieldChange}
+                className="w-full rounded-xl border border-brand-700/60 bg-brand-900/80 px-4 py-3 text-body-sm text-clay-100 focus:border-accent-400 focus:outline-none focus:ring-2 focus:ring-accent-500/40"
+              >
+                <option value="verification">Verification email</option>
+                <option value="passwordReset">Password reset email</option>
+              </select>
+            </label>
+
+            {emailStatus === EMAIL_STATUS.error && (
+              <p className="rounded-xl border border-danger-500/60 bg-danger-500/10 px-4 py-3 text-body-sm text-danger-100">
+                {emailError}
+              </p>
+            )}
+
+            {emailStatus === EMAIL_STATUS.success && (
+              <p className="rounded-xl border border-success-500/60 bg-success-500/10 px-4 py-3 text-body-sm text-success-100">
+                {emailMessage}
+              </p>
+            )}
+
+            <div className="flex items-center gap-4">
+              <button
+                type="submit"
+                className="inline-flex items-center justify-center rounded-xl bg-accent-500 px-5 py-3 text-body-sm font-semibold text-brand-950 transition hover:bg-accent-400 disabled:cursor-not-allowed disabled:opacity-60"
+                disabled={emailStatus === EMAIL_STATUS.sending}
+              >
+                {emailStatus === EMAIL_STATUS.sending ? 'Sending…' : 'Send test email'}
+              </button>
+              {emailStatus === EMAIL_STATUS.sending && (
+                <span className="text-body-sm text-clay-300">Dispatching email…</span>
+              )}
+            </div>
+          </form>
         </section>
       </section>
     </main>

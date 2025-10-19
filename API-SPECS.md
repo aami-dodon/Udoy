@@ -13,6 +13,7 @@
 | POST   | /api/auth/login  | Placeholder login endpoint.                            | No   |
 | POST   | /api/auth/refresh| Placeholder refresh endpoint requiring a valid token.  | Yes  |
 | GET    | /api/admin/overview | Placeholder admin overview protected by Casbin. | Yes  |
+| POST   | /api/email/test | Sends a test verification or password reset email via SMTP. | No   |
 
 ## Endpoints
 
@@ -167,3 +168,54 @@ Accept: application/json
 **Notes:**
 - Authorization decisions are delegated to Casbin using the subject (role/email), object (resource), and action parameters defined in `policy.csv`.
 - Update the policy or switch to a database adapter when introducing dynamic role assignments.
+
+### POST /api/email/test
+**Description:** Sends a templated verification or password reset email using the configured SMTP credentials. Intended for manual testing of email delivery.
+
+**Authentication:** Not required.
+
+**Headers:**
+- `Content-Type: application/json`
+- `Accept: application/json`
+
+**Body Parameters:**
+- `to` *(string, required)* — Recipient email address.
+- `type` *(string, optional)* — Either `verification` (default) or `passwordReset`.
+- `name` *(string, optional)* — Recipient name for template substitution.
+- `template` *(string, optional)* — Custom HTML template supporting `{{variable}}` placeholders.
+- `textTemplate` *(string, optional)* — Plain-text body template mirroring the HTML content.
+- `variables` *(object, optional)* — Additional values injected into templates.
+
+**Sample Request:**
+```
+POST /api/email/test HTTP/1.1
+Host: ${SERVER_HOST}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "to": "user@example.com",
+  "type": "verification",
+  "name": "Udoy Tester"
+}
+```
+
+**Success Response — 200 OK**
+```json
+{
+  "status": "success",
+  "message": "Test verification email sent to user@example.com."
+}
+```
+
+**Error Response — 400 Bad Request**
+```json
+{
+  "status": "error",
+  "message": "Recipient email address (to) is required."
+}
+```
+
+**Notes:**
+- Email content uses default verification and password reset templates but can be overridden by providing `template`, `textTemplate`, and `variables` fields in the request body.
+- Delivery relies on the Nodemailer transporter configured through environment variables; errors are logged with Winston for troubleshooting.
