@@ -1,5 +1,8 @@
 # Changelog
 
+## 2025-10-20 04:19 IST
+- Fixed shared button typography by resolving Tailwind font-size tokens so CTA labels render correctly across the site.
+
 ## 2025-10-27 10:05 IST
 - Reimagined the landing page with a light, airy navigation bar, gradient hero, and refreshed CTA suite that surfaces login, register, sponsor, and volunteer journeys prominently.
 - Added thematic pillars, sponsor benefits, FAQs, and footer interactions to reinforce the new earthy-green identity and guide every audience segment to action.

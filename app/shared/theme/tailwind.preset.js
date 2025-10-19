@@ -184,6 +184,20 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
     return Array.isArray(value) ? value.join(', ') : value;
   };
 
+  const resolveFontSize = (key) => {
+    const value = theme('fontSize')[key];
+    return Array.isArray(value) ? value : [value, {}];
+  };
+
+  const [displayLgFontSize, displayLgMeta] = resolveFontSize('display-lg');
+  const [headingXlFontSize, headingXlMeta] = resolveFontSize('heading-xl');
+  const [headingLgFontSize, headingLgMeta] = resolveFontSize('heading-lg');
+  const [headingMdFontSize, headingMdMeta] = resolveFontSize('heading-md');
+  const [headingSmFontSize, headingSmMeta] = resolveFontSize('heading-sm');
+  const [bodyBaseFontSize, bodyBaseMeta] = resolveFontSize('body-base');
+  const [bodySmFontSize, bodySmMeta] = resolveFontSize('body-sm');
+  const [bodyXsFontSize, bodyXsMeta] = resolveFontSize('body-xs');
+
   addBase({
     ':root': {
       colorScheme: 'light',
@@ -216,36 +230,36 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
       margin: 0,
     },
     h1: {
-      fontSize: theme('fontSize.display-lg')[0],
-      lineHeight: theme('fontSize.display-lg')[1].lineHeight,
-      letterSpacing: theme('fontSize.display-lg')[1].letterSpacing,
+      fontSize: displayLgFontSize,
+      ...(displayLgMeta.lineHeight ? { lineHeight: displayLgMeta.lineHeight } : {}),
+      ...(displayLgMeta.letterSpacing ? { letterSpacing: displayLgMeta.letterSpacing } : {}),
     },
     h2: {
-      fontSize: theme('fontSize.heading-xl')[0],
-      lineHeight: theme('fontSize.heading-xl')[1].lineHeight,
+      fontSize: headingXlFontSize,
+      ...(headingXlMeta.lineHeight ? { lineHeight: headingXlMeta.lineHeight } : {}),
     },
     h3: {
-      fontSize: theme('fontSize.heading-lg')[0],
-      lineHeight: theme('fontSize.heading-lg')[1].lineHeight,
+      fontSize: headingLgFontSize,
+      ...(headingLgMeta.lineHeight ? { lineHeight: headingLgMeta.lineHeight } : {}),
     },
     h4: {
-      fontSize: theme('fontSize.heading-md')[0],
-      lineHeight: theme('fontSize.heading-md')[1].lineHeight,
+      fontSize: headingMdFontSize,
+      ...(headingMdMeta.lineHeight ? { lineHeight: headingMdMeta.lineHeight } : {}),
     },
     h5: {
-      fontSize: theme('fontSize.heading-sm')[0],
-      lineHeight: theme('fontSize.heading-sm')[1].lineHeight,
+      fontSize: headingSmFontSize,
+      ...(headingSmMeta.lineHeight ? { lineHeight: headingSmMeta.lineHeight } : {}),
     },
     h6: {
-      fontSize: theme('fontSize.body-sm')[0],
-      lineHeight: theme('fontSize.body-sm')[1].lineHeight,
+      fontSize: bodySmFontSize,
+      ...(bodySmMeta.lineHeight ? { lineHeight: bodySmMeta.lineHeight } : {}),
       textTransform: 'uppercase',
       letterSpacing: '0.08em',
     },
     p: {
       margin: 0,
-      fontSize: theme('fontSize.body-base')[0],
-      lineHeight: theme('fontSize.body-base')[1].lineHeight,
+      fontSize: bodyBaseFontSize,
+      ...(bodyBaseMeta.lineHeight ? { lineHeight: bodyBaseMeta.lineHeight } : {}),
       color: theme('colors.neutral.700'),
     },
     'a, button': {
@@ -284,7 +298,7 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
       color: theme('colors.accent.600'),
       padding: `0 ${theme('spacing.2')}`,
       borderRadius: theme('borderRadius.sm'),
-      fontSize: theme('fontSize.body-sm')[0],
+      fontSize: bodySmFontSize,
     },
     pre: {
       fontFamily: fontStack('mono'),
@@ -308,14 +322,14 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
       backgroundColor: theme('colors.surface.muted'),
       color: theme('colors.neutral.700'),
       padding: `${theme('spacing.3')} ${theme('spacing.4')}`,
-      fontSize: theme('fontSize.body-sm')[0],
+      fontSize: bodySmFontSize,
       fontWeight: theme('fontWeight.semibold'),
     },
     'tbody td': {
       padding: `${theme('spacing.3')} ${theme('spacing.4')}`,
       borderBottom: `1px solid ${theme('colors.neutral.200')}`,
       color: theme('colors.neutral.700'),
-      fontSize: theme('fontSize.body-sm')[0],
+      fontSize: bodySmFontSize,
     },
     'tbody tr:hover td': {
       backgroundColor: theme('colors.surface.subtle'),
@@ -423,14 +437,14 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
       gap: theme('spacing.3'),
     },
     '.card__title': {
-      fontSize: theme('fontSize.heading-lg')[0],
-      lineHeight: theme('fontSize.heading-lg')[1].lineHeight,
+      fontSize: headingLgFontSize,
+      ...(headingLgMeta.lineHeight ? { lineHeight: headingLgMeta.lineHeight } : {}),
       fontWeight: theme('fontWeight.semibold'),
       color: theme('colors.neutral.900'),
     },
     '.card__subtitle': {
-      fontSize: theme('fontSize.body-sm')[0],
-      lineHeight: theme('fontSize.body-sm')[1].lineHeight,
+      fontSize: bodySmFontSize,
+      ...(bodySmMeta.lineHeight ? { lineHeight: bodySmMeta.lineHeight } : {}),
       color: theme('colors.neutral.600'),
     },
     '.card__body': {
@@ -452,7 +466,7 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
       borderRadius: theme('borderRadius.pill'),
       borderWidth: '1px',
       borderStyle: 'solid',
-      fontSize: theme('fontSize.body-xs')[0],
+      fontSize: bodyXsFontSize,
       fontWeight: theme('fontWeight.medium'),
       letterSpacing: '0.02em',
       textTransform: 'uppercase',
@@ -495,8 +509,8 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
       borderStyle: 'solid',
       borderColor: theme('colors.neutral.200'),
       fontWeight: theme('fontWeight.semibold'),
-      fontSize: theme('fontSize.body-sm')[0],
-      lineHeight: theme('fontSize.body-sm')[1].lineHeight,
+      fontSize: bodySmFontSize,
+      ...(bodySmMeta.lineHeight ? { lineHeight: bodySmMeta.lineHeight } : {}),
       paddingInline: theme('spacing.5'),
       paddingBlock: theme('spacing.3'),
       gap: theme('spacing.2'),
@@ -572,28 +586,28 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
     '.btn--sm': {
       paddingInline: theme('spacing.4'),
       paddingBlock: theme('spacing.2'),
-      fontSize: theme('fontSize.body-xs')[0],
+      fontSize: bodyXsFontSize,
     },
     '.btn--lg': {
       paddingInline: theme('spacing.6'),
       paddingBlock: theme('spacing.3'),
-      fontSize: theme('fontSize.body-base')[0],
+      fontSize: bodyBaseFontSize,
     },
     '.field': {
       display: 'grid',
       gap: theme('spacing.2'),
     },
     '.field__label': {
-      fontSize: theme('fontSize.body-sm')[0],
+      fontSize: bodySmFontSize,
       fontWeight: theme('fontWeight.medium'),
       color: theme('colors.neutral.700'),
     },
     '.field__hint': {
-      fontSize: theme('fontSize.body-xs')[0],
+      fontSize: bodyXsFontSize,
       color: theme('colors.neutral.500'),
     },
     '.field__error': {
-      fontSize: theme('fontSize.body-xs')[0],
+      fontSize: bodyXsFontSize,
       color: theme('colors.danger.300'),
       display: 'flex',
       alignItems: 'center',
@@ -706,7 +720,7 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
       placeItems: 'center',
       background: 'linear-gradient(135deg, rgba(111, 169, 127, 0.3), rgba(223, 133, 58, 0.3))',
       color: theme('colors.brand.700'),
-      fontSize: theme('fontSize.heading-lg')[0],
+      fontSize: headingLgFontSize,
       boxShadow: theme('boxShadow.brand'),
     },
     '.grid-auto-fit': {
@@ -737,13 +751,13 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
       gap: theme('spacing.1'),
     },
     '.data-table__title': {
-      fontSize: theme('fontSize.heading-sm')[0],
-      lineHeight: theme('fontSize.heading-sm')[1].lineHeight,
+      fontSize: headingSmFontSize,
+      ...(headingSmMeta.lineHeight ? { lineHeight: headingSmMeta.lineHeight } : {}),
       fontWeight: theme('fontWeight.semibold'),
       color: theme('colors.neutral.900'),
     },
     '.data-table__meta': {
-      fontSize: theme('fontSize.body-xs')[0],
+      fontSize: bodyXsFontSize,
       color: theme('colors.neutral.400'),
     },
     '.data-table__table': {
@@ -753,7 +767,7 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
     },
     '.data-table__table thead th': {
       textAlign: 'left',
-      fontSize: theme('fontSize.body-xs')[0],
+      fontSize: bodyXsFontSize,
       letterSpacing: '0.04em',
       textTransform: 'uppercase',
       color: theme('colors.neutral.600'),
@@ -773,7 +787,7 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
       paddingInline: theme('spacing.5'),
       paddingBlock: theme('spacing.4'),
       borderBottom: `1px solid ${theme('colors.neutral.200')}`,
-      fontSize: theme('fontSize.body-sm')[0],
+      fontSize: bodySmFontSize,
       color: theme('colors.neutral.700'),
     },
     '.data-table__table tbody tr:last-child td': {
@@ -797,7 +811,7 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
       borderRadius: theme('borderRadius.md'),
       borderWidth: '1px',
       borderStyle: 'solid',
-      fontSize: theme('fontSize.body-xs')[0],
+      fontSize: bodyXsFontSize,
       fontWeight: theme('fontWeight.medium'),
       letterSpacing: '0.02em',
       textTransform: 'uppercase',
@@ -882,7 +896,7 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
       paddingInline: theme('spacing.3'),
       paddingBlock: theme('spacing.2'),
       borderRadius: theme('borderRadius.md'),
-      fontSize: theme('fontSize.body-xs')[0],
+      fontSize: bodyXsFontSize,
       whiteSpace: 'nowrap',
       boxShadow: theme('boxShadow.soft'),
       opacity: 0,
@@ -904,7 +918,7 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
       display: 'flex',
       alignItems: 'center',
       gap: theme('spacing.3'),
-      fontSize: theme('fontSize.heading-sm')[0],
+      fontSize: headingSmFontSize,
       color: theme('colors.brand.700'),
     },
     '.navbar__menu': {
@@ -948,7 +962,7 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
       flexWrap: 'wrap',
       gap: theme('spacing.2'),
       alignItems: 'center',
-      fontSize: theme('fontSize.body-sm')[0],
+      fontSize: bodySmFontSize,
       color: theme('colors.neutral.400'),
     },
     '.tabs': {
@@ -1115,7 +1129,7 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
       flexWrap: 'wrap',
       gap: theme('spacing.3'),
       color: theme('colors.neutral.600'),
-      fontSize: theme('fontSize.body-xs')[0],
+      fontSize: bodyXsFontSize,
     },
     '.lesson-module': {
       ...cardBase,
