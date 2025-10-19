@@ -1,5 +1,6 @@
 import swaggerJsdoc from 'swagger-jsdoc';
 import env from './env.js';
+import { schemas } from '../utils/swagger/schemas.js';
 
 const apiTitle = 'Udoy API';
 
@@ -34,6 +35,7 @@ const swaggerDefinition = {
           'Alternative mechanism for supplying a refresh token when the Authorization header is absent.',
       },
     },
+    schemas,
   },
 };
 

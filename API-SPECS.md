@@ -15,6 +15,8 @@
 | GET    | /api/health          | Returns service health, uptime, and dependency status. | No   |
 | POST   | /api/auth/login      | Placeholder login endpoint.                            | No   |
 | POST   | /api/auth/refresh    | Placeholder refresh endpoint requiring a valid token.  | Yes  |
+| GET    | /api/admin/overview  | Placeholder admin dashboard overview payload.          | Yes  |
+| POST   | /api/email/test      | Sends a verification or password reset template.       | No   |
 | POST   | /api/uploads/presign | Generates a MinIO presigned URL for uploads/downloads. | Yes  |
 
 ## Endpoints
@@ -121,6 +123,91 @@ Accept: application/json
 {
   "status": "error",
   "message": "Unauthorized"
+}
+```
+
+### GET /api/admin/overview
+**Description:** Returns a placeholder payload that echoes the authenticated principal and the permissions required to render the admin dashboard. Real analytics will be connected in future iterations.
+
+**Authentication:** Required via either of the following mechanisms:
+- `Authorization: Bearer <token>` header containing a valid access token.
+- `x-refresh-token: <token>` header when a refresh token should be used instead of an access token.
+
+**Authorization:** Casbin must grant the caller `resource = "admin:dashboard"` with `action = "read"`.
+
+**Headers:**
+- `Accept: application/json`
+- `Authorization: Bearer <token>` *(optional when a refresh token header is provided)*
+- `x-refresh-token: <token>` *(optional alternative to cookies)*
+
+**Sample Response — 200 OK**
+```json
+{
+  "status": "success",
+  "message": "Admin overview placeholder",
+  "user": {
+    "id": "user-id",
+    "role": "admin"
+  },
+  "permissions": {
+    "resource": "admin:dashboard",
+    "action": "read"
+  }
+}
+```
+
+**Error Response — 401 Unauthorized**
+```json
+{
+  "status": "error",
+  "message": "Unauthorized"
+}
+```
+
+**Error Response — 403 Forbidden**
+```json
+{
+  "status": "error",
+  "message": "Forbidden"
+}
+```
+
+### POST /api/email/test
+**Description:** Dispatches either the verification or password reset email template using the configured Nodemailer transport. Useful for manually validating template rendering and merge variables.
+
+**Authentication:** Not required.
+
+**Headers:**
+- `Content-Type: application/json`
+- `Accept: application/json`
+
+**Body:**
+```jsonc
+{
+  "to": "test@example.com",                         // required email recipient
+  "type": "verification",                           // optional, defaults to "verification"
+  "name": "Udoy Tester",                            // optional friendly name merged into the template
+  "template": "custom-verification",                // optional HTML template override
+  "textTemplate": "custom-verification-text",       // optional plaintext template override
+  "variables": {                                     // optional additional template variables
+    "organization": "Udoy"
+  }
+}
+```
+
+**Success Response — 200 OK**
+```json
+{
+  "status": "success",
+  "message": "Test verification email sent to test@example.com."
+}
+```
+
+**Error Response — 400 Bad Request**
+```json
+{
+  "status": "error",
+  "message": "Recipient email address (to) is required."
 }
 ```
 
