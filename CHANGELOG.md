@@ -1,5 +1,10 @@
 # Changelog
 
+## 2025-10-21 12:30 IST
+- Added Swagger JSDoc tooling and UI to the server with a documented `/docs` route and JSON schema feed.
+- Annotated health and auth routes to auto-generate the OpenAPI spec and aligned `API-SPECS.md` with the schema.
+- Installed Swagger dependencies in the server package and introduced configuration helpers under `src/config/swagger.js`.
+
 ## 2025-10-19 17:49 IST
 - Added a Nodemailer transporter integration configured via central environment settings with Winston error logging.
 - Built an email service with templated verification and password reset helpers plus a test endpoint for triggering sends.

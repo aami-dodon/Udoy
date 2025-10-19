@@ -1,10 +1,13 @@
 # API Specifications
 
 ## Overview
-- **Base URL:** `${SERVER_URL}/api` (configure via `.env`)
+- **Base URL:** `${SERVER_URL}/api`
 - **Default Content Type:** `application/json`
-- **Authentication:** JWT access tokens sent as `Authorization: Bearer <token>` unless noted.
+- **Authentication:** JWT access tokens sent as `Authorization: Bearer <token>` when required. A refresh token may also be supplied via the `x-refresh-token` header.
 - **Notation:** All timestamps use ISO-8601 format in UTC.
+- **Interactive Docs:** Swagger UI is available at `${SERVER_URL}/docs` with the raw schema at `${SERVER_URL}/docs/swagger.json`.
+
+> The OpenAPI schema is sourced directly from the JSDoc annotations that live next to each module (for example, `app/server/src/modules/health/health.routes.js`).
 
 ## Endpoint Summary
 | Method | Path             | Description                                             | Auth |
@@ -12,8 +15,6 @@
 | GET    | /api/health      | Returns service health, uptime, and dependency status. | No   |
 | POST   | /api/auth/login  | Placeholder login endpoint.                            | No   |
 | POST   | /api/auth/refresh| Placeholder refresh endpoint requiring a valid token.  | Yes  |
-| GET    | /api/admin/overview | Placeholder admin overview protected by Casbin. | Yes  |
-| POST   | /api/email/test | Sends a test verification or password reset email via SMTP. | No   |
 
 ## Endpoints
 
@@ -24,8 +25,6 @@
 
 **Headers:**
 - `Accept: application/json`
-
-**Query Parameters:** None.
 
 **Sample Request:**
 ```
@@ -73,10 +72,6 @@ Accept: application/json
 }
 ```
 
-**Notes:**
-- `uptime` is expressed in seconds.
-- Any failing dependency appears under `checks` with a descriptive `message`.
-
 ### POST /api/auth/login
 **Description:** Placeholder endpoint for initiating a session. Returns a static success payload until authentication is implemented.
 
@@ -86,7 +81,7 @@ Accept: application/json
 - `Content-Type: application/json`
 - `Accept: application/json`
 
-**Body:** TBD (implementation pending).
+**Body:** Optional object (structure will be defined when auth is implemented).
 
 **Sample Response — 200 OK**
 ```json
@@ -96,17 +91,16 @@ Accept: application/json
 }
 ```
 
-**Notes:**
-- The real implementation should validate credentials, issue tokens, and set the appropriate cookies.
-
 ### POST /api/auth/refresh
 **Description:** Placeholder endpoint that demonstrates JWT validation via the `authenticate` middleware. Responds with the decoded user payload when a valid token is supplied.
 
-**Authentication:** Required. Accepts an access token via `Authorization: Bearer <token>` or a refresh token via the `x-refresh-token` header/corresponding cookies.
+**Authentication:** Required. Supply either of the following:
+- `Authorization: Bearer <token>` header with an access token.
+- `x-refresh-token: <token>` header when an access token is unavailable.
 
 **Headers:**
 - `Accept: application/json`
-- `Authorization: Bearer <token>` *(optional if a refresh token cookie/header is provided)*
+- `Authorization: Bearer <token>` *(optional if a refresh token header is provided)*
 - `x-refresh-token: <token>` *(optional alternative to cookies)*
 
 **Sample Response — 200 OK**
@@ -128,94 +122,3 @@ Accept: application/json
   "message": "Unauthorized"
 }
 ```
-
-**Notes:**
-- The middleware attempts to validate access tokens first, then refresh tokens. Future implementations can use the attached `req.user` and `req.auth` context to issue new tokens.
-
-### GET /api/admin/overview
-**Description:** Demonstrates a protected admin route that requires both JWT authentication and Casbin authorization. Returns placeholder data along with the authenticated user payload when permitted.
-
-**Authentication:** Required. Uses the `authenticate` middleware to populate `req.user` before enforcing Casbin policies.
-
-**Headers:**
-- `Accept: application/json`
-- `Authorization: Bearer <token>`
-
-**Sample Response — 200 OK**
-```json
-{
-  "status": "success",
-  "message": "Admin overview placeholder",
-  "user": {
-    "email": "admin@example.com",
-    "role": "admin"
-  },
-  "permissions": {
-    "resource": "admin:dashboard",
-    "action": "read"
-  }
-}
-```
-
-**Error Response — 403 Forbidden**
-```json
-{
-  "status": "error",
-  "message": "Forbidden"
-}
-```
-
-**Notes:**
-- Authorization decisions are delegated to Casbin using the subject (role/email), object (resource), and action parameters defined in `policy.csv`.
-- Update the policy or switch to a database adapter when introducing dynamic role assignments.
-
-### POST /api/email/test
-**Description:** Sends a templated verification or password reset email using the configured SMTP credentials. Intended for manual testing of email delivery.
-
-**Authentication:** Not required.
-
-**Headers:**
-- `Content-Type: application/json`
-- `Accept: application/json`
-
-**Body Parameters:**
-- `to` *(string, required)* — Recipient email address.
-- `type` *(string, optional)* — Either `verification` (default) or `passwordReset`.
-- `name` *(string, optional)* — Recipient name for template substitution.
-- `template` *(string, optional)* — Custom HTML template supporting `{{variable}}` placeholders.
-- `textTemplate` *(string, optional)* — Plain-text body template mirroring the HTML content.
-- `variables` *(object, optional)* — Additional values injected into templates.
-
-**Sample Request:**
-```
-POST /api/email/test HTTP/1.1
-Host: ${SERVER_HOST}
-Content-Type: application/json
-Accept: application/json
-
-{
-  "to": "user@example.com",
-  "type": "verification",
-  "name": "Udoy Tester"
-}
-```
-
-**Success Response — 200 OK**
-```json
-{
-  "status": "success",
-  "message": "Test verification email sent to user@example.com."
-}
-```
-
-**Error Response — 400 Bad Request**
-```json
-{
-  "status": "error",
-  "message": "Recipient email address (to) is required."
-}
-```
-
-**Notes:**
-- Email content uses default verification and password reset templates but can be overridden by providing `template`, `textTemplate`, and `variables` fields in the request body.
-- Delivery relies on the Nodemailer transporter configured through environment variables; errors are logged with Winston for troubleshooting.
