@@ -9,7 +9,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tiptap/core": "^2.6.6",
+    "@tiptap/extension-file-handler": "^2.26.3",
+    "@tiptap/extension-image": "^2.6.6",
+    "@tiptap/extension-link": "^2.6.6",
+    "@tiptap/extension-placeholder": "^2.6.6",
+    "@tiptap/react": "^2.6.6",
+    "@tiptap/starter-kit": "^2.6.6",
     "axios": "^1.7.7",
+    "prop-types": "^15.8.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.27.0"
