@@ -1,5 +1,20 @@
 # Changelog
 
+## 2025-10-27 10:05 IST
+- Reimagined the landing page with a light, airy navigation bar, gradient hero, and refreshed CTA suite that surfaces login, register, sponsor, and volunteer journeys prominently.
+- Added thematic pillars, sponsor benefits, FAQs, and footer interactions to reinforce the new earthy-green identity and guide every audience segment to action.
+- Polished layout treatments with translucent surfaces, soft gradients, and updated storytelling blocks that align with the redesigned light theme.
+
+## 2025-10-26 09:20 IST
+- Rebuilt the Udoy Tailwind preset as a light, earthy-green system with refreshed surface tokens, typography (Fraunces & DM Sans), and uplifted component styles.
+- Crafted a navigation-first landing experience with hero storytelling, ecosystem highlights, testimonials, and clear CTAs for login, register, sponsors, and volunteers.
+- Updated the favicon and client metadata to match the new palette while keeping social sharing previews aligned with the 2025 narrative.
+
+## 2025-10-25 11:45 IST
+- Reimagined the shared Tailwind theme with an earthy green palette, warm neutrals, and Playfair/Manrope typography for the new marketing direction.
+- Built an inspiring Udoy landing page with mission storytelling, impact stats, ecosystem highlights, and CTAs while relocating the health dashboard to `/health`.
+- Refreshed client metadata with SEO copy, favicon, and Open Graph assets so social previews and discovery feel on-brand.
+
 ## 2025-10-24 14:45 IST
 - Implemented branded 403, 404, 500, and generic error experiences that follow the shared Udoy theme and link users back to the home dashboard.
 - Added a reusable client error boundary that captures unexpected React render failures and surfaces the generic fallback with a retry control.
