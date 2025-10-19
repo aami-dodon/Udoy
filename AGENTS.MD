@@ -19,19 +19,18 @@ Follow them strictly to maintain **quality**, **consistency**, **security**, and
 | TailwindCSS + Theme      | Utility-first CSS framework with centralized, shared design system across all apps.        |
 | Tiptap Editor            | Headless WYSIWYG editor with React integration and theme control. Extended with custom video support for **direct uploads to MinIO** (used for all media: video, images, docs). |
 | Prisma ORM               | Schema and database management for Postgres.                                               |
-| JWT.                     | Authentication strategy (JWT tokens or sessions) to secure API routes and user sessions.    |
+| JWT                     | Authentication strategy (JWT tokens or sessions) to secure API routes and user sessions.    |
 | Casbin (RBAC)            | Policy-based role and permission control integrated with Express.js.                       |
 | dotenv                   | Environment variable management for configuration across frontend and backend.             |
 | CORS Middleware          | Enables secure cross-origin communication between Vite frontend and Express backend.       |
 | Nodemailer               | Server-side email sending.                                                                 |
 | Winston + Morgan         | Structured JSON logging for server monitoring and debugging.                               |
-| Jest + RTL               | Testing frameworks for unit and integration testing.                                       |
-| ESLint + Prettier        | JavaScript linting and code formatting to maintain code quality.                           |
 | Swagger (OpenAPI)        | API documentation for all backend routes.                                                  |
 | MinIO                    | **Externally hosted** object storage for **all file uploads including video**, using presigned URLs. |
 | Meilisearch              | Lightweight full-text search with typo tolerance (courses, lessons, instructors).          |
 | Socket.io                | Real-time communication for live classes, chat, Q&A, and notifications.                     |
 
+---
 
 ## 3. Code and Project Structure
 
@@ -53,16 +52,15 @@ Follow them strictly to maintain **quality**, **consistency**, **security**, and
 **Structure Conventions**
 
 - All apps live in `app/`.
-- System-wide documentation lives in `docs/`.
-- Feature-based organization:
+- Product Requirement Documents (PRD) and its Features and User Stories lives in `docs/`.
+- You **must have** Feature-based organization:
   ```
   client/src/features/<feature>
   server/src/modules/<feature>
   ```
-- Shared integrations (`Nodemailer`, `MinIO`, `Mux`, `Casbin`) in `server/src/integrations`.
+- Shared integrations (`Nodemailer`, `MinIO`, `Casbin`) in `server/src/integrations`.
 - Shared logic in `shared/`.
 - Single `.env` for all services; template in `.env.example`.
-- Root directory kept clean — infrastructure, scripts, and docs separated.
 
 ---
 
@@ -103,8 +101,7 @@ npm run prisma:migrate
 - Routes must be defined only in `routes.js`.  
 - Use **utility classes** and reusable components — no inline CSS.  
 - **Tiptap** is the single WYSIWYG editor:  
-  - Videos are uploaded directly to **Mux** and embedded in content.  
-  - Other assets (PDFs, images, docs) are stored in **MinIO**.
+  - Videos and other assets (PDFs, images, docs) are uploaded directly to **MinIO** using pre-signed URLs and embedded in content.
 
 ---
 
@@ -119,10 +116,9 @@ npm run prisma:migrate
 
 ## 8. Documentation and Communication
 
-- All project-wide changes must be recorded in `CHANGELOG.md`.
+- All project-wide changes must be recorded in `CHANGELOG.md`. Include a **Date–Time Stamp (IST)** with every entry.
 - All server APIs must be recorded in `API-SPECS.md`.
 - All client Routes must be recorded in `ROUTES.md`.
-- Include a **Date–Time Stamp (IST)** with every entry.
 
 ---
 
@@ -155,8 +151,7 @@ flowchart TB
     %% === Data Layer ===
     subgraph Data["Data & Storage Layer"]
         K[Postgres]
-        L[MinIO - File Storage]
-        M[Mux - Video Streaming]
+        L[MinIO - File & Video Storage]
         N[Meilisearch - Search]
     end
 
@@ -172,6 +167,4 @@ flowchart TB
     Server --> Data
     Server --> Infra
     C --> L
-    C --> M
 ```
-
