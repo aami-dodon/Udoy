@@ -1,16 +1,12 @@
 import jwt from 'jsonwebtoken';
 import env from '../config/env.js';
 import logger from './logger.js';
+import AppError from './appError.js';
 
-class JwtError extends Error {
+class JwtError extends AppError {
   constructor(message, { status = 401, code, cause } = {}) {
-    super(message);
+    super(message, { status, code, cause });
     this.name = 'JwtError';
-    this.status = status;
-    this.code = code;
-    if (cause) {
-      this.cause = cause;
-    }
   }
 }
 

@@ -1,6 +1,7 @@
 import env from '../config/env.js';
 import transporter from '../integrations/email/nodemailerClient.js';
 import logger from '../utils/logger.js';
+import AppError from '../utils/appError.js';
 
 const DEFAULT_VERIFICATION_SUBJECT = 'Verify your email address';
 const DEFAULT_PASSWORD_RESET_SUBJECT = 'Reset your Udoy account password';
@@ -25,7 +26,10 @@ const DEFAULT_PASSWORD_RESET_TEXT_TEMPLATE = `Hi {{name}},\n\nReset your Udoy pa
 
 function ensureTransporter() {
   if (!transporter) {
-    throw new Error('Email transporter is not configured.');
+    throw AppError.serviceUnavailable('Email transporter is not configured.', {
+      code: 'EMAIL_TRANSPORTER_UNAVAILABLE',
+      expose: false,
+    });
   }
 
   return transporter;
@@ -63,17 +67,23 @@ function buildLink(baseUrl, token, tokenKey = 'token') {
 
 async function sendEmail({ to, subject, html, text, from }) {
   if (!to) {
-    throw new Error('Recipient email address is required.');
+    throw AppError.badRequest('Recipient email address is required.', {
+      code: 'EMAIL_RECIPIENT_REQUIRED',
+    });
   }
 
   const resolvedFrom = from || env.email?.from;
 
   if (!resolvedFrom) {
-    throw new Error('Sender email address is not configured.');
+    throw AppError.serviceUnavailable('Sender email address is not configured.', {
+      code: 'EMAIL_SENDER_UNCONFIGURED',
+    });
   }
 
   if (!html && !text) {
-    throw new Error('Email content is required (html or text).');
+    throw AppError.badRequest('Email content is required (html or text).', {
+      code: 'EMAIL_CONTENT_REQUIRED',
+    });
   }
 
   const mailOptions = {
@@ -100,7 +110,11 @@ async function sendEmail({ to, subject, html, text, from }) {
       to,
       subject: mailOptions.subject,
     });
-    throw error;
+    throw AppError.from(error, {
+      status: 502,
+      code: 'EMAIL_DISPATCH_FAILED',
+      details: { to, subject: mailOptions.subject },
+    });
   }
 }
 

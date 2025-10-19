@@ -1,10 +1,15 @@
 import { Client } from 'minio';
 import env from '../../config/env.js';
+import AppError from '../../utils/appError.js';
 import logger from '../../utils/logger.js';
 
-export class MinioConfigError extends Error {
-  constructor(message) {
-    super(message || 'MinIO configuration is unavailable.');
+export class MinioConfigError extends AppError {
+  constructor(message, options = {}) {
+    super(message || 'MinIO configuration is unavailable.', {
+      status: 503,
+      code: 'MINIO_CONFIGURATION_ERROR',
+      ...options,
+    });
     this.name = 'MinioConfigError';
   }
 }

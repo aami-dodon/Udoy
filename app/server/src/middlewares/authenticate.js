@@ -1,4 +1,5 @@
 import env from '../config/env.js';
+import AppError from '../utils/appError.js';
 import logger from '../utils/logger.js';
 import {
   JwtError,
@@ -28,7 +29,7 @@ function getCookie(req, name) {
   return cookies[name] || signedCookies[name] || null;
 }
 
-function authenticate(req, res, next) {
+function authenticate(req, _res, next) {
   const { jwt: jwtConfig = {} } = env;
   const accessCookie = jwtConfig.access?.cookieName;
   const refreshCookie = jwtConfig.refresh?.cookieName;
@@ -87,7 +88,12 @@ function authenticate(req, res, next) {
     }
   }
 
-  return res.status(401).json({ status: 'error', message: 'Unauthorized' });
+  return next(
+    AppError.unauthorized('Unauthorized', {
+      code: 'AUTHENTICATION_REQUIRED',
+      details: { reason: 'Missing valid access or refresh token' },
+    })
+  );
 }
 
 export default authenticate;
