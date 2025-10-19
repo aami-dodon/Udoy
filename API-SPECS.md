@@ -5,7 +5,7 @@
 - **Default Content Type:** `application/json`
 - **Authentication:** JWT access tokens sent as `Authorization: Bearer <token>` when required. A refresh token may also be supplied via the `x-refresh-token` header.
 - **Notation:** All timestamps use ISO-8601 format in UTC.
-- **Interactive Docs:** Swagger UI is available at `${SERVER_URL}/docs` with the raw schema at `${SERVER_URL}/docs/swagger.json`.
+- **Interactive Docs:** Swagger UI is available at `${SERVER_URL}/api/docs` with the raw schema at `${SERVER_URL}/api/docs/swagger.json`.
 
 > The OpenAPI schema is sourced directly from the JSDoc annotations that live next to each module (for example, `app/server/src/modules/health/health.routes.js`).
 

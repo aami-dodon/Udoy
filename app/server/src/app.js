@@ -46,7 +46,7 @@ function createApp() {
   });
   docsRouter.use('/', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
 
-  app.use('/docs', docsRouter);
+  app.use(`${env.apiPrefix}/docs`, docsRouter);
 
   registerModules(app, env.apiPrefix);
 

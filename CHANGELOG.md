@@ -1,7 +1,7 @@
 # Changelog
 
 ## 2025-10-21 12:30 IST
-- Added Swagger JSDoc tooling and UI to the server with a documented `/docs` route and JSON schema feed.
+- Added Swagger JSDoc tooling and UI to the server with a documented `/api/docs` route and JSON schema feed.
 - Annotated health and auth routes to auto-generate the OpenAPI spec and aligned `API-SPECS.md` with the schema.
 - Installed Swagger dependencies in the server package and introduced configuration helpers under `src/config/swagger.js`.
 
