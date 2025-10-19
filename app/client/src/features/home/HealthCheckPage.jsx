@@ -15,7 +15,7 @@ const EMAIL_STATUS = {
   error: 'error',
 };
 
-function HomePage() {
+function HealthCheckPage() {
   const [status, setStatus] = useState(STATUS.idle);
   const [errorMessage, setErrorMessage] = useState('');
   const [healthData, setHealthData] = useState(null);
@@ -329,4 +329,4 @@ function HomePage() {
   );
 }
 
-export default HomePage;
+export default HealthCheckPage;

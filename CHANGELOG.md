@@ -1,5 +1,10 @@
 # Changelog
 
+## 2025-10-25 11:45 IST
+- Reimagined the shared Tailwind theme with an earthy green palette, warm neutrals, and Playfair/Manrope typography for the new marketing direction.
+- Built an inspiring Udoy landing page with mission storytelling, impact stats, ecosystem highlights, and CTAs while relocating the health dashboard to `/health`.
+- Refreshed client metadata with SEO copy, favicon, and Open Graph assets so social previews and discovery feel on-brand.
+
 ## 2025-10-24 14:45 IST
 - Implemented branded 403, 404, 500, and generic error experiences that follow the shared Udoy theme and link users back to the home dashboard.
 - Added a reusable client error boundary that captures unexpected React render failures and surfaces the generic fallback with a retry control.

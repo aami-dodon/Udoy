@@ -7,7 +7,8 @@
 ## Routes
 | Path | Feature | Description |
 | --- | --- | --- |
-| `/` | Health Check | Homepage that pings `/api/health` and renders `OK` on success. |
+| `/` | Landing | Inspirational marketing landing page introducing the Udoy mission, ecosystem, and key CTAs. |
+| `/health` | Health Check | Operational dashboard that pings `/api/health` and offers test email tooling. |
 | `/theme` | Theme Showcase | Central theme catalog displaying shared tokens and components for developers. |
 | `/403` | Error Pages | Forbidden access screen that guides users back to the home experience. |
 | `/500` | Error Pages | Server error page surfaced when upstream systems fail unexpectedly. |
