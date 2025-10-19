@@ -1,5 +1,8 @@
 # Changelog
 
+## 2025-10-22 10:20 IST
+- Added class name annotations to the `/theme` showcase so developers can copy the exact utility tokens for colors, typography, buttons, and badges.
+
 ## 2025-10-20 01:59 IST
 - Introduced a `/theme` client route that renders the centralized token and component catalog, replacing the standalone HTML preview.
 - Documented the new showcase path in the theme README and updated the route registry for developer discovery.

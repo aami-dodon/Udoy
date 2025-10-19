@@ -1,28 +1,28 @@
 const brandShades = [
-  { label: '500', className: 'bg-brand-500' },
-  { label: '600', className: 'bg-brand-600' },
-  { label: '700', className: 'bg-brand-700' },
-  { label: '800', className: 'bg-brand-800' },
-  { label: '900', className: 'bg-brand-900' },
+  { label: 'Brand 500', className: 'bg-brand-500' },
+  { label: 'Brand 600', className: 'bg-brand-600' },
+  { label: 'Brand 700', className: 'bg-brand-700' },
+  { label: 'Brand 800', className: 'bg-brand-800' },
+  { label: 'Brand 900', className: 'bg-brand-900' },
 ];
 const accentShades = [
-  { label: '400', className: 'bg-accent-400' },
-  { label: '500', className: 'bg-accent-500' },
-  { label: '600', className: 'bg-accent-600' },
-  { label: '700', className: 'bg-accent-700' },
-  { label: '800', className: 'bg-accent-800' },
+  { label: 'Accent 400', className: 'bg-accent-400' },
+  { label: 'Accent 500', className: 'bg-accent-500' },
+  { label: 'Accent 600', className: 'bg-accent-600' },
+  { label: 'Accent 700', className: 'bg-accent-700' },
+  { label: 'Accent 800', className: 'bg-accent-800' },
 ];
 const surfaceTokens = [
-  { label: 'base', className: 'bg-surface-base' },
-  { label: 'muted', className: 'bg-surface-muted' },
-  { label: 'raised', className: 'bg-surface-raised' },
-  { label: 'subtle', className: 'bg-surface-subtle' },
+  { label: 'Surface base', className: 'bg-surface-base' },
+  { label: 'Surface muted', className: 'bg-surface-muted' },
+  { label: 'Surface raised', className: 'bg-surface-raised' },
+  { label: 'Surface subtle', className: 'bg-surface-subtle' },
 ];
 const feedbackTokens = [
-  { label: 'success', className: 'bg-success-500' },
-  { label: 'warning', className: 'bg-warning-500' },
-  { label: 'info', className: 'bg-info-500' },
-  { label: 'danger', className: 'bg-danger-500' },
+  { label: 'Success', className: 'bg-success-500' },
+  { label: 'Warning', className: 'bg-warning-500' },
+  { label: 'Info', className: 'bg-info-500' },
+  { label: 'Danger', className: 'bg-danger-500' },
 ];
 
 const buttonVariants = [
@@ -40,6 +40,53 @@ const badgeVariants = [
   { label: 'Danger', className: 'badge badge--danger' },
   { label: 'Neutral', className: 'badge badge--neutral' },
 ];
+
+const typographyTokens = [
+  {
+    label: 'Display Large',
+    styleClass: 'text-display-lg',
+    description: 'Learning that feels premium.',
+    supportingClasses: 'text-on-surface font-semibold',
+  },
+  {
+    label: 'Heading Large',
+    styleClass: 'text-heading-lg',
+    description: 'Instructor insights and section titles.',
+    supportingClasses: 'text-on-surface font-semibold',
+  },
+  {
+    label: 'Heading Small',
+    styleClass: 'text-heading-sm',
+    description: 'Module overview and subheaders.',
+    supportingClasses: 'text-on-surface font-semibold',
+  },
+  {
+    label: 'Body Base',
+    styleClass: 'text-body-base',
+    description:
+      'Course descriptions, announcements, and discussion replies rely on this default body style with comfortable line-height for long-form reading.',
+    supportingClasses: 'text-subdued',
+  },
+  {
+    label: 'Body Small',
+    styleClass: 'text-body-sm',
+    description: 'Secondary metadata, captions, and helper text.',
+    supportingClasses: 'text-subdued',
+  },
+  {
+    label: 'Body Extra Small',
+    styleClass: 'text-body-xs',
+    description: 'Tags, counters, and UI chrome.',
+    supportingClasses: 'text-subdued uppercase',
+  },
+];
+
+const formatClasses = (className) =>
+  className
+    .split(' ')
+    .filter(Boolean)
+    .map((token) => `.${token}`)
+    .join(' ');
 
 const timelineItems = [
   {
@@ -89,40 +136,48 @@ function ThemeShowcasePage() {
           <div className="grid-fit-md">
             <div className="card card--inset stack-sm">
               <p className="text-body-sm text-subdued">Brand spectrum</p>
-              <div className="grid grid-cols-5 gap-2 text-body-xs text-center">
+              <div className="grid grid-cols-5 gap-4 text-body-xs text-center">
                 {brandShades.map((shade) => (
-                  <div key={shade.label} className={`rounded-lg ${shade.className} py-3`}>
-                    {shade.label}
+                  <div key={shade.label} className="flex flex-col items-center gap-2">
+                    <div className={`h-16 w-full rounded-lg ${shade.className}`} />
+                    <span className="text-body-xs font-medium text-on-surface">{shade.label}</span>
+                    <code className="font-mono text-[11px] text-subdued">{formatClasses(shade.className)}</code>
                   </div>
                 ))}
               </div>
             </div>
             <div className="card card--inset stack-sm">
               <p className="text-body-sm text-subdued">Accent spectrum</p>
-              <div className="grid grid-cols-5 gap-2 text-body-xs text-center">
+              <div className="grid grid-cols-5 gap-4 text-body-xs text-center">
                 {accentShades.map((shade) => (
-                  <div key={shade.label} className={`rounded-lg ${shade.className} py-3`}>
-                    {shade.label}
+                  <div key={shade.label} className="flex flex-col items-center gap-2">
+                    <div className={`h-16 w-full rounded-lg ${shade.className}`} />
+                    <span className="text-body-xs font-medium text-on-surface">{shade.label}</span>
+                    <code className="font-mono text-[11px] text-subdued">{formatClasses(shade.className)}</code>
                   </div>
                 ))}
               </div>
             </div>
             <div className="card card--inset stack-sm">
               <p className="text-body-sm text-subdued">Surface tokens</p>
-              <div className="grid grid-cols-2 gap-3 text-body-xs text-center">
+              <div className="grid grid-cols-2 gap-4 text-body-xs">
                 {surfaceTokens.map((token) => (
-                  <div key={token.label} className={`rounded-lg ${token.className} py-4`}>
-                    {token.label}
+                  <div key={token.label} className="flex flex-col gap-2">
+                    <div className={`h-16 w-full rounded-lg ${token.className}`} />
+                    <span className="text-body-xs font-medium text-on-surface">{token.label}</span>
+                    <code className="font-mono text-[11px] text-subdued">{formatClasses(token.className)}</code>
                   </div>
                 ))}
               </div>
             </div>
             <div className="card card--inset stack-sm">
               <p className="text-body-sm text-subdued">Feedback</p>
-              <div className="grid grid-cols-4 gap-3 text-body-xs text-center">
+              <div className="grid grid-cols-4 gap-4 text-body-xs text-center">
                 {feedbackTokens.map((token) => (
-                  <div key={token.label} className={`rounded-lg ${token.className} py-3`}>
-                    {token.label}
+                  <div key={token.label} className="flex flex-col items-center gap-2">
+                    <div className={`h-16 w-full rounded-lg ${token.className}`} />
+                    <span className="text-body-xs font-medium text-on-surface">{token.label}</span>
+                    <code className="font-mono text-[11px] text-subdued">{formatClasses(token.className)}</code>
                   </div>
                 ))}
               </div>
@@ -138,15 +193,16 @@ function ThemeShowcasePage() {
             <p className="card__subtitle">Display, heading, and body scales.</p>
           </div>
           <div className="stack-md">
-            <p className="text-display-lg text-on-surface font-semibold">Display Large — Learning that feels premium.</p>
-            <p className="text-heading-lg text-on-surface font-semibold">Heading Large — Instructor insights</p>
-            <p className="text-heading-sm text-on-surface font-semibold">Heading Small — Module overview</p>
-            <p className="text-body-base text-subdued">
-              Body Base — Course descriptions, announcements, and discussion replies rely on this default body style with
-              comfortable line-height for long-form reading.
-            </p>
-            <p className="text-body-sm text-subdued">Body Small — Secondary metadata, captions, and helper text.</p>
-            <p className="text-body-xs text-subdued uppercase">Body Extra Small — Tags, counters, and UI chrome.</p>
+            {typographyTokens.map((token) => (
+              <div key={token.label} className="flex flex-col gap-1">
+                <p className={`${token.styleClass} ${token.supportingClasses}`}>
+                  <span className="font-semibold text-on-surface">{token.label}</span>
+                  {' — '}
+                  {token.description}
+                </p>
+                <code className="font-mono text-[11px] text-subdued">{formatClasses(token.styleClass)}</code>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -157,18 +213,22 @@ function ThemeShowcasePage() {
             <h2 className="card__title">Buttons &amp; Tags</h2>
             <p className="card__subtitle">Primary CTAs and supporting actions.</p>
           </div>
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-6">
             {buttonVariants.map((variant) => (
-              <button key={variant.label} type="button" className={variant.className}>
-                {variant.label}
-              </button>
+              <div key={variant.label} className="flex flex-col gap-1">
+                <button type="button" className={variant.className}>
+                  {variant.label}
+                </button>
+                <code className="font-mono text-[11px] text-subdued">{formatClasses(variant.className)}</code>
+              </div>
             ))}
           </div>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-5">
             {badgeVariants.map((variant) => (
-              <span key={variant.label} className={variant.className}>
-                {variant.label}
-              </span>
+              <div key={variant.label} className="flex flex-col items-start gap-1">
+                <span className={variant.className}>{variant.label}</span>
+                <code className="font-mono text-[11px] text-subdued">{formatClasses(variant.className)}</code>
+              </div>
             ))}
           </div>
         </div>
