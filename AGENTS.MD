@@ -101,7 +101,7 @@ npm run prisma:migrate
 - Routes must be defined only in `routes.js`.  
 - Use **utility classes** and reusable components — no inline CSS.  
 - **Tiptap** is the single WYSIWYG editor:  
-  - Videos and other assets (PDFs, images, docs) are uploaded directly to **MinIO** using pre-signed URLs and embedded in content.
+  - Videos and other assets (PDFs, images, documents) are uploaded directly to **MinIO** using pre-signed URLs and embedded in content.
 
 ---
 
