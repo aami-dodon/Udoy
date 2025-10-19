@@ -11,11 +11,47 @@ const {
   SERVER_PORT = 6005,
   API_PREFIX = '/api',
   CORS_ALLOWED_ORIGINS = 'http://localhost:6004',
+  MINIO_ENDPOINT,
+  MINIO_PORT,
+  MINIO_USE_SSL = 'true',
+  MINIO_ACCESS_KEY,
+  MINIO_SECRET_KEY,
+  MINIO_REGION,
+  MINIO_BUCKET,
+  MINIO_PUBLIC_BASE_URL,
 } = process.env;
+
+const corsAllowedOrigins = CORS_ALLOWED_ORIGINS.split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+const parsedMinioPort = MINIO_PORT ? Number(MINIO_PORT) : undefined;
+const hasValidMinioPort =
+  parsedMinioPort !== undefined && !Number.isNaN(parsedMinioPort);
+
+const hasMinioConfig = Boolean(
+  MINIO_ENDPOINT &&
+  MINIO_ACCESS_KEY &&
+  MINIO_SECRET_KEY
+);
+
+const minioConfig = hasMinioConfig
+  ? {
+      endpoint: MINIO_ENDPOINT,
+      port: hasValidMinioPort ? parsedMinioPort : undefined,
+      useSSL: String(MINIO_USE_SSL).toLowerCase() === 'true',
+      accessKey: MINIO_ACCESS_KEY,
+      secretKey: MINIO_SECRET_KEY,
+      region: MINIO_REGION || undefined,
+      bucket: MINIO_BUCKET || undefined,
+      publicBaseUrl: MINIO_PUBLIC_BASE_URL || undefined,
+    }
+  : null;
 
 export default {
   nodeEnv: NODE_ENV,
   port: Number(SERVER_PORT) || 6005,
   apiPrefix: API_PREFIX.startsWith('/') ? API_PREFIX : `/${API_PREFIX}`,
-  corsAllowedOrigins: CORS_ALLOWED_ORIGINS.split(',').map((origin) => origin.trim()).filter(Boolean),
+  corsAllowedOrigins,
+  minio: minioConfig,
 };
