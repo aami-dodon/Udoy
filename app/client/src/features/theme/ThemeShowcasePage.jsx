@@ -113,6 +113,30 @@ const tabItems = [
 
 const paginationItems = [1, 2, 3];
 
+const tableRows = [
+  {
+    course: 'Design Systems 101',
+    mentor: 'Anita Rao',
+    updated: 'Today',
+    statusLabel: 'Active',
+    statusClass: 'badge badge--success',
+  },
+  {
+    course: 'Cohort Coaching',
+    mentor: 'Miguel Chen',
+    updated: '2 days ago',
+    statusLabel: 'Review',
+    statusClass: 'badge badge--warning',
+  },
+  {
+    course: 'Leadership Primer',
+    mentor: 'Priya Nair',
+    updated: '1 week ago',
+    statusLabel: 'Draft',
+    statusClass: 'badge badge--neutral',
+  },
+];
+
 function ThemeShowcasePage() {
   return (
     <main className="page-container stack-xl">
@@ -260,6 +284,81 @@ function ThemeShowcasePage() {
               </p>
             </div>
           </form>
+        </div>
+      </section>
+
+      <section className="stack-lg">
+        <div className="card card--muted stack-md">
+          <div className="card__header">
+            <h2 className="card__title">Data table</h2>
+            <p className="card__subtitle">Inline actions for quick edits stay consistent across pages.</p>
+          </div>
+          <div className="data-table">
+            <div className="data-table__toolbar">
+              <div className="data-table__heading">
+                <h3 className="data-table__title">Course roster</h3>
+                <p className="data-table__meta">3 cohorts live</p>
+              </div>
+              <button type="button" className="btn btn--primary btn--sm">
+                New course
+              </button>
+            </div>
+            <table className="data-table__table">
+              <thead>
+                <tr>
+                  <th>Course</th>
+                  <th>Mentor</th>
+                  <th>Updated</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tableRows.map((row) => (
+                  <tr key={row.course}>
+                    <td>{row.course}</td>
+                    <td className="data-table__cell--muted">{row.mentor}</td>
+                    <td className="data-table__cell--muted">{row.updated}</td>
+                    <td>
+                      <span className={row.statusClass}>{row.statusLabel}</span>
+                    </td>
+                    <td>
+                      <div className="data-table__actions">
+                        <button
+                          type="button"
+                          className="data-table__action data-table__action--edit"
+                          aria-label={`Edit ${row.course}`}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          className="data-table__action data-table__action--modify"
+                          aria-label={`Modify ${row.course}`}
+                        >
+                          Modify
+                        </button>
+                        <button
+                          type="button"
+                          className="data-table__action data-table__action--delete"
+                          aria-label={`Delete ${row.course}`}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div className="px-5 pb-5 text-body-xs text-subdued">
+              <div className="flex flex-wrap gap-3">
+                <code className="font-mono text-[11px]">{formatClasses('data-table')}</code>
+                <code className="font-mono text-[11px]">{formatClasses('data-table__table')}</code>
+                <code className="font-mono text-[11px]">{formatClasses('data-table__action data-table__action--edit')}</code>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

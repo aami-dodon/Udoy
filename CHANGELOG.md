@@ -1,5 +1,10 @@
 # Changelog
 
+## 2025-10-20 02:34 IST
+- Added a shared `data-table` component in the Tailwind preset with edit, modify, and delete action styles for consistent inline controls.
+- Updated the theme showcase page to demonstrate the new table along with usage tokens.
+- Documented the table API in the centralized theme README for quick copy-and-paste markup.
+
 ## 2025-10-22 10:20 IST
 - Added class name annotations to the `/theme` showcase so developers can copy the exact utility tokens for colors, typography, buttons, and badges.
 
