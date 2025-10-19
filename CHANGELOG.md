@@ -1,5 +1,10 @@
 # Changelog
 
+## 2025-10-20 12:10 IST
+- Expanded the shared Tailwind preset with an earthy blue brand palette, golden accents, typography scale, spacing tokens, and shared shadows.
+- Registered `@tailwindcss/forms` across apps and documented how to consume the new design tokens.
+- Updated the client health dashboard to showcase the refreshed tokens and ensure the preset is wired through the Vite build.
+
 ## 2025-10-19 16:45 IST
 - Added shared Tiptap editor configuration (extensions, defaults, styling tokens) under `app/shared/editor/` for reuse across apps.
 - Implemented a reusable `RichTextEditor` React component that consumes the shared preset and exposes asset upload callbacks.
