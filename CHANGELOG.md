@@ -1,5 +1,11 @@
 # Changelog
 
+## 2025-10-21 15:45 IST
+- Extended the MinIO integration with presigned URL helpers, configuration guards, and a dedicated integration index for reuse.
+- Added secured `/api/uploads/presign` routing that issues upload/download URLs via JWT + Casbin checks with expiry metadata.
+- Created shared editor upload utilities to request presigned URLs and stream assets directly to MinIO from the client.
+- Documented the new storage endpoint in `API-SPECS.md` and refreshed health checks to surface MinIO readiness state.
+
 ## 2025-10-21 12:30 IST
 - Added Swagger JSDoc tooling and UI to the server with a documented `/api/docs` route and JSON schema feed.
 - Annotated health and auth routes to auto-generate the OpenAPI spec and aligned `API-SPECS.md` with the schema.

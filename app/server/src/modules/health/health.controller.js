@@ -1,6 +1,10 @@
 import prisma from '../../utils/prismaClient.js';
 import env from '../../config/env.js';
-import minioClient from '../../integrations/minioClient.js';
+import {
+  getMinioClient,
+  getMinioBucket,
+  isMinioConfigured,
+} from '../../integrations/minio/index.js';
 
 export async function getHealthStatus(req, res) {
   const checks = {};
@@ -17,11 +21,25 @@ export async function getHealthStatus(req, res) {
     };
   }
 
-  if (env.minio && minioClient) {
+  const bucketName = getMinioBucket();
+  const client = getMinioClient();
+
+  if (!env.minio) {
+    checks.minio = {
+      status: 'skipped',
+      message: 'MinIO not configured',
+    };
+  } else if (!isMinioConfigured()) {
+    isHealthy = false;
+    checks.minio = {
+      status: 'down',
+      bucket: bucketName || null,
+      message: 'MinIO client unavailable or bucket missing',
+    };
+  } else {
     try {
-      const bucketName = env.minio.bucket;
       const bucketExists = bucketName
-        ? await minioClient.bucketExists(bucketName)
+        ? await client.bucketExists(bucketName)
         : true;
 
       if (bucketExists) {
@@ -44,11 +62,6 @@ export async function getHealthStatus(req, res) {
         message: error.message,
       };
     }
-  } else {
-    checks.minio = {
-      status: 'skipped',
-      message: 'MinIO not configured',
-    };
   }
 
   const corsStatus = {
