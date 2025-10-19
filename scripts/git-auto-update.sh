@@ -44,5 +44,5 @@ while true; do
   fi
 
   echo "Sleeping for 2 minutes..."
-  sleep 120
+  sleep 30
 done
