@@ -1,0 +1,2 @@
+# This file locks the provider used for migrations. Do not edit manually.
+provider = "postgresql"

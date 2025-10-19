@@ -1,10 +1,10 @@
 # API Specifications
 
-## 2025-10-19 05:39 IST
+## 2025-10-19 06:11 IST
 ### Health Check
 - **Method:** GET
 - **Endpoint:** /api/health
-- **Description:** Returns the service status used by the client homepage to validate connectivity.
+- **Description:** Returns the service status after verifying database connectivity.
 - **Response:**
   ```json
   {
