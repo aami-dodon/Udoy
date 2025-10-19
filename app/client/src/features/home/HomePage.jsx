@@ -78,43 +78,68 @@ function HomePage() {
     return () => controller.abort();
   }, []);
 
+  const resetEmailFeedback = () => {
+    setEmailStatus(EMAIL_STATUS.idle);
+    setEmailError('');
+    setEmailMessage('');
+  };
+
   if (status === STATUS.loading || status === STATUS.idle) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-brand-950 text-clay-100">
-        <p className="text-body-lg font-medium">Checking service health…</p>
+      <main className="app-shell">
+        <section className="page-container flex-center">
+          <div className="empty-state max-w-content-sm">
+            <div className="spinner" aria-hidden="true" />
+            <div className="stack-sm">
+              <p className="text-heading-sm text-on-surface font-semibold">Checking service health…</p>
+              <p className="text-body-sm text-subdued">Please wait while we ping the Udoy services.</p>
+            </div>
+          </div>
+        </section>
       </main>
     );
   }
 
   if (status === STATUS.error) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-danger-950 text-danger-100">
-        <div className="space-y-2 text-center">
-          <p className="text-heading-md font-semibold">Service unavailable</p>
-          <p className="text-body-sm text-danger-200/80">{errorMessage}</p>
-        </div>
+      <main className="app-shell">
+        <section className="page-container flex-center">
+          <div className="card card--brand stack-md max-w-content-sm text-balance">
+            <h1 className="text-heading-lg text-on-surface font-semibold">Service unavailable</h1>
+            <p className="text-body-sm text-subdued">{errorMessage}</p>
+            <div className="alert alert--danger">
+              <p className="text-body-sm">Review your environment configuration and try again.</p>
+            </div>
+          </div>
+        </section>
       </main>
     );
   }
 
   if (!healthData) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-brand-950 text-clay-100">
-        <p className="text-body-lg font-medium">No health data available.</p>
+      <main className="app-shell">
+        <section className="page-container flex-center">
+          <div className="empty-state max-w-content-sm">
+            <div className="stack-sm">
+              <p className="text-heading-sm text-on-surface font-semibold">No health data available.</p>
+              <p className="text-body-sm text-subdued">Try refreshing this page to request a fresh status report.</p>
+            </div>
+          </div>
+        </section>
       </main>
     );
   }
 
   const checks = healthData?.checks ?? {};
   const corsInfo = healthData?.cors;
+  const isHealthy = healthData?.status === 'ok';
 
   const handleEmailFieldChange = (event) => {
     const { name, value } = event.target;
     setEmailForm((prev) => ({ ...prev, [name]: value }));
     if (emailStatus !== EMAIL_STATUS.idle) {
-      setEmailStatus(EMAIL_STATUS.idle);
-      setEmailError('');
-      setEmailMessage('');
+      resetEmailFeedback();
     }
   };
 
@@ -144,90 +169,95 @@ function HomePage() {
     } catch (error) {
       setEmailStatus(EMAIL_STATUS.error);
       const message =
-        error?.response?.data?.message ||
-        error?.message ||
-        'Failed to send test email.';
+        error?.response?.data?.message || error?.message || 'Failed to send test email.';
       setEmailError(message);
     }
   };
 
   const statusBadgeClasses = {
-    up: 'border-success-400/60 bg-success-500/15 text-success-100',
-    down: 'border-danger-400/60 bg-danger-500/15 text-danger-100',
-    skipped: 'border-clay-500/60 bg-clay-500/15 text-clay-100',
+    up: 'badge badge--success',
+    down: 'badge badge--danger',
+    skipped: 'badge badge--neutral',
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-brand-950 p-6 text-clay-100">
-      <section className="w-full max-w-content-readable space-y-18 rounded-3xl border border-brand-800 bg-brand-900/70 p-10 shadow-elevated">
-        <header className="space-y-3">
-          <p className="text-eyebrow uppercase text-accent-300">Udoy API health</p>
-          <h1 className="text-display-lg font-semibold text-clay-50">
-            {healthData?.status === 'ok' ? 'All systems operational' : 'Degraded performance detected'}
-          </h1>
-          <p className="text-body-sm text-clay-200">
-            Last checked {healthData?.timestamp ? new Date(healthData.timestamp).toLocaleString() : 'just now'}
-          </p>
-        </header>
-
-        <div className="grid gap-6 rounded-2xl border border-brand-800 bg-brand-950/60 p-8 sm:grid-cols-2">
-          <div>
-            <p className="text-eyebrow uppercase text-clay-300">Uptime</p>
-            <p className="mt-2 text-heading-lg font-semibold text-clay-50">{formatUptime(healthData?.uptime)}</p>
-          </div>
-          <div>
-            <p className="text-eyebrow uppercase text-clay-300">CORS</p>
-            <p className="mt-2 text-body-sm">
-              {corsInfo?.enabled ? 'Enabled' : 'Disabled'}
-              {corsInfo?.allowedOrigins?.length ? (
-                <span className="block text-body-sm text-clay-300">
-                  Allowed origins: {corsInfo.allowedOrigins.join(', ')}
-                </span>
-              ) : (
-                <span className="block text-body-sm text-clay-300">No origins configured</span>
-              )}
+    <main className="app-shell">
+      <section className="page-container stack-xl">
+        <header className="card hero-gradient shadow-raised border border-neutral-800/60 stack-lg text-balance">
+          <div className="stack-sm">
+            <span className="badge badge--info w-fit">Udoy platform</span>
+            <h1 className="text-display-lg text-on-surface font-semibold">
+              {isHealthy ? 'All systems operational' : 'Degraded performance detected'}
+            </h1>
+            <p className="text-body-sm text-subdued">
+              Last checked {healthData?.timestamp ? new Date(healthData.timestamp).toLocaleString() : 'just now'}
             </p>
           </div>
-        </div>
 
-        <section>
-          <h2 className="text-heading-md font-semibold text-clay-50">Service checks</h2>
-          <ul className="mt-6 space-y-4">
+          <div className="grid-fit-sm">
+            <div className="card card--inset stack-sm">
+              <span className="badge badge--neutral w-fit">Uptime</span>
+              <p className="text-heading-lg text-on-surface font-semibold">{formatUptime(healthData?.uptime)}</p>
+              <p className="text-body-xs text-subdued">Calculated since the most recent server start.</p>
+            </div>
+
+            <div className="card card--inset stack-sm">
+              <span className="badge badge--neutral w-fit">CORS</span>
+              <p className="text-body-base text-on-surface font-medium">
+                {corsInfo?.enabled ? 'Enabled' : 'Disabled'}
+              </p>
+              {corsInfo?.allowedOrigins?.length ? (
+                <p className="text-body-xs text-subdued">
+                  Allowed origins: {corsInfo.allowedOrigins.join(', ')}
+                </p>
+              ) : (
+                <p className="text-body-xs text-subdued">No origins configured</p>
+              )}
+            </div>
+          </div>
+        </header>
+
+        <section className="card card--muted stack-lg">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <h2 className="card__title">Service checks</h2>
+            <span className={isHealthy ? 'badge badge--success' : 'badge badge--warning'}>
+              {isHealthy ? 'Stable' : 'Needs attention'}
+            </span>
+          </div>
+          <ul className="stack-md">
             {Object.entries(checks).map(([name, detail]) => {
               const badgeClass = statusBadgeClasses[detail.status] || statusBadgeClasses.skipped;
               return (
                 <li
                   key={name}
-                  className="flex flex-col gap-3 rounded-2xl border border-brand-800/60 bg-brand-950/50 p-6 sm:flex-row sm:items-center sm:justify-between"
+                  className="card card--inset grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
                 >
-                  <div>
-                    <p className="text-heading-sm font-medium capitalize text-clay-50">{name}</p>
-                    {detail.message && <p className="text-body-sm text-clay-300">{detail.message}</p>}
+                  <div className="stack-sm">
+                    <p className="text-heading-sm text-on-surface font-semibold capitalize">{name}</p>
+                    {detail.message && <p className="text-body-sm text-subdued">{detail.message}</p>}
                     {detail.bucket && (
-                      <p className="text-body-sm text-clay-400">Bucket: {detail.bucket}</p>
+                      <p className="text-body-xs text-subdued">Bucket: {detail.bucket}</p>
                     )}
                   </div>
-                  <span
-                    className={`inline-flex items-center justify-center rounded-full border px-4 py-1.5 text-body-sm font-semibold ${badgeClass}`}
-                  >
-                    {detail.status}
-                  </span>
+                  <span className={badgeClass}>{detail.status}</span>
                 </li>
               );
             })}
           </ul>
         </section>
 
-        <section className="rounded-2xl border border-brand-800/60 bg-brand-950/50 p-6">
-          <h2 className="text-heading-md font-semibold text-clay-50">Send a test email</h2>
-          <p className="mt-2 text-body-sm text-clay-300">
-            Use your SMTP configuration to send either a verification or password reset email.
-          </p>
+        <section className="card card--muted stack-lg">
+          <div className="card__header">
+            <h2 className="card__title">Send a test email</h2>
+            <p className="card__subtitle">
+              Use your SMTP configuration to send either a verification or password reset email.
+            </p>
+          </div>
 
-          <form className="mt-6 space-y-4" onSubmit={handleSendTestEmail}>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <label className="space-y-2 text-body-sm font-medium text-clay-200" htmlFor="email-to">
-                Recipient email
+          <form className="stack-md" onSubmit={handleSendTestEmail}>
+            <div className="form-grid">
+              <label className="field" htmlFor="email-to">
+                <span className="field__label">Recipient email</span>
                 <input
                   id="email-to"
                   name="to"
@@ -235,33 +265,33 @@ function HomePage() {
                   required
                   value={emailForm.to}
                   onChange={handleEmailFieldChange}
-                  className="w-full rounded-xl border border-brand-700/60 bg-brand-900/80 px-4 py-3 text-body-sm text-clay-100 placeholder:text-clay-500 focus:border-accent-400 focus:outline-none focus:ring-2 focus:ring-accent-500/40"
+                  className="input"
                   placeholder="name@example.com"
                 />
               </label>
 
-              <label className="space-y-2 text-body-sm font-medium text-clay-200" htmlFor="email-name">
-                Recipient name (optional)
+              <label className="field" htmlFor="email-name">
+                <span className="field__label">Recipient name (optional)</span>
                 <input
                   id="email-name"
                   name="name"
                   type="text"
                   value={emailForm.name}
                   onChange={handleEmailFieldChange}
-                  className="w-full rounded-xl border border-brand-700/60 bg-brand-900/80 px-4 py-3 text-body-sm text-clay-100 placeholder:text-clay-500 focus:border-accent-400 focus:outline-none focus:ring-2 focus:ring-accent-500/40"
+                  className="input"
                   placeholder="Udoy Tester"
                 />
               </label>
             </div>
 
-            <label className="block space-y-2 text-body-sm font-medium text-clay-200" htmlFor="email-type">
-              Email type
+            <label className="field" htmlFor="email-type">
+              <span className="field__label">Email type</span>
               <select
                 id="email-type"
                 name="type"
                 value={emailForm.type}
                 onChange={handleEmailFieldChange}
-                className="w-full rounded-xl border border-brand-700/60 bg-brand-900/80 px-4 py-3 text-body-sm text-clay-100 focus:border-accent-400 focus:outline-none focus:ring-2 focus:ring-accent-500/40"
+                className="select"
               >
                 <option value="verification">Verification email</option>
                 <option value="passwordReset">Password reset email</option>
@@ -269,27 +299,27 @@ function HomePage() {
             </label>
 
             {emailStatus === EMAIL_STATUS.error && (
-              <p className="rounded-xl border border-danger-500/60 bg-danger-500/10 px-4 py-3 text-body-sm text-danger-100">
-                {emailError}
-              </p>
+              <div className="alert alert--danger">
+                <p className="text-body-sm text-on-surface">{emailError}</p>
+              </div>
             )}
 
             {emailStatus === EMAIL_STATUS.success && (
-              <p className="rounded-xl border border-success-500/60 bg-success-500/10 px-4 py-3 text-body-sm text-success-100">
-                {emailMessage}
-              </p>
+              <div className="alert alert--success">
+                <p className="text-body-sm text-on-surface">{emailMessage}</p>
+              </div>
             )}
 
-            <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center gap-4">
               <button
                 type="submit"
-                className="inline-flex items-center justify-center rounded-xl bg-accent-500 px-5 py-3 text-body-sm font-semibold text-brand-950 transition hover:bg-accent-400 disabled:cursor-not-allowed disabled:opacity-60"
+                className="btn btn--accent"
                 disabled={emailStatus === EMAIL_STATUS.sending}
               >
                 {emailStatus === EMAIL_STATUS.sending ? 'Sending…' : 'Send test email'}
               </button>
               {emailStatus === EMAIL_STATUS.sending && (
-                <span className="text-body-sm text-clay-300">Dispatching email…</span>
+                <span className="text-body-sm text-subdued">Dispatching email…</span>
               )}
             </div>
           </form>

@@ -1,56 +1,200 @@
-# Design Tokens Reference
+# Udoy Central Theme
 
-Udoy uses a centralized Tailwind preset located at `app/shared/theme/tailwind.preset.js`. Every application loads this preset (see `app/client/tailwind.config.js`), so the utility classes described below are available anywhere you author styles.
+The Udoy theme is a shared Tailwind preset (`app/shared/theme/tailwind.preset.js`) that unifies the visual language across the
+learning platform. Every client application imports this preset through Tailwind's [`presets`](https://tailwindcss.com/docs/presets)
+array (see `app/client/tailwind.config.js`). Once added, you can rely on:
 
-## Color palette
+- Consistent design tokens (color, typography, spacing, radius, elevation, transitions, breakpoints).
+- Opinionated base styles for HTML elements so text, tables, and media look uniform.
+- Ready-to-use component classes (`btn`, `card`, `badge`, `alert`, `course-card`, …) for core LMS journeys.
+- Layout utilities (`app-shell`, `page-container`, `stack-md`, `flex-center`, `grid-fit-sm`, …) that encode the product’s rhythm.
 
-| Token | Description | Example usage |
-|-------|-------------|---------------|
-| `brand-*` | Earthy blue foundation for backgrounds, surfaces, and headlines. | `bg-brand-950`, `text-brand-200`, `border-brand-700` |
-| `accent-*` | Warm golden highlight used for keylines, badges, or subtle emphasis. | `text-accent-300`, `bg-accent-500` |
-| `clay-*` | Neutral companion scale for text and subdued surfaces. | `text-clay-200`, `bg-clay-900` |
-| `success-*` | Positive state feedback. | `bg-success-500/15`, `text-success-100` |
-| `warning-*` | Cautionary state feedback. | `border-warning-400`, `text-warning-700` |
-| `danger-*` | Error and destructive actions. | `bg-danger-950`, `text-danger-400` |
+> ✅ **Rule of thumb:** reach for the shared classes first. Only fall back to raw utilities when you are arranging layout, not when
+you are setting core visual attributes.
 
-> ℹ️ Each palette follows Tailwind's `50–950` shade naming convention, so you can pick lighter or darker tones with predictable increments.
+---
 
-## Typography scale
+## 1. Foundations / Design Tokens
 
-| Utility | Purpose | Notes |
-|---------|---------|-------|
-| `text-display-2xl`, `text-display-xl`, `text-display-lg` | Hero and marketing headings. | Pair with `font-semibold` or `font-bold` for additional weight. |
-| `text-heading-xl` → `text-heading-sm` | Application headings. | Ideal for page titles (`xl`/`lg`) and card headings (`md`/`sm`). |
-| `text-body-lg`, `text-body-base`, `text-body-sm` | Primary, base, and secondary body copy. | Already include comfortable line-height (`1.65–1.7`). |
-| `text-eyebrow` | Eyebrow / kicker text. | Automatically applies wide letter-spacing; add `uppercase` where needed. |
+| Token family | Highlights | Example utilities |
+| ------------ | ---------- | ----------------- |
+| `brand-*` | Sapphire primary scale for navigation and key actions. | `bg-brand-500`, `shadow-brand`, `text-brand-200` |
+| `accent-*` | Emerald secondary scale for highlights and positive cues. | `bg-accent-500`, `text-accent`, `border-accent-400` |
+| `neutral-*` | Cool neutrals for typography and surfaces. Alias available as `clay-*` for backward compatibility. | `text-neutral-200`, `border-neutral-800` |
+| `surface.{base, muted, raised, subtle, overlay, inverted}` | Semantic background colors that adapt to depth. | `bg-surface-raised`, `bg-surface-muted`, `text-on-surface` |
+| `info-*`, `success-*`, `warning-*`, `danger-*` | Feedback palettes that drive alerts, badges, and progress. | `badge badge--success`, `alert alert--danger` |
 
-## Spacing scale
+### Typography
 
-Additional spacing tokens provide more granular rhythm between components:
+Custom font stacks power two type layers:
 
-- `4.5` → `1.125rem`
-- `13` → `3.25rem`
-- `18` → `4.5rem`
-- `22` → `5.5rem`
-- `26` → `6.5rem`
-- `30` → `7.5rem`
-- `34` → `8.5rem`
-- `42` → `10.5rem`
-- `108` → `27rem`
+- `font-sans` (default) → `Inter`, `SF Pro Display`, and system fallbacks.
+- `font-display` → `Poppins` for expressive headlines.
+- `font-mono` → `JetBrains Mono` for code/technical readouts.
 
-Use them with standard spacing utilities such as `p-18`, `px-22`, `gap-30`, or `space-y-34`.
+Scales map to semantic utilities:
 
-## Forms plugin
+- Displays: `text-display-3xl` → `text-display-lg` for hero statements.
+- Headings: `text-heading-2xl` → `text-heading-sm` for application sections.
+- Body copy: `text-body-lg`, `text-body-base`, `text-body-sm`, `text-body-xs` for paragraphs, metadata, and captions.
+- Eyebrow: `text-eyebrow` for kicker labels.
 
-The preset registers `@tailwindcss/forms` with `strategy: 'class'`. Add the `form-input`, `form-select`, or `form-textarea` classes to opt into the styled controls while keeping the default utilities untouched.
+### Spacing, Radius, Elevation, Motion
 
-## Practical example
+- Extended spacing tokens (`2.5`, `3.5`, `4.5`, `7.5`, `11`, `13`, `18`, `22`, `26`, `30`, `34`, `42`, `108`).
+- Radii: `border-radius` tokens from `xs` to `3xl` plus `pill` for fully rounded chips.
+- Shadows: `shadow-soft`, `shadow-brand`, `shadow-accent`, `shadow-raised`, `shadow-focus`, `shadow-outline`.
+- Transition helpers: `duration-fast`, `duration-normal`, `duration-slow`, `ease-emphasized`, `ease-entrance`, `ease-exit`.
+- Motion: `animate-pulse-soft`, `animate-slide-up-fade`, `animate-shimmer`, `animate-spin-slow`.
 
-The health dashboard (`app/client/src/features/home/HomePage.jsx`) showcases the new tokens:
+### Breakpoints & Layout Scales
 
-- Layout background: `bg-brand-950`
-- Card surface: `bg-brand-900/70` with `border-brand-800`
-- Eyebrow heading: `text-eyebrow text-accent-300`
-- Status badges: `bg-success-500/15` and `bg-danger-500/15`
+- Screens: `xs (480px)`, `sm`, `md`, `lg`, `xl`, `2xl`.
+- Containers: automatic centering with padded gutters via `container` plus layout helpers `page-container`, `stack-md`, `grid-fit-sm`.
+- Max widths: `max-w-content-sm`, `max-w-content-lg`, `max-w-page`, `max-w-dashboard` keep LMS dashboards readable.
 
-Use this file as a reference when introducing the tokens to new features.
+---
+
+## 2. Base Elements
+
+The preset injects Tailwind `@layer base` styles so HTML defaults feel on-brand:
+
+- Document shell: `html`, `body`, and `.app-shell` enforce the dark sapphire background and typography smoothing.
+- Headings & paragraphs: semantic fonts, weights, and line-height applied automatically.
+- Lists, blockquotes, tables, images, code, and scrollbars receive consistent padding, borders, and colors.
+- Accessibility: `:focus-visible` outlines, reduced-motion fallbacks, and keyboard-friendly states.
+
+Use `appRootClassName` from `app/client/src/shared/theme/layout.js` to wrap each app: it simply returns `"app-shell"`.
+
+---
+
+## 3. UI Components
+
+Component classes live in the preset (`@layer components`). Compose them with utility classes for layout only.
+
+### Buttons
+
+| Class | Purpose |
+| ----- | ------- |
+| `btn` | Base styling (padding, radius, elevation). |
+| `btn--primary` | Primary brand CTA. |
+| `btn--accent` | Secondary positive CTA. |
+| `btn--secondary` | Subtle surface button. |
+| `btn--ghost` | Low-emphasis ghost button. |
+| `btn--danger` | Destructive action. |
+| `btn--icon`, `btn--sm`, `btn--lg` | Size modifiers. |
+
+### Form Elements
+
+- Inputs: `className="input"`, `textarea` via `className="textarea"`, selects via `className="select"`.
+- Labels & messaging: wrap fields with `<label className="field">` and add `field__label`, `field__hint`, `field__error` spans.
+- Layout: `form-grid` auto-wraps controls, `.toggle[data-state="on"]` supports switch UI, and the preset keeps focus rings aligned.
+
+### Feedback & Tags
+
+- Badges: `badge`, `badge--info`, `badge--success`, `badge--warning`, `badge--danger`, `badge--neutral`.
+- Alerts & toasts: `alert` with status modifiers, `toast` for ephemeral notifications.
+- Skeletons & spinners: `skeleton`, `spinner`, `empty-state` for loading/empty feedback.
+
+### Cards & Surfaces
+
+- `card` base plus `card--muted`, `card--brand`, `card--inset`, `card__header`, `card__title`, `card__subtitle`, `card__body`.
+- LMS-specific shells: `course-card`, `lesson-module`, `dashboard-widget`, `certificate-card`, `discussion-thread`.
+- Data display: `table-card`, `progress-bar` + `progress-bar__value`, `timeline`, `calendar-grid`, `accordion`, `rating`.
+
+### Navigation & Layout Helpers
+
+- Top level: `navbar`, `navbar__brand`, `navbar__menu`.
+- Sidebars: `sidebar`, `sidebar__section`, `sidebar__item`, `sidebar__item--active`.
+- Wayfinding: `breadcrumbs`, `tabs` + `tab--active`, `pagination` + `pagination__item`/`--active`.
+- Utilities: `flex-center`, `flex-between`, `grid-fit-sm`, `grid-fit-md`, `grid-fit-lg`, `stack-sm` → `stack-xl`, `page-section`.
+
+### Overlays & Popovers
+
+- Modals: `.modal` + `.modal__panel`.
+- Drawers: `.drawer`.
+- Tooltips & popovers: `.tooltip`, `.tooltip__content`.
+
+---
+
+## 4. LMS Essentials
+
+The preset targets Udoy’s core scenarios:
+
+- Course discovery: `course-card`, `badge`, `progress-bar`, `rating`.
+- Lesson delivery: `lesson-module`, `accordion`, `timeline`, `calendar-grid`.
+- Assessment: `quiz-option`, `quiz-option--correct`, `quiz-option--incorrect`.
+- Learner engagement: `dashboard-widget`, `discussion-thread`, `profile-avatar`, `certificate-card`.
+
+Combine them with foundational utilities to build dashboards, course outlines, quizzes, and discussion threads without re-inventing
+styles.
+
+---
+
+## 5. Using the Theme in a Client App
+
+1. **Consume the preset** in `tailwind.config.js`:
+   ```js
+   const sharedPreset = require('../shared/theme/tailwind.preset');
+
+   module.exports = {
+     presets: [sharedPreset],
+     content: ['./index.html', './src/**/*.{js,jsx}'],
+   };
+   ```
+2. **Wrap your root** component with the shared layout class:
+   ```jsx
+   import { appRootClassName } from './shared/theme/layout';
+
+   export default function App() {
+     return <div className={appRootClassName}>{/* routes */}</div>;
+   }
+   ```
+3. **Compose UI** using the shared classes. Example card with CTA:
+   ```jsx
+   <article className="card stack-md">
+     <header className="card__header">
+       <span className="badge badge--info">New lesson</span>
+       <h2 className="card__title">Design Systems 101</h2>
+       <p className="card__subtitle">15 lessons • Updated yesterday</p>
+     </header>
+     <div className="progress-bar">
+       <div className="progress-bar__value" style={{ width: '60%' }} />
+     </div>
+     <div className="flex flex-wrap gap-3">
+       <button className="btn btn--primary">Continue learning</button>
+       <button className="btn btn--ghost">View syllabus</button>
+     </div>
+   </article>
+   ```
+
+4. **Add feature-specific layout** with utilities (`grid-fit-sm`, `stack-lg`, `flex-between`) while letting components handle
+   typography, colors, states, and depth.
+
+---
+
+## 6. Theme Documentation & Visual Regression
+
+A living HTML sample (`app/shared/theme/theme-preview.html`) demonstrates every token and component in one place. Regenerate or open
+it locally to validate new additions:
+
+```bash
+# from repository root
+npx tailwindcss -c app/client/tailwind.config.js -i app/client/src/index.css \
+  -o app/shared/theme/theme-preview.css --content app/shared/theme/theme-preview.html
+```
+
+Open `theme-preview.html` in a browser (optionally include the generated CSS file) to review typography, components, and LMS
+patterns side-by-side.
+
+---
+
+## 7. Changelog Expectations
+
+Whenever the preset changes:
+
+1. Update this README with any new tokens or components.
+2. Regenerate or tweak `theme-preview.html` so designers can visually inspect updates.
+3. Note the change in `CHANGELOG.md` with an IST timestamp (see repository root instructions).
+
+Following this flow keeps Udoy’s learning experience coherent while allowing rapid feature delivery.

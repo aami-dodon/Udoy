@@ -1,5 +1,11 @@
 # Changelog
 
+## 2025-10-20 01:43 IST
+- Rebuilt the shared Tailwind preset with expanded design tokens, base resets, component classes, LMS patterns, and layout utilities for the centralized Udoy theme.
+- Updated the client health dashboard and root layout to rely on the new theme primitives (`app-shell`, `card`, `badge`, `btn`, `field`, and `alert` classes).
+- Documented usage in the theme README and added `theme-preview.html` so designers can review the token and component catalogue.
+
+
 ## 2025-10-21 18:30 IST
 - Secured the `/api/email/test` endpoint with JWT authentication and Casbin enforcement using the new `email:test` resource mapping HTTP verbs to RBAC actions.
 - Granted the admin role permission to invoke the email testing endpoint and documented the requirement in the Casbin policy file.
