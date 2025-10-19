@@ -7,9 +7,11 @@
 - **Notation:** All timestamps use ISO-8601 format in UTC.
 
 ## Endpoint Summary
-| Method | Path         | Description                                             | Auth |
-| ------ | ------------ | ------------------------------------------------------- | ---- |
-| GET    | /api/health  | Returns service health, uptime, and dependency status. | No   |
+| Method | Path             | Description                                             | Auth |
+| ------ | ---------------- | ------------------------------------------------------- | ---- |
+| GET    | /api/health      | Returns service health, uptime, and dependency status. | No   |
+| POST   | /api/auth/login  | Placeholder login endpoint.                            | No   |
+| POST   | /api/auth/refresh| Placeholder refresh endpoint requiring a valid token.  | Yes  |
 
 ## Endpoints
 
@@ -72,3 +74,58 @@ Accept: application/json
 **Notes:**
 - `uptime` is expressed in seconds.
 - Any failing dependency appears under `checks` with a descriptive `message`.
+
+### POST /api/auth/login
+**Description:** Placeholder endpoint for initiating a session. Returns a static success payload until authentication is implemented.
+
+**Authentication:** Not required.
+
+**Headers:**
+- `Content-Type: application/json`
+- `Accept: application/json`
+
+**Body:** TBD (implementation pending).
+
+**Sample Response — 200 OK**
+```json
+{
+  "status": "success",
+  "message": "Login endpoint placeholder"
+}
+```
+
+**Notes:**
+- The real implementation should validate credentials, issue tokens, and set the appropriate cookies.
+
+### POST /api/auth/refresh
+**Description:** Placeholder endpoint that demonstrates JWT validation via the `authenticate` middleware. Responds with the decoded user payload when a valid token is supplied.
+
+**Authentication:** Required. Accepts an access token via `Authorization: Bearer <token>` or a refresh token via the `x-refresh-token` header/corresponding cookies.
+
+**Headers:**
+- `Accept: application/json`
+- `Authorization: Bearer <token>` *(optional if a refresh token cookie/header is provided)*
+- `x-refresh-token: <token>` *(optional alternative to cookies)*
+
+**Sample Response — 200 OK**
+```json
+{
+  "status": "success",
+  "message": "Refresh endpoint placeholder",
+  "user": {
+    "id": "user-id",
+    "email": "user@example.com"
+  }
+}
+```
+
+**Error Response — 401 Unauthorized**
+```json
+{
+  "status": "error",
+  "message": "Unauthorized"
+}
+```
+
+**Notes:**
+- The middleware attempts to validate access tokens first, then refresh tokens. Future implementations can use the attached `req.user` and `req.auth` context to issue new tokens.
