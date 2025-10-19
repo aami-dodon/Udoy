@@ -1,11 +1,8 @@
-import { Router } from 'express';
-import prisma from '../utils/prismaClient.js';
-import env from '../config/env.js';
-import minioClient from '../utils/minioClient.js';
+import prisma from '../../utils/prismaClient.js';
+import env from '../../config/env.js';
+import minioClient from '../../integrations/minioClient.js';
 
-const router = Router();
-
-router.get('/health', async (req, res) => {
+export async function getHealthStatus(req, res) {
   const checks = {};
   let isHealthy = true;
 
@@ -69,6 +66,4 @@ router.get('/health', async (req, res) => {
   };
 
   res.status(isHealthy ? 200 : 503).json(responsePayload);
-});
-
-export default router;
+}

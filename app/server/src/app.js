@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import registerRoutes from './routes/index.js';
+import registerModules from './modules/index.js';
 import env from './config/env.js';
 import errorHandler from './middlewares/errorHandler.js';
 import logger from './utils/logger.js';
@@ -28,7 +28,7 @@ function createApp() {
     })
   );
 
-  registerRoutes(app, env.apiPrefix);
+  registerModules(app, env.apiPrefix);
 
   app.get('/', (req, res) => {
     res.json({ status: 'ok', message: 'Udoy server is running' });
