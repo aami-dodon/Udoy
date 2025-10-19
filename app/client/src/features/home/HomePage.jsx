@@ -59,18 +59,18 @@ function HomePage() {
 
   if (status === STATUS.loading || status === STATUS.idle) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-slate-950 text-slate-100">
-        <p className="text-lg font-medium">Checking service health…</p>
+      <main className="flex min-h-screen items-center justify-center bg-brand-950 text-clay-100">
+        <p className="text-body-lg font-medium">Checking service health…</p>
       </main>
     );
   }
 
   if (status === STATUS.error) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-rose-950 text-rose-100">
+      <main className="flex min-h-screen items-center justify-center bg-danger-950 text-danger-100">
         <div className="space-y-2 text-center">
-          <p className="text-xl font-semibold">Service unavailable</p>
-          <p className="text-sm opacity-80">{errorMessage}</p>
+          <p className="text-heading-md font-semibold">Service unavailable</p>
+          <p className="text-body-sm text-danger-200/80">{errorMessage}</p>
         </div>
       </main>
     );
@@ -78,8 +78,8 @@ function HomePage() {
 
   if (!healthData) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-slate-950 text-slate-100">
-        <p className="text-lg font-medium">No health data available.</p>
+      <main className="flex min-h-screen items-center justify-center bg-brand-950 text-clay-100">
+        <p className="text-body-lg font-medium">No health data available.</p>
       </main>
     );
   }
@@ -88,59 +88,64 @@ function HomePage() {
   const corsInfo = healthData?.cors;
 
   const statusBadgeClasses = {
-    up: 'border-emerald-400/60 bg-emerald-500/15 text-emerald-200',
-    down: 'border-rose-400/60 bg-rose-500/15 text-rose-200',
-    skipped: 'border-slate-500/60 bg-slate-500/15 text-slate-200',
+    up: 'border-success-400/60 bg-success-500/15 text-success-100',
+    down: 'border-danger-400/60 bg-danger-500/15 text-danger-100',
+    skipped: 'border-clay-500/60 bg-clay-500/15 text-clay-100',
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-950 p-6 text-slate-100">
-      <section className="w-full max-w-3xl space-y-6 rounded-2xl border border-slate-800 bg-slate-900/70 p-8 shadow-xl shadow-black/30">
-        <header className="space-y-2">
-          <p className="text-sm uppercase tracking-[0.3em] text-slate-400">Udoy API health</p>
-          <h1 className="text-3xl font-semibold">
+    <main className="flex min-h-screen items-center justify-center bg-brand-950 p-6 text-clay-100">
+      <section className="w-full max-w-content-readable space-y-18 rounded-3xl border border-brand-800 bg-brand-900/70 p-10 shadow-elevated">
+        <header className="space-y-3">
+          <p className="text-eyebrow uppercase text-accent-300">Udoy API health</p>
+          <h1 className="text-display-lg font-semibold text-clay-50">
             {healthData?.status === 'ok' ? 'All systems operational' : 'Degraded performance detected'}
           </h1>
-          <p className="text-sm text-slate-400">
+          <p className="text-body-sm text-clay-200">
             Last checked {healthData?.timestamp ? new Date(healthData.timestamp).toLocaleString() : 'just now'}
           </p>
         </header>
 
-        <div className="grid gap-4 rounded-xl border border-slate-800 bg-slate-950/40 p-6 sm:grid-cols-2">
+        <div className="grid gap-6 rounded-2xl border border-brand-800 bg-brand-950/60 p-8 sm:grid-cols-2">
           <div>
-            <p className="text-xs uppercase tracking-wide text-slate-400">Uptime</p>
-            <p className="mt-1 text-xl font-semibold">{formatUptime(healthData?.uptime)}</p>
+            <p className="text-eyebrow uppercase text-clay-300">Uptime</p>
+            <p className="mt-2 text-heading-lg font-semibold text-clay-50">{formatUptime(healthData?.uptime)}</p>
           </div>
           <div>
-            <p className="text-xs uppercase tracking-wide text-slate-400">CORS</p>
-            <p className="mt-1 text-sm">
+            <p className="text-eyebrow uppercase text-clay-300">CORS</p>
+            <p className="mt-2 text-body-sm">
               {corsInfo?.enabled ? 'Enabled' : 'Disabled'}
               {corsInfo?.allowedOrigins?.length ? (
-                <span className="block text-xs text-slate-400">
+                <span className="block text-body-sm text-clay-300">
                   Allowed origins: {corsInfo.allowedOrigins.join(', ')}
                 </span>
               ) : (
-                <span className="block text-xs text-slate-400">No origins configured</span>
+                <span className="block text-body-sm text-clay-300">No origins configured</span>
               )}
             </p>
           </div>
         </div>
 
         <section>
-          <h2 className="text-lg font-semibold text-slate-200">Service checks</h2>
-          <ul className="mt-4 space-y-3">
+          <h2 className="text-heading-md font-semibold text-clay-50">Service checks</h2>
+          <ul className="mt-6 space-y-4">
             {Object.entries(checks).map(([name, detail]) => {
               const badgeClass = statusBadgeClasses[detail.status] || statusBadgeClasses.skipped;
               return (
-                <li key={name} className="flex flex-col gap-2 rounded-xl border border-slate-800 bg-slate-950/40 p-4 sm:flex-row sm:items-center sm:justify-between">
+                <li
+                  key={name}
+                  className="flex flex-col gap-3 rounded-2xl border border-brand-800/60 bg-brand-950/50 p-6 sm:flex-row sm:items-center sm:justify-between"
+                >
                   <div>
-                    <p className="text-base font-medium capitalize">{name}</p>
-                    {detail.message && <p className="text-sm text-slate-400">{detail.message}</p>}
+                    <p className="text-heading-sm font-medium capitalize text-clay-50">{name}</p>
+                    {detail.message && <p className="text-body-sm text-clay-300">{detail.message}</p>}
                     {detail.bucket && (
-                      <p className="text-xs text-slate-500">Bucket: {detail.bucket}</p>
+                      <p className="text-body-sm text-clay-400">Bucket: {detail.bucket}</p>
                     )}
                   </div>
-                  <span className={`inline-flex items-center justify-center rounded-full border px-3 py-1 text-sm font-medium ${badgeClass}`}>
+                  <span
+                    className={`inline-flex items-center justify-center rounded-full border px-4 py-1.5 text-body-sm font-semibold ${badgeClass}`}
+                  >
                     {detail.status}
                   </span>
                 </li>
