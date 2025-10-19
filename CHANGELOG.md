@@ -1,5 +1,10 @@
 # Changelog
 
+## 2025-10-24 14:45 IST
+- Implemented branded 403, 404, 500, and generic error experiences that follow the shared Udoy theme and link users back to the home dashboard.
+- Added a reusable client error boundary that captures unexpected React render failures and surfaces the generic fallback with a retry control.
+- Registered the new error routes in the SPA manifest so navigation and documentation stay aligned.
+
 ## 2025-10-20 02:34 IST
 - Added a shared `data-table` component in the Tailwind preset with edit, modify, and delete action styles for consistent inline controls.
 - Updated the theme showcase page to demonstrate the new table along with usage tokens.
