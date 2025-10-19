@@ -1,5 +1,10 @@
 # Changelog
 
+## 2025-10-19 17:49 IST
+- Added a Nodemailer transporter integration configured via central environment settings with Winston error logging.
+- Built an email service with templated verification and password reset helpers plus a test endpoint for triggering sends.
+- Updated the client home dashboard with a form to send test emails and documented the new API.
+
 ## 2025-10-19 17:24 IST
 - Added Casbin with a file-backed policy and enforcer singleton under `server/src/integrations/casbin/`.
 - Created authorization middleware and an admin overview route gated by JWT + Casbin checks.
