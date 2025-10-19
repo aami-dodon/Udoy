@@ -3,7 +3,7 @@
 These guidelines apply to **all contributors and agents** working on the project.  
 Follow them strictly to maintain **quality**, **consistency**, **security**, and **scalability** across all environments.
 
-The .env.local file is already set up with a working public database, SMTP, and other configs, so you can run the project and test without extra setup. If you ever change any environment variables (like credentials), make sure to update both .env.local (for your local testing) and .env.example (so others know what’s needed). 
+TL;DR: The .env.local file is preconfigured with working public database, SMTP, and other settings, so you can run and test the project without extra setup. If you change any environment variables, update both .env.local (for your local tests) and .env.example (as a template for others). After making changes, atest with .env.local as and when required to ensure everything works and no errors occur.
 
 ---
 
