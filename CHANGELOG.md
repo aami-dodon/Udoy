@@ -1,5 +1,8 @@
 # Changelog
 
+## 2025-10-19 08:11 IST
+- Realigned the server code to use module-based routing and dedicated integrations, and added project scaffolding directories to match the prescribed structure guidelines.
+
 ## 2025-10-19 05:39 IST
 - Initialized project structure with client (React + Vite) and server (Express) applications.
 - Added environment template, Docker configuration, and baseline documentation.

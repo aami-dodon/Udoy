@@ -1,6 +1,6 @@
 import { Client } from 'minio';
 import env from '../config/env.js';
-import logger from './logger.js';
+import logger from '../utils/logger.js';
 
 let minioClient = null;
 
