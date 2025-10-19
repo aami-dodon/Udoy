@@ -12,7 +12,7 @@ function ErrorState({ statusCode, title, description, badgeTone, actions, childr
   const badgeClass = badgeTone ? `badge badge--${badgeTone}` : 'badge badge--neutral';
 
   return (
-    <main className="app-shell">
+    <main className="page-shell page-shell--center">
       <section className="page-container flex-center">
         <div className="card card--muted stack-lg max-w-content-sm text-center text-balance">
           <div className="stack-sm">

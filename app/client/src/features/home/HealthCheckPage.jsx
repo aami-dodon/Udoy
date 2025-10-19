@@ -86,7 +86,7 @@ function HealthCheckPage() {
 
   if (status === STATUS.loading || status === STATUS.idle) {
     return (
-      <main className="app-shell">
+      <main className="page-shell page-shell--center">
         <section className="page-container flex-center">
           <div className="empty-state max-w-content-sm">
             <div className="spinner" aria-hidden="true" />
@@ -102,7 +102,7 @@ function HealthCheckPage() {
 
   if (status === STATUS.error) {
     return (
-      <main className="app-shell">
+      <main className="page-shell page-shell--center">
         <section className="page-container flex-center">
           <div className="card card--brand stack-md max-w-content-sm text-balance">
             <h1 className="text-heading-lg text-on-surface font-semibold">Service unavailable</h1>
@@ -118,7 +118,7 @@ function HealthCheckPage() {
 
   if (!healthData) {
     return (
-      <main className="app-shell">
+      <main className="page-shell page-shell--center">
         <section className="page-container flex-center">
           <div className="empty-state max-w-content-sm">
             <div className="stack-sm">
@@ -181,7 +181,7 @@ function HealthCheckPage() {
   };
 
   return (
-    <main className="app-shell">
+    <main className="page-shell">
       <section className="page-container stack-xl">
         <header className="card hero-gradient shadow-raised border border-neutral-800/60 stack-lg text-balance">
           <div className="stack-sm">
