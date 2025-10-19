@@ -1,0 +1,32 @@
+version: '3.9'
+
+services:
+  server:
+    build:
+      context: ./app/server
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+    ports:
+      - "6005:6005"
+    restart: unless-stopped
+
+  client:
+    build:
+      context: ./app/client
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      VITE_API_URL: ${VITE_API_URL:-http://server:6005/api}
+      CLIENT_PORT: ${CLIENT_PORT:-6004}
+    depends_on:
+      - server
+    ports:
+      - "6004:6004"
+    restart: unless-stopped
+
+networks:
+  default:
+    name: udoy-network
