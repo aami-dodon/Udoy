@@ -1,3 +1,6 @@
+## 2025-10-30 09:05 IST
+- Copied the shared shadcn component library into the client Docker image so the `@components/ui` alias resolves during dev-server builds inside containers.
+
 ## 2025-10-30 08:45 IST
 - Restored the client Vite dev server root to the allow list so `/index.html` loads without triggering 403 errors during local development.
 
