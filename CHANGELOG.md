@@ -1,3 +1,7 @@
+## 2025-10-21 00:30 IST
+- Introduced end-to-end test tooling: Vitest with Testing Library on the client and Jest with Supertest on the server, covering home page rendering, routing fallbacks, and API bootstrapping scenarios.
+- Added health controller unit tests that simulate dependency outages to lock in the service diagnostics contract.
+
 ## 2025-10-20 18:54 IST
 - Enlarged the hero login and sign-up CTAs to match the sponsor button footprint and introduced an accent button variant using the ecru palette for sign-up emphasis.
 
