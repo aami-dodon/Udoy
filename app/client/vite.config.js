@@ -5,7 +5,7 @@ import path from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const sharedComponentsPath = path.resolve(__dirname, '../components');
+const sharedComponentsPath = path.resolve(__dirname, '../shared/components');
 const sharedUiEntryPath = path.resolve(sharedComponentsPath, 'ui/index.js');
 
 export default defineConfig(({ mode }) => {
