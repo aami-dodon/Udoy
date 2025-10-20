@@ -1,3 +1,6 @@
+## 2025-11-02 10:15 IST
+- Bootstrapped a default admin account during server startup using environment-provided identifiers, ensuring the admin role is always provisioned.
+
 ## 2025-11-01 09:45 IST
 - Added a shared `@icons` Vite alias and refreshed feature pages to consume the centralized Lucide exports without brittle relative paths.
 ## 2025-10-31 12:45 IST
