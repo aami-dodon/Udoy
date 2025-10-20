@@ -21,7 +21,7 @@ Follow them strictly to maintain **quality**, **consistency**, **security**, and
 | React Router DOM         | Client-side routing for single-page application (SPA) navigation.                          |
 | Axios                    | HTTP client for communication between frontend and backend.                                |
 | Node.js                  | Server runtime environment.                                                                |
-| TailwindCSS + shadcn/ui  | Utility-first CSS framework + prebuilt, accessible React component library with Tailwind-based design system. |
+| TailwindCSS + shadcn     | Utility-first CSS framework + prebuilt, accessible React component library with Tailwind-based design system. |
 | Lucide React Icons       | Modern icon library used with shadcn/ui components (replacing Heroicons).                  |
 | Tiptap Editor            | Headless WYSIWYG editor with React integration and theme control. Extended with custom video support for **direct uploads to MinIO** (used for all media: video, images, docs). |
 | Prisma ORM               | Schema and database management for Postgres.                                               |
