@@ -1,4 +1,4 @@
-import * as tokens from './tokens.js';
+import tokens, { colors, layout, motion, shadows, typography } from './tokens.js';
 
 export default tokens;
-export const { colors, typography, layout, shadows, motion } = tokens;
+export { colors, typography, layout, shadows, motion };

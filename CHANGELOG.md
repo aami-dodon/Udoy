@@ -1,4 +1,8 @@
 ## 2025-10-30 12:45 IST
+## 2025-10-20 06:44 IST
+- Converted the shared `tokens.js` design token catalog to support both ES modules and CommonJS, preventing the `module is not defined` runtime in the client while keeping Tailwind consumption working.
+- Updated the `.mjs` re-export to consume the new hybrid module so React pages can continue to import named token sets without changes.
+
 - Centralized the LMS yellow/grey/red palette inside the shared Tailwind tokens and mapped the values to shadcn CSS variables for light and dark modes.
 - Refined button, card, and form primitives so hover, focus, and disabled states rely exclusively on the new brand tokens.
 - Introduced the `/theme` design reference route that documents colors, typography, components, layout primitives, interactions, and Heroicons in both themes.
