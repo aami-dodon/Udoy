@@ -106,7 +106,7 @@ const faqs = [
 
 function RoleCard({ role }) {
   return (
-    <Card className="h-full">
+    <Card className="h-full transition-none hover:translate-y-0 hover:shadow-gentle">
       <CardHeader>
         <div className="flex items-center gap-3">
           <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-spotlight-gradient">
@@ -135,7 +135,21 @@ const HomePage = () => {
           <div className="absolute -left-16 top-32 h-72 w-72 rounded-full bg-ecru blur-3xl" />
           <div className="absolute bottom-20 right-10 h-80 w-80 rounded-full bg-mint-sage/50 blur-3xl" />
         </div>
-        <div className="container relative z-10 grid gap-12 py-24 md:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] md:items-center">
+        <header className="container relative z-10 flex items-center justify-between py-8">
+          <div>
+            <p className="font-display text-2xl font-semibold text-white">Udoy</p>
+            <p className="text-sm uppercase tracking-widest text-white/70">Emerge, Rise, Thrive</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
+              Log in
+            </Button>
+            <Button size="sm" className="bg-white text-black-olive hover:bg-porcelain">
+              Sign up
+            </Button>
+          </div>
+        </header>
+        <div className="container relative z-10 grid gap-12 pb-24 pt-10 md:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] md:items-center">
           <div className="space-y-8">
             <Badge variant="accent" className="text-sm font-medium text-black-olive">
               Where potential meets opportunity
@@ -172,7 +186,7 @@ const HomePage = () => {
             </div>
           </div>
           <div className="relative">
-            <div className="surface-card animate-float border-0 bg-white/10 p-10 text-white shadow-2xl backdrop-blur">
+            <div className="surface-card border-0 bg-white/10 p-10 text-white shadow-2xl backdrop-blur">
               <h2 className="font-display text-2xl text-white">The Udoy Flywheel</h2>
               <Separator className="my-6 bg-white/30" />
               <ol className="space-y-4 text-sm text-white/80">
@@ -237,8 +251,8 @@ const HomePage = () => {
               </div>
               <Separator />
               <blockquote className="text-base italic text-neutral-700">
-                “Udoy gave our students the confidence to design their own future. The mentorship loop keeps them inspired long
-                after graduation.”
+                “Udoy potentially can give students the confidence to design their own future. The mentorship loop keeps them
+                inspired long after graduation.”
               </blockquote>
               <p className="text-sm font-medium text-evergreen">Ananya Rao · Academic Partner, Bengaluru</p>
             </div>
@@ -388,7 +402,7 @@ const HomePage = () => {
             </div>
             <div className="space-y-6 text-sm text-white/70">
               <div>
-                <h4 className="text-white">Stay in the loop</h4>
+                <h4 className="font-display text-2xl font-semibold text-white">Stay in the loop</h4>
                 <p className="mt-2">Monthly updates with wins, stories, and open cohorts.</p>
               </div>
               <div className="flex flex-col gap-3">
