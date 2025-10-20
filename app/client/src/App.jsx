@@ -1,10 +1,15 @@
+import { Suspense } from 'react';
 import { useRoutes } from 'react-router-dom';
-import routes from './routes.jsx';
+import routes from './routes.js';
+
 function App() {
   const element = useRoutes(routes);
+
   return (
     <div className="app-shell">
-      <div className="app-shell__content">{element}</div>
+      <Suspense fallback={<div className="app-shell__loading">Loading...</div>}>
+        <div className="app-shell__content">{element}</div>
+      </Suspense>
     </div>
   );
 }
