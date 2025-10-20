@@ -1,3 +1,6 @@
+## 2025-10-31 12:45 IST
+- Audited the React router manifest and expanded `ROUTES.md` with access guards so every implemented SPA path is documented from the live configuration.
+
 ## 2025-10-31 12:10 IST
 - Verified `API-SPECS.md` against the Express module registrations to confirm there are no undocumented or missing endpoints.
 
