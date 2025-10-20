@@ -1,3 +1,7 @@
+## 2025-11-02 10:45 IST
+- Required a `DEFAULT_ADMIN_PASSWORD` environment setting and hash it during startup so the seeded admin can sign in securely.
+- Documented the new configuration knob alongside the default admin identifiers in the environment templates.
+
 ## 2025-11-02 10:15 IST
 - Bootstrapped a default admin account during server startup using environment-provided identifiers, ensuring the admin role is always provisioned.
 
@@ -188,6 +192,9 @@
 - Updated the registration date picker to use the shadcn dropdown calendar interaction and close the popover when a date is chosen.
 - Synced the date picker trigger styling with the shared calendar UI so the button spans the field width and matches shadcn defaults.
 
+## 2025-10-21 12:30 IST
+- Simplified the default admin bootstrap to rely on email-only upserts and removed the `DEFAULT_ADMIN_USER_ID` variable.
+- Hardcoded the seeded admin's profile details to "Super" and "Admin" so the account has consistent display information.
 ## 2025-10-21 04:25 IST
 - Shortened the register date of birth helper text copy for clarity and tighter layout.
 - Removed the extra flex wrapper from the register date picker so its label/input aligns with neighboring fields.
