@@ -11,6 +11,18 @@ import { cn } from '@/lib/utils';
 import { buildApiUrl } from '@/lib/api';
 
 const HEALTH_ENDPOINT = buildApiUrl('/health');
+const EMAIL_TEST_ENDPOINT = buildApiUrl('/email/test');
+
+const DEFAULT_EMAIL_TEST_PAYLOAD = {
+  to: 'test@example.com',
+  type: 'verification',
+  name: 'Udoy Tester',
+  template: '',
+  textTemplate: '',
+  variables: {
+    organization: 'Udoy',
+  },
+};
 
 const STATUS_VARIANTS = {
   ok: 'bg-success-100 text-success-700 ring-1 ring-inset ring-success-200',
@@ -88,6 +100,9 @@ function HealthPage() {
   const [health, setHealth] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [emailTestResult, setEmailTestResult] = useState(null);
+  const [emailTestError, setEmailTestError] = useState(null);
+  const [isEmailTestLoading, setIsEmailTestLoading] = useState(false);
   const isMountedRef = useRef(false);
 
   const loadHealth = useCallback(async () => {
@@ -123,6 +138,55 @@ function HealthPage() {
     } finally {
       if (isMountedRef.current) {
         setIsLoading(false);
+      }
+    }
+  }, []);
+
+  const sendEmailTest = useCallback(async () => {
+    if (isMountedRef.current) {
+      setIsEmailTestLoading(true);
+      setEmailTestError(null);
+    }
+
+    try {
+      const response = await fetch(EMAIL_TEST_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(DEFAULT_EMAIL_TEST_PAYLOAD),
+      });
+
+      let payload = null;
+
+      try {
+        payload = await response.json();
+      } catch (parseError) {
+        throw new Error(`Unable to parse email test response (status ${response.status})`);
+      }
+
+      if (!response.ok) {
+        const message =
+          typeof payload?.message === 'string' && payload.message.trim().length > 0
+            ? payload.message
+            : `Email test failed with status ${response.status}`;
+
+        throw new Error(message);
+      }
+
+      if (isMountedRef.current) {
+        setEmailTestResult(payload);
+        setEmailTestError(null);
+      }
+    } catch (requestError) {
+      if (!isMountedRef.current) return;
+
+      setEmailTestError(requestError?.message || 'Failed to send test email.');
+      setEmailTestResult(null);
+    } finally {
+      if (isMountedRef.current) {
+        setIsEmailTestLoading(false);
       }
     }
   }, []);
@@ -272,6 +336,45 @@ function HealthPage() {
                 </CardContent>
               </Card>
             ) : null}
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Transactional email test</CardTitle>
+                <CardDescription>
+                  Trigger the /api/email/test endpoint to verify template rendering and delivery configuration.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex flex-col gap-2">
+                  <span className="text-body-xs uppercase tracking-[0.2em] text-muted-foreground">Endpoint</span>
+                  <span className="text-body-sm text-foreground">{EMAIL_TEST_ENDPOINT}</span>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <span className="text-body-xs uppercase tracking-[0.2em] text-muted-foreground">Request payload</span>
+                  <pre className="max-h-60 overflow-auto rounded-lg border border-border/60 bg-surface-subtle px-4 py-3 text-left text-[13px] leading-relaxed text-foreground/90">
+                    {JSON.stringify(DEFAULT_EMAIL_TEST_PAYLOAD, null, 2)}
+                  </pre>
+                </div>
+                <div className="flex flex-col gap-3">
+                  <Button onClick={sendEmailTest} disabled={isEmailTestLoading}>
+                    {isEmailTestLoading ? 'Sending…' : 'Send test email'}
+                  </Button>
+                  {emailTestError ? (
+                    <div className="rounded-lg border border-danger-200 bg-danger-50 px-4 py-3 text-body-sm text-danger-700">
+                      {emailTestError}
+                    </div>
+                  ) : null}
+                  {emailTestResult ? (
+                    <div className="space-y-2">
+                      <span className="text-body-xs uppercase tracking-[0.2em] text-muted-foreground">Response</span>
+                      <pre className="max-h-60 overflow-auto rounded-lg border border-border/60 bg-surface-subtle px-4 py-3 text-left text-[13px] leading-relaxed text-foreground/90">
+                        {JSON.stringify(emailTestResult, null, 2)}
+                      </pre>
+                    </div>
+                  ) : null}
+                </div>
+              </CardContent>
+            </Card>
           </>
         )}
 
