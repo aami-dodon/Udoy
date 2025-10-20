@@ -321,7 +321,7 @@ const ThemePage = () => {
                   </div>
                   <div className="flex flex-col gap-3 rounded-2xl border border-info-200 bg-info-50/80 p-5">
                     <div className="flex items-center gap-2 text-info-700">
-                      <Info className="h-5 w-5" aria-hidden />
+                      <Icon name="Info" className="h-5 w-5" aria-hidden />
                       <span className="text-body-sm font-semibold">Tooltip preview</span>
                     </div>
                     <div className="inline-flex items-center gap-2">
@@ -335,7 +335,7 @@ const ThemePage = () => {
                   </div>
                   <div className="grid gap-3 rounded-2xl border border-danger-200 bg-danger-50/80 p-5">
                     <div className="flex items-center gap-2 text-danger-700">
-                      <AlertCircle className="h-5 w-5" aria-hidden />
+                      <Icon name="AlertCircle" className="h-5 w-5" aria-hidden />
                       <span className="text-body-sm font-semibold">Alert</span>
                     </div>
                     <p className="text-body-sm text-muted-foreground">
@@ -360,7 +360,7 @@ const ThemePage = () => {
                   </div>
                   <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-5 shadow-raised">
                     <div className="flex items-center gap-3 text-success-600">
-                      <CheckCircle className="h-5 w-5" aria-hidden />
+                      <Icon name="CheckCircle" className="h-5 w-5" aria-hidden />
                       <span className="text-body-sm font-semibold text-foreground">Toast notification</span>
                     </div>
                     <p className="text-body-sm text-muted-foreground">
