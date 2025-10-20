@@ -1,33 +1,32 @@
 import { useEffect, useRef, useState } from 'react';
 import {
-  ArrowLeftIcon,
-  ArrowPathIcon,
-  ArrowRightIcon,
-  Bars3Icon,
-  BellIcon,
-  BookOpenIcon,
-  ChartBarIcon,
-  ChatBubbleLeftRightIcon,
-  CheckCircleIcon,
-  CheckIcon,
-  ClockIcon,
-  Cog6ToothIcon,
-  DocumentTextIcon,
-  EllipsisHorizontalIcon,
-  ExclamationCircleIcon,
-  ExclamationTriangleIcon,
-  HomeIcon,
-  InformationCircleIcon,
-  MagnifyingGlassIcon,
-  PencilSquareIcon,
-  PlayIcon,
-  PlusIcon,
-  TrashIcon,
-  UserIcon,
-  UsersIcon,
-  XCircleIcon,
-  XMarkIcon,
-} from '@heroicons/react/24/outline';
+  AlertCircle,
+  AlertTriangle,
+  ArrowLeft,
+  ArrowRight,
+  BarChart3,
+  Bell,
+  BookOpen,
+  CheckCircle,
+  Clock3,
+  FileText,
+  Home,
+  Info,
+  Menu,
+  MessagesSquare,
+  MoreHorizontal,
+  Play,
+  Plus,
+  RefreshCw,
+  Search,
+  Settings,
+  SquarePen,
+  Trash2,
+  User,
+  Users,
+  X,
+  XCircle,
+} from 'lucide-react';
 import { colors, layout, motion, typography } from '../../../../shared/theme/tokens.mjs';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -59,7 +58,7 @@ const SpacingBar = ({ token, value }) => (
 const IconTile = ({ Icon, name }) => (
   <div className="flex flex-col items-center gap-3 rounded-xl border border-border bg-card p-4 shadow-soft">
     <div className="flex h-14 w-14 items-center justify-center rounded-full bg-secondary text-foreground">
-      <Icon className="h-7 w-7" aria-hidden />
+      <Icon className="h-7 w-7" aria-hidden strokeWidth={1.5} />
     </div>
     <span className="text-body-xs font-medium text-muted-foreground">{name}</span>
   </div>
@@ -79,48 +78,48 @@ const iconGroups = [
   {
     label: 'Navigation',
     items: [
-      { name: 'home', Icon: HomeIcon },
-      { name: 'user', Icon: UserIcon },
-      { name: 'users', Icon: UsersIcon },
-      { name: 'cog-6-tooth', Icon: Cog6ToothIcon },
-      { name: 'bell', Icon: BellIcon },
-      { name: 'magnifying-glass', Icon: MagnifyingGlassIcon },
-      { name: 'bars-3', Icon: Bars3Icon },
-      { name: 'x-mark', Icon: XMarkIcon },
+      { name: 'home', Icon: Home },
+      { name: 'user', Icon: User },
+      { name: 'users', Icon: Users },
+      { name: 'settings', Icon: Settings },
+      { name: 'bell', Icon: Bell },
+      { name: 'search', Icon: Search },
+      { name: 'menu', Icon: Menu },
+      { name: 'close', Icon: X },
     ],
   },
   {
     label: 'Actions',
     items: [
-      { name: 'plus', Icon: PlusIcon },
-      { name: 'pencil-square', Icon: PencilSquareIcon },
-      { name: 'trash', Icon: TrashIcon },
-      { name: 'arrow-right', Icon: ArrowRightIcon },
-      { name: 'arrow-left', Icon: ArrowLeftIcon },
-      { name: 'check', Icon: CheckIcon },
-      { name: 'exclamation-triangle', Icon: ExclamationTriangleIcon },
-      { name: 'information-circle', Icon: InformationCircleIcon },
-      { name: 'ellipsis-horizontal', Icon: EllipsisHorizontalIcon },
+      { name: 'plus', Icon: Plus },
+      { name: 'square-pen', Icon: SquarePen },
+      { name: 'trash', Icon: Trash2 },
+      { name: 'arrow-right', Icon: ArrowRight },
+      { name: 'arrow-left', Icon: ArrowLeft },
+      { name: 'check', Icon: Check },
+      { name: 'alert-triangle', Icon: AlertTriangle },
+      { name: 'info', Icon: Info },
+      { name: 'more-horizontal', Icon: MoreHorizontal },
     ],
   },
   {
     label: 'Learning',
     items: [
-      { name: 'book-open', Icon: BookOpenIcon },
-      { name: 'play', Icon: PlayIcon },
-      { name: 'document-text', Icon: DocumentTextIcon },
-      { name: 'chat-bubble-left-right', Icon: ChatBubbleLeftRightIcon },
-      { name: 'chart-bar', Icon: ChartBarIcon },
+      { name: 'book-open', Icon: BookOpen },
+      { name: 'play', Icon: Play },
+      { name: 'file-text', Icon: FileText },
+      { name: 'messages-square', Icon: MessagesSquare },
+      { name: 'bar-chart-3', Icon: BarChart3 },
     ],
   },
   {
     label: 'Status',
     items: [
-      { name: 'check-circle', Icon: CheckCircleIcon },
-      { name: 'x-circle', Icon: XCircleIcon },
-      { name: 'exclamation-circle', Icon: ExclamationCircleIcon },
-      { name: 'clock', Icon: ClockIcon },
-      { name: 'arrow-path', Icon: ArrowPathIcon },
+      { name: 'check-circle', Icon: CheckCircle },
+      { name: 'x-circle', Icon: XCircle },
+      { name: 'alert-circle', Icon: AlertCircle },
+      { name: 'clock-3', Icon: Clock3 },
+      { name: 'refresh-cw', Icon: RefreshCw },
     ],
   },
 ];
@@ -343,7 +342,7 @@ const ThemePage = () => {
                   </div>
                   <div className="flex flex-col gap-3 rounded-2xl border border-info-200 bg-info-50/80 p-5">
                     <div className="flex items-center gap-2 text-info-700">
-                      <InformationCircleIcon className="h-5 w-5" aria-hidden />
+                      <Info className="h-5 w-5" aria-hidden />
                       <span className="text-body-sm font-semibold">Tooltip preview</span>
                     </div>
                     <div className="inline-flex items-center gap-2">
@@ -357,7 +356,7 @@ const ThemePage = () => {
                   </div>
                   <div className="grid gap-3 rounded-2xl border border-danger-200 bg-danger-50/80 p-5">
                     <div className="flex items-center gap-2 text-danger-700">
-                      <ExclamationCircleIcon className="h-5 w-5" aria-hidden />
+                      <AlertCircle className="h-5 w-5" aria-hidden />
                       <span className="text-body-sm font-semibold">Alert</span>
                     </div>
                     <p className="text-body-sm text-muted-foreground">
@@ -382,7 +381,7 @@ const ThemePage = () => {
                   </div>
                   <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-5 shadow-raised">
                     <div className="flex items-center gap-3 text-success-600">
-                      <CheckCircleIcon className="h-5 w-5" aria-hidden />
+                      <CheckCircle className="h-5 w-5" aria-hidden />
                       <span className="text-body-sm font-semibold text-foreground">Toast notification</span>
                     </div>
                     <p className="text-body-sm text-muted-foreground">
@@ -518,8 +517,8 @@ const ThemePage = () => {
           <CardHeader className="stack-sm">
             <CardTitle>Iconography</CardTitle>
             <CardDescription>
-              Heroicons provide consistent line weight and scale across navigation, actions, and feedback moments. All icons inherit
-              the current text color so they adapt to light and dark backgrounds.
+              Lucide icons provide consistent stroke weight and scale across navigation, actions, and feedback moments. All icons
+              inherit the current text color so they adapt to light and dark backgrounds.
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-8">

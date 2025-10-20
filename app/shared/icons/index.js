@@ -1,8 +1,7 @@
-export { default as HeroIcon } from './HeroIcon.jsx';
+export { default as LucideIcon } from './LucideIcon.jsx';
 export {
-  HERO_ICON_STYLES,
-  heroIconDefaults,
-  heroIconNames,
-  getHeroIcon,
-  resolveHeroIcon,
-} from './heroicons.js';
+  lucideIconNames,
+  lucideIconWeights,
+  getLucideIcon,
+  resolveLucideIcon,
+} from './lucide.js';

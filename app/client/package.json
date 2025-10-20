@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@heroicons/react": "^2.2.0",
+    "lucide-react": "^0.308.0",
     "@radix-ui/react-slot": "^1.2.3",
     "@tiptap/core": "^2.6.6",
     "@tiptap/extension-file-handler": "^2.26.3",

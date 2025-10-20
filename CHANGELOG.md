@@ -1,3 +1,8 @@
+## 2025-10-30 16:00 IST
+- Replaced Heroicons with Lucide React icons across the shared registry and theme showcase, including the `/theme` reference page.
+- Updated the shared Tailwind icon utilities and documentation to reflect Lucide stroke weights and component usage.
+- Swapped the client dependency from `@heroicons/react` to `lucide-react` for future development.
+
 ## 2025-10-30 12:45 IST
 ## 2025-10-20 06:44 IST
 - Converted the shared `tokens.js` design token catalog to support both ES modules and CommonJS, preventing the `module is not defined` runtime in the client while keeping Tailwind consumption working.
