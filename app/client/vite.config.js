@@ -26,6 +26,8 @@ export default defineConfig(({ mode }) => {
 
   const projectRoot = path.resolve(__dirname);
 
+  const clientNodeModules = path.resolve(__dirname, 'node_modules');
+
   return {
     plugins: [react()],
     resolve: {
@@ -33,6 +35,9 @@ export default defineConfig(({ mode }) => {
         '@': path.resolve(__dirname, './src'),
         '@components': sharedComponentsPath,
         '@components/ui': sharedUiEntryPath,
+        'lucide-react': path.resolve(clientNodeModules, 'lucide-react'),
+        '@radix-ui/react-slot': path.resolve(clientNodeModules, '@radix-ui/react-slot'),
+        '@radix-ui/react-accordion': path.resolve(clientNodeModules, '@radix-ui/react-accordion'),
       },
     },
     server: {

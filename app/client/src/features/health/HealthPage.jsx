@@ -28,12 +28,12 @@ const DEFAULT_EMAIL_TEST_PAYLOAD = {
 };
 
 const STATUS_VARIANTS = {
-  ok: 'bg-success-100 text-success-700 ring-1 ring-inset ring-success-200',
-  up: 'bg-success-100 text-success-700 ring-1 ring-inset ring-success-200',
-  error: 'bg-danger-100 text-danger-700 ring-1 ring-inset ring-danger-200',
-  down: 'bg-danger-100 text-danger-700 ring-1 ring-inset ring-danger-200',
-  skipped: 'bg-muted text-muted-foreground ring-1 ring-inset ring-border/60',
-  unknown: 'bg-secondary text-secondary-foreground ring-1 ring-inset ring-border/60',
+  ok: 'bg-mint-sage/20 text-evergreen ring-1 ring-inset ring-mint-sage/40',
+  up: 'bg-mint-sage/20 text-evergreen ring-1 ring-inset ring-mint-sage/40',
+  error: 'bg-ecru/20 text-black-olive ring-1 ring-inset ring-ecru/40',
+  down: 'bg-ecru/25 text-black-olive ring-1 ring-inset ring-ecru/40',
+  skipped: 'bg-porcelain-tint text-neutral-600 ring-1 ring-inset ring-porcelain-shade',
+  unknown: 'bg-porcelain text-neutral-600 ring-1 ring-inset ring-porcelain-shade',
 };
 
 const STATUS_LABELS = {
