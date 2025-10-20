@@ -1,3 +1,18 @@
+## 2025-10-21 21:05 IST
+- Added a `/verify-email` client route alias so verification links delivered by email no longer render a 404 page.
+
+## 2025-10-21 20:15 IST
+- Normalized audit log writes to coerce resource identifiers to strings so Prisma accepts role and permission bootstrap events.
+
+## 2025-10-21 01:05 IST
+- Backfilled the Prisma migration to create RBAC, session, guardian, and audit tables so deployments provision the Role catalog on startup.
+
+## 2025-10-21 00:27 IST
+- Implemented the full UMS authentication stack with registration, login, refresh, logout, email verification, password reset, and guardian approval flows, backed by hashed verification tokens and audit logging.
+- Added Prisma models plus Casbin bootstrap logic for sessions, guardians, verification tokens, audit trails, and synchronized RBAC capability bundles.
+- Delivered React auth context, gated routes, and admin dashboards that consume the new API endpoints with cookie-aware session hydration and role management controls.
+- Updated API and route documentation to capture the expanded auth and user management surfaces.
+
 ## 2025-10-20 18:54 IST
 - Enlarged the hero login and sign-up CTAs to match the sponsor button footprint and introduced an accent button variant using the ecru palette for sign-up emphasis.
 

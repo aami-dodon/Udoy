@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express';
+import cookieParser from 'cookie-parser';
 import registerModules from './modules/index.js';
 import env from './config/env.js';
 import errorHandler from './middlewares/errorHandler.js';
@@ -20,6 +21,7 @@ function createApp() {
   app.use(cors(corsOptions));
   app.use(helmet());
   app.use(express.json());
+  app.use(cookieParser());
   app.use(
     morgan('combined', {
       stream: {
