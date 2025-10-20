@@ -3,6 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { Button } from '@components/ui/button.jsx';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@components/ui/card.jsx';
 import { useAuth } from './AuthProvider.jsx';
+import { SupportContactMessage } from './components/SupportContactMessage.jsx';
 
 const STATUS_COPY = {
   verifying: {
@@ -69,13 +70,16 @@ export default function VerifyTokenPage() {
         <CardContent>
           {message ? <p className="text-sm text-neutral-700">{message}</p> : null}
         </CardContent>
-        <CardFooter className="flex gap-3 text-sm text-neutral-700">
-          <Button asChild variant="secondary" className="px-6">
-            <Link to="/login">Go to login</Link>
-          </Button>
-          <Button asChild variant="ghost" className="px-6 text-evergreen">
-            <Link to="/forgot-password">Need another link?</Link>
-          </Button>
+        <CardFooter className="flex flex-col gap-3 text-sm text-neutral-700">
+          <div className="flex flex-wrap gap-3">
+            <Button asChild variant="secondary" className="px-6">
+              <Link to="/login">Go to login</Link>
+            </Button>
+            <Button asChild variant="ghost" className="px-6 text-evergreen">
+              <Link to="/forgot-password">Need another link?</Link>
+            </Button>
+          </div>
+          <SupportContactMessage />
         </CardFooter>
       </Card>
     </div>

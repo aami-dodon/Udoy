@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@components/ui/input.jsx';
 import { Label } from '@components/ui/label.jsx';
 import { useAuth } from './AuthProvider.jsx';
+import { SupportContactMessage } from './components/SupportContactMessage.jsx';
 
 export default function LoginPage() {
   const auth = useAuth();
@@ -90,13 +91,7 @@ export default function LoginPage() {
               Forgot password?
             </Link>
           </div>
-          <p className="text-xs text-neutral-500">
-            Need help? Write to{' '}
-            <a className="text-evergreen hover:underline" href="mailto:support@udoy.in">
-              support@udoy.in
-            </a>
-            .
-          </p>
+          <SupportContactMessage />
         </CardFooter>
       </Card>
     </div>

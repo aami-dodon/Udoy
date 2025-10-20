@@ -6,6 +6,7 @@ import { Input } from '@components/ui/input.jsx';
 import { Label } from '@components/ui/label.jsx';
 import { Select } from '@components/ui/select.jsx';
 import { useAuth } from './AuthProvider.jsx';
+import { SupportContactMessage } from './components/SupportContactMessage.jsx';
 
 function calculateAge(isoDate) {
   if (!isoDate) return null;
@@ -317,6 +318,7 @@ export default function RegisterPage() {
               As a student under 16, your guardian will receive an approval request. Access unlocks after they confirm.
             </p>
           ) : null}
+          <SupportContactMessage />
         </CardFooter>
       </Card>
     </div>
