@@ -119,6 +119,7 @@ export default function RegisterPage() {
   }, [dateOfBirth]);
 
   const requiresGuardian = role === 'student' && typeof age === 'number' && age < MINIMUM_GUARDIAN_AGE;
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
   const onSubmit = async (values) => {
     setServerFeedback(null);
@@ -261,28 +262,33 @@ export default function RegisterPage() {
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
                       <FormLabel>Date of birth</FormLabel>
-                      <Popover>
+                      <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
                         <PopoverTrigger asChild>
                           <FormControl>
                             <Button
                               variant="outline"
                               className={cn(
-                                'justify-start text-left font-normal',
+                                'w-full justify-between text-left font-normal',
                                 !field.value && 'text-muted-foreground'
                               )}
                               type="button"
                             >
-                              {field.value ? format(field.value, 'PPP') : 'Pick a date'}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              <span>{field.value ? format(field.value, 'PPP') : 'Select date'}</span>
+                              <CalendarIcon className="h-4 w-4 opacity-50" />
                             </Button>
                           </FormControl>
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
+                        <PopoverContent className="w-auto overflow-hidden p-0" align="start">
                           <Calendar
                             mode="single"
                             selected={field.value}
-                            onSelect={field.onChange}
-                            captionLayout="dropdown-buttons"
+                            onSelect={(selectedDate) => {
+                              field.onChange(selectedDate);
+                              if (selectedDate) {
+                                setIsDatePickerOpen(false);
+                              }
+                            }}
+                            captionLayout="dropdown"
                             fromYear={EARLIEST_BIRTHDATE.getFullYear()}
                             toYear={new Date().getFullYear()}
                             toDate={new Date()}
