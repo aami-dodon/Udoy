@@ -1,33 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import {
-  AlertCircle,
-  AlertTriangle,
-  ArrowLeft,
-  ArrowRight,
-  BarChart3,
-  Bell,
-  BookOpen,
-  Check,
-  CheckCircle,
-  Clock3,
-  FileText,
-  Home,
-  Info,
-  Menu,
-  MessagesSquare,
-  MoreHorizontal,
-  Play,
-  Plus,
-  RefreshCw,
-  Search,
-  Settings,
-  SquarePen,
-  Trash2,
-  User,
-  Users,
-  X,
-  XCircle,
-} from 'lucide-react';
+import Icon from '../../../../shared/Icon';
 import { colors, layout, motion, typography } from '../../../../shared/theme/tokens.mjs';
 import {
   Button,
@@ -62,12 +34,12 @@ const SpacingBar = ({ token, value }) => (
   </div>
 );
 
-const IconTile = ({ Icon, name }) => (
+const IconTile = ({ iconName, label }) => (
   <div className="flex flex-col items-center gap-3 rounded-xl border border-border bg-card p-4 shadow-soft">
     <div className="flex h-14 w-14 items-center justify-center rounded-full bg-secondary text-foreground">
-      <Icon className="h-7 w-7" aria-hidden strokeWidth={1.5} />
+      <Icon name={iconName} size="lg" decorative />
     </div>
-    <span className="text-body-xs font-medium text-muted-foreground">{name}</span>
+    <span className="text-body-xs font-medium text-muted-foreground">{label}</span>
   </div>
 );
 
@@ -85,48 +57,48 @@ const iconGroups = [
   {
     label: 'Navigation',
     items: [
-      { name: 'home', Icon: Home },
-      { name: 'user', Icon: User },
-      { name: 'users', Icon: Users },
-      { name: 'settings', Icon: Settings },
-      { name: 'bell', Icon: Bell },
-      { name: 'search', Icon: Search },
-      { name: 'menu', Icon: Menu },
-      { name: 'close', Icon: X },
+      { label: 'home', iconName: 'Home' },
+      { label: 'user', iconName: 'User' },
+      { label: 'users', iconName: 'Users' },
+      { label: 'settings', iconName: 'Settings' },
+      { label: 'bell', iconName: 'Bell' },
+      { label: 'search', iconName: 'Search' },
+      { label: 'menu', iconName: 'Menu' },
+      { label: 'close', iconName: 'X' },
     ],
   },
   {
     label: 'Actions',
     items: [
-      { name: 'plus', Icon: Plus },
-      { name: 'square-pen', Icon: SquarePen },
-      { name: 'trash', Icon: Trash2 },
-      { name: 'arrow-right', Icon: ArrowRight },
-      { name: 'arrow-left', Icon: ArrowLeft },
-      { name: 'check', Icon: Check },
-      { name: 'alert-triangle', Icon: AlertTriangle },
-      { name: 'info', Icon: Info },
-      { name: 'more-horizontal', Icon: MoreHorizontal },
+      { label: 'plus', iconName: 'Plus' },
+      { label: 'square-pen', iconName: 'SquarePen' },
+      { label: 'trash', iconName: 'Trash2' },
+      { label: 'arrow-right', iconName: 'ArrowRight' },
+      { label: 'arrow-left', iconName: 'ArrowLeft' },
+      { label: 'check', iconName: 'Check' },
+      { label: 'alert-triangle', iconName: 'AlertTriangle' },
+      { label: 'info', iconName: 'Info' },
+      { label: 'more-horizontal', iconName: 'MoreHorizontal' },
     ],
   },
   {
     label: 'Learning',
     items: [
-      { name: 'book-open', Icon: BookOpen },
-      { name: 'play', Icon: Play },
-      { name: 'file-text', Icon: FileText },
-      { name: 'messages-square', Icon: MessagesSquare },
-      { name: 'bar-chart-3', Icon: BarChart3 },
+      { label: 'book-open', iconName: 'BookOpen' },
+      { label: 'play', iconName: 'Play' },
+      { label: 'file-text', iconName: 'FileText' },
+      { label: 'messages-square', iconName: 'MessagesSquare' },
+      { label: 'bar-chart-3', iconName: 'BarChart3' },
     ],
   },
   {
     label: 'Status',
     items: [
-      { name: 'check-circle', Icon: CheckCircle },
-      { name: 'x-circle', Icon: XCircle },
-      { name: 'alert-circle', Icon: AlertCircle },
-      { name: 'clock-3', Icon: Clock3 },
-      { name: 'refresh-cw', Icon: RefreshCw },
+      { label: 'check-circle', iconName: 'CheckCircle' },
+      { label: 'x-circle', iconName: 'XCircle' },
+      { label: 'alert-circle', iconName: 'AlertCircle' },
+      { label: 'clock-3', iconName: 'Clock3' },
+      { label: 'refresh-cw', iconName: 'RefreshCw' },
     ],
   },
 ];
@@ -533,8 +505,8 @@ const ThemePage = () => {
               <div key={group.label} className="flex flex-col gap-4">
                 <h3 className="text-heading-sm text-foreground">{group.label}</h3>
                 <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-8">
-                  {group.items.map(({ name, Icon }) => (
-                    <IconTile key={name} Icon={Icon} name={name} />
+                  {group.items.map(({ label, iconName }) => (
+                    <IconTile key={label} iconName={iconName} label={label} />
                   ))}
                 </div>
               </div>
