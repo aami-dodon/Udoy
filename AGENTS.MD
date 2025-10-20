@@ -107,6 +107,8 @@ Follow them strictly to maintain **quality**, **consistency**, **security**, and
 - **Tiptap** is the single WYSIWYG editor.
   - Videos and other assets (PDFs, images, documents) are uploaded directly to **MinIO** using **presigned URLs** and embedded in content.
 
+### Screenshots
+- **Always** provide a screenshot to preview of the full page when you are making a UI change
 
 ---
 
