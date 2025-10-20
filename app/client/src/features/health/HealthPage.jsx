@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
+  Badge,
   Button,
   Card,
   CardContent,
@@ -8,10 +9,12 @@ import {
   CardTitle,
   Input,
   Label,
+  Separator,
   Textarea,
 } from '@components/ui';
 import { cn } from '@/lib/utils';
 import { buildApiUrl } from '@/lib/api';
+import { LucideIcon } from '../../../../shared/icons';
 
 const HEALTH_ENDPOINT = buildApiUrl('/health');
 const EMAIL_TEST_ENDPOINT = buildApiUrl('/email/test');
@@ -43,6 +46,21 @@ const STATUS_LABELS = {
   down: 'Down',
   skipped: 'Skipped',
 };
+
+const OVERVIEW_HIGHLIGHTS = [
+  {
+    icon: 'Activity',
+    label: 'Realtime uptime snapshots across every dependency.',
+  },
+  {
+    icon: 'Inbox',
+    label: 'One-click transactional email test to validate delivery.',
+  },
+  {
+    icon: 'ShieldCheck',
+    label: 'CORS, storage, and queue checks before launch windows.',
+  },
+];
 
 function formatDuration(totalSeconds) {
   if (typeof totalSeconds !== 'number' || Number.isNaN(totalSeconds)) {
@@ -237,34 +255,88 @@ function HealthPage() {
   const isHealthy = health?.status?.toLowerCase() === 'ok';
 
   return (
-    <div className="flex w-full justify-center px-6 py-10">
-      <div className="flex w-full max-w-5xl flex-col gap-6">
-        <Card>
-          <CardHeader>
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+    <main className="relative min-h-screen overflow-hidden bg-porcelain">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -left-24 top-28 h-[26rem] w-[26rem] rounded-full bg-spotlight-gradient opacity-80 blur-3xl" />
+        <div className="absolute -bottom-32 right-[-6rem] h-[28rem] w-[28rem] rounded-full bg-mint-sage/35 blur-3xl" />
+      </div>
+      <div className="container relative z-10 flex flex-col gap-16 py-16 md:py-24">
+        <header className="grid gap-10 lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1fr)] lg:items-end">
+          <div className="space-y-6">
+            <Badge variant="subtle" className="w-max">
+              Operations
+            </Badge>
+            <h1 className="font-display text-4xl font-semibold text-black-olive md:text-5xl">
+              Platform health dashboard
+            </h1>
+            <p className="body-large">
+              Monitor uptime, dependencies, and transactional email delivery to keep Udoy reliable for every learner.
+            </p>
+            <div className="flex flex-wrap gap-3 text-sm text-neutral-600">
+              {OVERVIEW_HIGHLIGHTS.map((item) => (
+                <span
+                  key={item.label}
+                  className="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 shadow-gentle backdrop-blur"
+                >
+                  <LucideIcon name={item.icon} size="sm" className="text-evergreen" />
+                  {item.label}
+                </span>
+              ))}
+            </div>
+          </div>
+          <div className="rounded-3xl border border-porcelain-shade bg-white/80 p-8 shadow-gentle backdrop-blur">
+            <div className="flex flex-col gap-4 text-left">
+              <div className="flex flex-col gap-2">
+                <span className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">API endpoint</span>
+                <span className="break-all text-sm text-neutral-600">{HEALTH_ENDPOINT}</span>
+              </div>
+              <Separator className="bg-porcelain-shade/80" />
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="flex flex-col gap-2">
+                  <span className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">
+                    Last refreshed
+                  </span>
+                  <span className="text-sm text-neutral-600">
+                    {isLoading && !health ? 'Loading…' : formattedTimestamp}
+                  </span>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <span className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">Server uptime</span>
+                  <span className="text-sm text-neutral-600">{formattedUptime}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <Card className="transition-none hover:translate-y-0 hover:shadow-uplift">
+          <CardHeader className="mb-8">
+            <div className="flex flex-col gap-4 text-left sm:flex-row sm:items-start sm:justify-between">
               <div className="space-y-2">
-                <CardTitle>Platform Health</CardTitle>
+                <CardTitle>Live systems pulse</CardTitle>
                 <CardDescription>
-                  Live snapshot of service readiness, dependency checks, and integration status.
+                  A quick snapshot of service readiness across the Udoy platform.
                 </CardDescription>
               </div>
-              <Button onClick={loadHealth} variant="outline" disabled={isLoading}>
+              <Button onClick={loadHealth} variant="outline" size="sm" disabled={isLoading}>
                 {isLoading ? 'Refreshing…' : 'Refresh status'}
               </Button>
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="text-left">
             {error ? (
-              <div className="rounded-xl border border-danger-200 bg-danger-50 px-4 py-3 text-body-sm text-danger-700">
+              <div className="rounded-2xl border border-ecru/60 bg-ecru/20 px-4 py-3 text-sm text-black-olive">
                 {error}
               </div>
             ) : (
               <div className="grid gap-6 md:grid-cols-2">
                 <div className="flex flex-col gap-2">
-                  <span className="text-body-xs uppercase tracking-[0.2em] text-muted-foreground">Overall status</span>
+                  <span className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">
+                    Overall status
+                  </span>
                   <span
                     className={cn(
-                      'inline-flex w-fit items-center gap-2 rounded-full px-4 py-2 text-body-sm font-semibold shadow-soft transition-colors',
+                      'inline-flex w-fit items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold shadow-gentle transition-colors',
                       healthStatusClasses,
                     )}
                   >
@@ -272,112 +344,120 @@ function HealthPage() {
                   </span>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <span className="text-body-xs uppercase tracking-[0.2em] text-muted-foreground">Last checked</span>
-                  <span className="text-body-sm text-foreground">{isLoading && !health ? 'Loading…' : formattedTimestamp}</span>
+                  <span className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">Last checked</span>
+                  <span className="text-sm text-neutral-600">
+                    {isLoading && !health ? 'Loading…' : formattedTimestamp}
+                  </span>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <span className="text-body-xs uppercase tracking-[0.2em] text-muted-foreground">Server uptime</span>
-                  <span className="text-body-sm text-foreground">{formattedUptime}</span>
+                  <span className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">Server uptime</span>
+                  <span className="text-sm text-neutral-600">{formattedUptime}</span>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <span className="text-body-xs uppercase tracking-[0.2em] text-muted-foreground">API endpoint</span>
-                  <span className="text-body-sm text-foreground">{HEALTH_ENDPOINT}</span>
+                  <span className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">API endpoint</span>
+                  <span className="break-all text-sm text-neutral-600">{HEALTH_ENDPOINT}</span>
                 </div>
               </div>
             )}
           </CardContent>
         </Card>
 
-        {!error && health && (
-          <>
-            <Card>
-              <CardHeader>
-                <CardTitle>Dependency checks</CardTitle>
-                <CardDescription>Detailed availability across required services.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {checks.length === 0 ? (
-                  <p className="text-body-sm text-muted-foreground">No health checks were reported.</p>
-                ) : (
-                  <div className="grid gap-4 md:grid-cols-2">
-                    {checks.map(([key, value]) => {
-                      const statusLabel = resolveStatusLabel(value?.status);
-                      const statusClasses = resolveStatusClasses(value?.status);
-
-                      return (
-                        <div key={key} className="rounded-2xl border border-border/60 bg-surface-base px-5 py-4 shadow-soft">
-                          <div className="flex items-center justify-between gap-3">
-                            <div className="flex flex-col gap-1">
-                              <span className="text-body-sm font-semibold capitalize text-foreground">{key}</span>
-                              {value?.bucket ? (
-                                <span className="text-body-xs text-muted-foreground">Bucket: {value.bucket}</span>
-                              ) : null}
-                              {value?.message ? (
-                                <span className="text-body-xs text-muted-foreground">{value.message}</span>
-                              ) : null}
-                            </div>
-                            <span
-                              className={cn(
-                                'inline-flex items-center rounded-full px-3 py-1 text-body-xs font-semibold',
-                                statusClasses,
-                              )}
-                            >
-                              {statusLabel}
-                            </span>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {corsDetails ? (
-              <Card>
+        {!error && health ? (
+          <div className="grid gap-10 xl:grid-cols-[minmax(0,0.65fr)_minmax(0,1fr)]">
+            <div className="space-y-10">
+              <Card className="transition-none hover:translate-y-0 hover:shadow-uplift">
                 <CardHeader>
-                  <CardTitle>CORS configuration</CardTitle>
-                  <CardDescription>Active cross-origin rules applied to the API gateway.</CardDescription>
+                  <CardTitle>Dependency checks</CardTitle>
+                  <CardDescription>Detailed availability across required services.</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex flex-col gap-2">
-                    <span className="text-body-xs uppercase tracking-[0.2em] text-muted-foreground">Enabled</span>
-                    <span className="text-body-sm text-foreground">{corsDetails.enabled ? 'Yes' : 'No'}</span>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <span className="text-body-xs uppercase tracking-[0.2em] text-muted-foreground">Allow credentials</span>
-                    <span className="text-body-sm text-foreground">{corsDetails.allowCredentials ? 'Yes' : 'No'}</span>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <span className="text-body-xs uppercase tracking-[0.2em] text-muted-foreground">Allowed origins</span>
-                    {corsDetails.allowedOrigins?.length ? (
-                      <ul className="list-disc space-y-1 pl-5 text-body-sm text-foreground">
-                        {corsDetails.allowedOrigins.map((origin) => (
-                          <li key={origin}>{origin}</li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <span className="text-body-sm text-muted-foreground">No origins configured.</span>
-                    )}
-                  </div>
+                <CardContent className="text-left">
+                  {checks.length === 0 ? (
+                    <p className="text-sm text-neutral-500">No health checks were reported.</p>
+                  ) : (
+                    <div className="grid gap-4 md:grid-cols-2">
+                      {checks.map(([key, value]) => {
+                        const statusLabel = resolveStatusLabel(value?.status);
+                        const statusClasses = resolveStatusClasses(value?.status);
+
+                        return (
+                          <div key={key} className="rounded-2xl border border-porcelain-shade bg-white/80 p-5 shadow-gentle">
+                            <div className="flex items-center justify-between gap-3">
+                              <div className="flex flex-col gap-1 text-left">
+                                <span className="text-sm font-semibold capitalize text-black-olive">{key}</span>
+                                {value?.bucket ? (
+                                  <span className="text-xs text-neutral-500">Bucket: {value.bucket}</span>
+                                ) : null}
+                                {value?.message ? (
+                                  <span className="text-xs text-neutral-500">{value.message}</span>
+                                ) : null}
+                              </div>
+                              <span
+                                className={cn(
+                                  'inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold shadow-gentle',
+                                  statusClasses,
+                                )}
+                              >
+                                {statusLabel}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
-            ) : null}
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Transactional email test</CardTitle>
-                <CardDescription>
-                  Trigger the /api/email/test endpoint to verify template rendering and delivery configuration.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex flex-col gap-2">
-                  <span className="text-body-xs uppercase tracking-[0.2em] text-muted-foreground">Endpoint</span>
-                  <span className="text-body-sm text-foreground">{EMAIL_TEST_ENDPOINT}</span>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <span className="text-body-xs uppercase tracking-[0.2em] text-muted-foreground">Request payload</span>
+              {corsDetails ? (
+                <Card className="transition-none hover:translate-y-0 hover:shadow-uplift">
+                  <CardHeader>
+                    <CardTitle>CORS configuration</CardTitle>
+                    <CardDescription>Active cross-origin rules applied to the API gateway.</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4 text-left">
+                    <div className="flex flex-col gap-2">
+                      <span className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">Enabled</span>
+                      <span className="text-sm text-neutral-600">{corsDetails.enabled ? 'Yes' : 'No'}</span>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <span className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">
+                        Allow credentials
+                      </span>
+                      <span className="text-sm text-neutral-600">{corsDetails.allowCredentials ? 'Yes' : 'No'}</span>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <span className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">
+                        Allowed origins
+                      </span>
+                      {corsDetails.allowedOrigins?.length ? (
+                        <ul className="list-disc space-y-2 pl-5 text-sm text-neutral-600">
+                          {corsDetails.allowedOrigins.map((origin) => (
+                            <li key={origin}>{origin}</li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <span className="text-sm text-neutral-500">No origins configured.</span>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ) : null}
+            </div>
+
+            <div className="space-y-10">
+              <Card className="transition-none hover:translate-y-0 hover:shadow-uplift">
+                <CardHeader>
+                  <CardTitle>Transactional email test</CardTitle>
+                  <CardDescription>
+                    Trigger the /api/email/test endpoint to verify template rendering and delivery configuration.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6 text-left">
+                  <div className="flex flex-col gap-2">
+                    <span className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">Endpoint</span>
+                    <span className="break-all text-sm text-neutral-600">{EMAIL_TEST_ENDPOINT}</span>
+                  </div>
+                  <Separator className="bg-porcelain-shade/80" />
                   <div className="space-y-4">
                     <div className="grid gap-4 md:grid-cols-2">
                       <div className="space-y-2">
@@ -445,39 +525,39 @@ function HealthPage() {
                       />
                     </div>
                   </div>
-                </div>
-                <div className="flex flex-col gap-3">
-                  <Button onClick={sendEmailTest} disabled={isEmailTestLoading}>
-                    {isEmailTestLoading ? 'Sending…' : 'Send test email'}
-                  </Button>
-                  {emailTestError ? (
-                    <div className="rounded-lg border border-danger-200 bg-danger-50 px-4 py-3 text-body-sm text-danger-700">
-                      {emailTestError}
-                    </div>
-                  ) : null}
-                  {emailTestResult ? (
-                    <div className="space-y-2">
-                      <span className="text-body-xs uppercase tracking-[0.2em] text-muted-foreground">Response</span>
-                      <pre className="max-h-60 overflow-auto rounded-lg border border-border/60 bg-surface-subtle px-4 py-3 text-left text-[13px] leading-relaxed text-foreground/90">
-                        {JSON.stringify(emailTestResult, null, 2)}
-                      </pre>
-                    </div>
-                  ) : null}
-                </div>
-              </CardContent>
-            </Card>
-          </>
-        )}
+                  <div className="flex flex-col gap-3">
+                    <Button onClick={sendEmailTest} disabled={isEmailTestLoading}>
+                      {isEmailTestLoading ? 'Sending…' : 'Send test email'}
+                    </Button>
+                    {emailTestError ? (
+                      <div className="rounded-lg border border-ecru/60 bg-ecru/20 px-4 py-3 text-sm text-black-olive">
+                        {emailTestError}
+                      </div>
+                    ) : null}
+                    {emailTestResult ? (
+                      <div className="space-y-2">
+                        <span className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">Response</span>
+                        <pre className="max-h-60 overflow-auto rounded-lg border border-porcelain-shade bg-porcelain-tint/70 px-4 py-3 text-left text-[13px] leading-relaxed text-neutral-700">
+                          {JSON.stringify(emailTestResult, null, 2)}
+                        </pre>
+                      </div>
+                    ) : null}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        ) : null}
 
         {error && !isLoading ? (
-          <Card>
+          <Card className="transition-none hover:translate-y-0 hover:shadow-uplift">
             <CardHeader>
               <CardTitle>Troubleshooting</CardTitle>
               <CardDescription>
                 The health API could not be reached. Confirm the server is running and try refreshing the status.
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="text-left">
               <Button onClick={loadHealth} disabled={isLoading}>
                 Retry now
               </Button>
@@ -486,17 +566,17 @@ function HealthPage() {
         ) : null}
 
         {health && !isHealthy ? (
-          <Card className="border-warning-300 bg-warning-50">
+          <Card className="border-ecru/70 bg-ecru/20 transition-none hover:translate-y-0 hover:shadow-uplift">
             <CardHeader>
-              <CardTitle className="text-warning-900">Degraded performance detected</CardTitle>
-              <CardDescription className="text-warning-800">
+              <CardTitle className="text-black-olive">Degraded performance detected</CardTitle>
+              <CardDescription>
                 One or more dependencies are reporting an unhealthy state. Review the checks above for details.
               </CardDescription>
             </CardHeader>
           </Card>
         ) : null}
       </div>
-    </div>
+    </main>
   );
 }
 

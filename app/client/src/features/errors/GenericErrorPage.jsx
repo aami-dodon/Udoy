@@ -17,9 +17,14 @@ function GenericErrorPage({ onRetry }) {
       badgeTone="danger"
       actions={actions}
     >
-      <p className="text-body-xs text-subdued">
-        We’ve logged the issue so the team can investigate. Please retry your last action or head back to the dashboard.
+      <p className="text-sm text-neutral-600">
+        We’ve logged the issue so the team can investigate. Try your last action again, or choose a different area to continue working.
       </p>
+      <ul className="list-disc space-y-2 pl-5 text-sm text-neutral-600">
+        <li>Refresh the page to reload a clean state.</li>
+        <li>If you were uploading content, confirm it saved before retrying.</li>
+        <li>Reach out to support with the time and steps if the error repeats.</li>
+      </ul>
     </ErrorState>
   );
 }
