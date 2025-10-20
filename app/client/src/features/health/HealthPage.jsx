@@ -6,6 +6,9 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  Input,
+  Label,
+  Textarea,
 } from '@components/ui';
 import { cn } from '@/lib/utils';
 import { buildApiUrl } from '@/lib/api';
@@ -103,7 +106,30 @@ function HealthPage() {
   const [emailTestResult, setEmailTestResult] = useState(null);
   const [emailTestError, setEmailTestError] = useState(null);
   const [isEmailTestLoading, setIsEmailTestLoading] = useState(false);
+  const [emailTestPayload, setEmailTestPayload] = useState(() => ({
+    ...DEFAULT_EMAIL_TEST_PAYLOAD,
+    variables: {
+      ...DEFAULT_EMAIL_TEST_PAYLOAD.variables,
+    },
+  }));
   const isMountedRef = useRef(false);
+
+  const handleEmailPayloadChange = useCallback((field, value) => {
+    setEmailTestPayload((previous) => ({
+      ...previous,
+      [field]: value,
+    }));
+  }, []);
+
+  const handleEmailPayloadVariableChange = useCallback((field, value) => {
+    setEmailTestPayload((previous) => ({
+      ...previous,
+      variables: {
+        ...(previous.variables || {}),
+        [field]: value,
+      },
+    }));
+  }, []);
 
   const loadHealth = useCallback(async () => {
     if (isMountedRef.current) {
@@ -146,6 +172,7 @@ function HealthPage() {
     if (isMountedRef.current) {
       setIsEmailTestLoading(true);
       setEmailTestError(null);
+      setEmailTestResult(null);
     }
 
     try {
@@ -155,7 +182,7 @@ function HealthPage() {
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(DEFAULT_EMAIL_TEST_PAYLOAD),
+        body: JSON.stringify(emailTestPayload),
       });
 
       let payload = null;
@@ -189,7 +216,7 @@ function HealthPage() {
         setIsEmailTestLoading(false);
       }
     }
-  }, []);
+  }, [emailTestPayload]);
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -351,9 +378,73 @@ function HealthPage() {
                 </div>
                 <div className="flex flex-col gap-2">
                   <span className="text-body-xs uppercase tracking-[0.2em] text-muted-foreground">Request payload</span>
-                  <pre className="max-h-60 overflow-auto rounded-lg border border-border/60 bg-surface-subtle px-4 py-3 text-left text-[13px] leading-relaxed text-foreground/90">
-                    {JSON.stringify(DEFAULT_EMAIL_TEST_PAYLOAD, null, 2)}
-                  </pre>
+                  <div className="space-y-4">
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div className="space-y-2">
+                        <Label htmlFor="email-test-to">Recipient email</Label>
+                        <Input
+                          id="email-test-to"
+                          type="email"
+                          autoComplete="email"
+                          value={emailTestPayload.to}
+                          onChange={(event) => handleEmailPayloadChange('to', event.target.value)}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="email-test-name">Recipient name</Label>
+                        <Input
+                          id="email-test-name"
+                          autoComplete="name"
+                          value={emailTestPayload.name}
+                          onChange={(event) => handleEmailPayloadChange('name', event.target.value)}
+                        />
+                      </div>
+                    </div>
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div className="space-y-2">
+                        <Label htmlFor="email-test-type">Template type</Label>
+                        <Input
+                          id="email-test-type"
+                          autoComplete="off"
+                          value={emailTestPayload.type}
+                          onChange={(event) => handleEmailPayloadChange('type', event.target.value)}
+                        />
+                      </div>
+                    </div>
+                    {Object.entries(emailTestPayload.variables || {}).length > 0 ? (
+                      <div className="grid gap-4 md:grid-cols-2">
+                        {Object.entries(emailTestPayload.variables || {}).map(([key, value]) => (
+                          <div key={key} className="space-y-2">
+                            <Label htmlFor={`email-test-variable-${key}`}>Variable: {key}</Label>
+                            <Input
+                              id={`email-test-variable-${key}`}
+                              autoComplete="off"
+                              value={value ?? ''}
+                              onChange={(event) =>
+                                handleEmailPayloadVariableChange(key, event.target.value)
+                              }
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    ) : null}
+                    <div className="space-y-2">
+                      <Label htmlFor="email-test-template">HTML template</Label>
+                      <Textarea
+                        id="email-test-template"
+                        value={emailTestPayload.template}
+                        onChange={(event) => handleEmailPayloadChange('template', event.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="email-test-text-template">Text template</Label>
+                      <Textarea
+                        id="email-test-text-template"
+                        value={emailTestPayload.textTemplate}
+                        onChange={(event) => handleEmailPayloadChange('textTemplate', event.target.value)}
+                      />
+                    </div>
+                  </div>
                 </div>
                 <div className="flex flex-col gap-3">
                   <Button onClick={sendEmailTest} disabled={isEmailTestLoading}>
