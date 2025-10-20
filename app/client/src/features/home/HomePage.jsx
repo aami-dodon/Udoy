@@ -23,9 +23,9 @@ const roles = [
     highlight: 'Every milestone is intended to unlock transparent rewards funded by the community.',
   },
   {
-    name: 'Creators (Ex-Students)',
+    name: 'Creators',
     description:
-      'Graduates who will return to craft relevant lessons rooted in their lived experiences and local realities.',
+      'Alumni who will return to craft relevant lessons rooted in their lived experiences and local realities.',
     icon: 'PenTool',
     highlight: 'Content will stay authentic, relatable, and deeply actionable for every learner.',
   },
@@ -109,7 +109,7 @@ function RoleCard({ role }) {
     <Card className="h-full transition-none hover:translate-y-0 hover:shadow-gentle">
       <CardHeader>
         <div className="flex items-center gap-3">
-          <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-spotlight-gradient">
+          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-sm">
             <LucideIcon name={role.icon} size="lg" className="text-evergreen" />
           </span>
           <CardTitle>{role.name}</CardTitle>
@@ -144,7 +144,7 @@ const HomePage = () => {
             <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
               Log in
             </Button>
-            <Button size="sm" className="bg-white text-black-olive hover:bg-porcelain">
+            <Button variant="secondary" size="sm">
               Sign up
             </Button>
           </div>
