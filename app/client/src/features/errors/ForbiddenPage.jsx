@@ -8,7 +8,7 @@ function ForbiddenPage() {
       description="This workspace is reserved for team members with elevated privileges or pending approvals."
       badgeTone="warning"
       actions={[
-        { label: 'Back to home', to: '/', variant: 'secondary' },
+        { label: 'Back to home', to: '/', variant: 'primary' },
       ]}
     >
       <p className="text-sm text-neutral-600">

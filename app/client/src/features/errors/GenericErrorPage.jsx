@@ -6,9 +6,10 @@ function GenericErrorPage({ onRetry }) {
 
   if (typeof onRetry === 'function') {
     actions.push({ label: 'Try again', onClick: onRetry, variant: 'primary' });
+    actions.push({ label: 'Back to home', to: '/', variant: 'outline' });
+  } else {
+    actions.push({ label: 'Back to home', to: '/', variant: 'primary' });
   }
-
-  actions.push({ label: 'Back to home', to: '/', variant: 'ghost' });
 
   return (
     <ErrorState

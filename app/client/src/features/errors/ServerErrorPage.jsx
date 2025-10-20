@@ -8,7 +8,7 @@ function ServerErrorPage() {
       description="We’re experiencing a hiccup behind the scenes and are already working on a fix."
       badgeTone="danger"
       actions={[
-        { label: 'Back to home', to: '/', variant: 'secondary' },
+        { label: 'Back to home', to: '/', variant: 'primary' },
       ]}
     >
       <p className="text-sm text-neutral-600">

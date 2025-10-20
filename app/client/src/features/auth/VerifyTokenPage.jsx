@@ -72,10 +72,10 @@ export default function VerifyTokenPage() {
         </CardContent>
         <CardFooter className="flex flex-col gap-3 text-sm text-neutral-700">
           <div className="flex flex-wrap gap-3">
-            <Button asChild variant="secondary" className="px-6">
+            <Button asChild variant="primary">
               <Link to="/login">Go to login</Link>
             </Button>
-            <Button asChild variant="ghost" className="px-6 text-evergreen">
+            <Button asChild variant="outline">
               <Link to="/forgot-password">Need another link?</Link>
             </Button>
           </div>
