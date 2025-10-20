@@ -13,9 +13,13 @@ import {
   Textarea,
 } from '@components/ui';
 
-const ColorSwatch = ({ label, value }) => (
+const colorTokenClass = (token) => (token ? `bg-token-${token}` : undefined);
+const spacingWidthClass = (token) => `w-spacing-${token.replace(/\./g, '-')}`;
+const progressWidthClass = (value) => `w-progress-${value}`;
+
+const ColorSwatch = ({ label, token, value }) => (
   <div className="flex flex-col gap-2">
-    <div className="h-16 w-full rounded-lg border border-border shadow-soft" style={{ backgroundColor: value }} />
+    <div className={cn('h-16 w-full rounded-lg border border-border shadow-soft', colorTokenClass(token))} />
     <div className="text-body-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</div>
     <div className="font-mono text-body-xs text-foreground">{value.toUpperCase()}</div>
   </div>
@@ -25,10 +29,7 @@ const SpacingBar = ({ token, value }) => (
   <div className="flex items-center gap-4">
     <div className="w-16 shrink-0 text-body-sm font-medium text-foreground">{token}</div>
     <div className="flex w-full flex-col gap-1">
-      <div
-        className="h-2 rounded-full bg-primary/45"
-        style={{ width: `min(100%, calc(${value} * 2))` }}
-      />
+      <div className={cn('h-2 rounded-full bg-primary/45', spacingWidthClass(token))} />
       <span className="font-mono text-body-xs text-muted-foreground">{value}</span>
     </div>
   </div>
@@ -131,19 +132,37 @@ const ThemePage = () => {
   }, [mode]);
 
   const colorPalettes = [
-    { name: 'Primary', swatches: Object.entries(colors.primary) },
-    { name: 'Neutral', swatches: Object.entries(colors.neutral) },
-    { name: 'Accent', swatches: Object.entries(colors.accent) },
-  ];
+    { name: 'Primary', key: 'primary' },
+    { name: 'Neutral', key: 'neutral' },
+    { name: 'Accent', key: 'accent' },
+  ].map((group) => ({
+    name: group.name,
+    swatches: Object.entries(colors[group.key]).map(([shade, hex]) => ({
+      token: `${group.key}-${shade}`,
+      label: shade,
+      value: hex,
+    })),
+  }));
 
   const statusPalettes = [
-    { name: 'Info', swatches: Object.entries(colors.info) },
-    { name: 'Success', swatches: Object.entries(colors.success) },
-    { name: 'Warning', swatches: Object.entries(colors.warning) },
-    { name: 'Danger', swatches: Object.entries(colors.danger) },
-  ];
+    { name: 'Info', key: 'info' },
+    { name: 'Success', key: 'success' },
+    { name: 'Warning', key: 'warning' },
+    { name: 'Danger', key: 'danger' },
+  ].map((group) => ({
+    name: group.name,
+    swatches: Object.entries(colors[group.key]).map(([shade, hex]) => ({
+      token: `${group.key}-${shade}`,
+      label: shade,
+      value: hex,
+    })),
+  }));
 
-  const surfaceTokens = Object.entries(colors.surface);
+  const surfaceTokens = Object.entries(colors.surface).map(([name, value]) => ({
+    token: `surface-${name}`,
+    label: name,
+    value,
+  }));
   const spacingEntries = Object.entries(layout.spacing);
   const breakpointEntries = Object.entries(layout.breakpoints);
   const radiusEntries = Object.entries(layout.radius);
@@ -181,8 +200,8 @@ const ThemePage = () => {
                 <div key={group.name} className="flex flex-col gap-4">
                   <h3 className="text-heading-sm text-foreground">{group.name}</h3>
                   <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-                    {group.swatches.map(([shade, hex]) => (
-                      <ColorSwatch key={shade} label={shade} value={hex} />
+                    {group.swatches.map((swatch) => (
+                      <ColorSwatch key={swatch.token} label={swatch.label} token={swatch.token} value={swatch.value} />
                     ))}
                   </div>
                 </div>
@@ -196,8 +215,13 @@ const ThemePage = () => {
                     <div key={group.name} className="flex flex-col gap-4">
                       <h4 className="text-body-sm font-semibold text-foreground">{group.name}</h4>
                       <div className="grid grid-cols-3 gap-4">
-                        {group.swatches.map(([shade, hex]) => (
-                          <ColorSwatch key={shade} label={shade} value={hex} />
+                        {group.swatches.map((swatch) => (
+                          <ColorSwatch
+                            key={swatch.token}
+                            label={swatch.label}
+                            token={swatch.token}
+                            value={swatch.value}
+                          />
                         ))}
                       </div>
                     </div>
@@ -207,8 +231,8 @@ const ThemePage = () => {
               <div className="flex flex-col gap-4">
                 <h3 className="text-heading-sm text-foreground">Surface hierarchy</h3>
                 <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-6">
-                  {surfaceTokens.map(([name, value]) => (
-                    <ColorSwatch key={name} label={name} value={value} />
+                  {surfaceTokens.map((swatch) => (
+                    <ColorSwatch key={swatch.token} label={swatch.label} token={swatch.token} value={swatch.value} />
                   ))}
                 </div>
               </div>
@@ -298,7 +322,7 @@ const ThemePage = () => {
                       <span>78%</span>
                     </div>
                     <div className="mt-2 h-2 rounded-full bg-secondary">
-                      <div className="h-full rounded-full bg-primary" style={{ width: '78%' }} />
+                      <div className={cn('h-full rounded-full bg-primary', progressWidthClass(78))} />
                     </div>
                   </CardContent>
                 </Card>

@@ -24,6 +24,14 @@ you are setting core visual attributes.
 | `surface.{base, muted, raised, subtle, overlay, inverted}` | Semantic background colors that adapt to depth. | `bg-surface-raised`, `bg-surface-muted`, `text-on-surface` |
 | `info-*`, `success-*`, `warning-*`, `danger-*` | Feedback palettes that drive alerts, badges, and progress. | `badge badge--success`, `alert alert--danger` |
 
+### Token visualization helpers
+
+- `bg-token-<group>-<shade>` — maps directly to the raw hex/rgba value of each color token. Helpful for building color swatches without falling back to inline styles.
+- `w-spacing-<token>` — exposes spacing tokens as widths (the preset multiplies the value by two and clamps at 100%) for rhythm previews like rulers or padding bars.
+- `w-progress-<percent>` — lightweight percentage utilities (`0`–`100`) so progress indicators stay tokenized.
+
+Use these helpers when documenting or testing tokens to stay compliant with the "no inline styles" policy.
+
 ### Typography
 
 Custom font stacks power two type layers:
