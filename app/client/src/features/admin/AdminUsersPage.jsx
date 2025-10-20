@@ -5,6 +5,7 @@ import { Badge } from '@components/ui/badge.jsx';
 import { Input } from '@components/ui/input.jsx';
 import { Label } from '@components/ui/label.jsx';
 import { Separator } from '@components/ui/separator.jsx';
+import { cn } from '@/lib/utils';
 import { LucideIcon } from '../../../../shared/icons';
 import { useAuth } from '../auth/AuthProvider.jsx';
 import adminApi from './api.js';
@@ -17,18 +18,21 @@ function RoleSelector({ availableRoles, activeRoles, onToggle }) {
       {availableRoles.map((role) => {
         const isActive = activeRoles.includes(role.name);
         return (
-          <button
+          <Button
             key={role.name}
             type="button"
-            onClick={() => onToggle(role.name, !isActive)}
-            className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+            size="sm"
+            variant={isActive ? 'primary' : 'outline'}
+            className={cn(
+              'rounded-full px-4 text-xs',
               isActive
-                ? 'border-evergreen bg-evergreen text-white'
+                ? 'shadow-none'
                 : 'border-porcelain-shade bg-porcelain-tint text-neutral-700 hover:border-evergreen hover:text-evergreen'
-            }`}
+            )}
+            onClick={() => onToggle(role.name, !isActive)}
           >
             {role.label}
-          </button>
+          </Button>
         );
       })}
     </div>

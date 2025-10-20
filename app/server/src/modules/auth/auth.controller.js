@@ -30,6 +30,16 @@ import emailService, {
   sendPasswordResetEmail,
 } from '../../services/emailService.js';
 import { logAuditEvent } from '../../services/auditService.js';
+import { ROLE_DEFINITIONS } from '../../services/rbacService.js';
+import validator from 'validator';
+
+const SELF_REGISTER_ROLE_SET = new Set(
+  ROLE_DEFINITIONS.filter((definition) =>
+    ['student', 'creator', 'validator', 'coach-guardian', 'sponsor-partner'].includes(definition.name)
+  ).map((definition) => definition.name)
+);
+
+const DEFAULT_SELF_REGISTER_ROLE = 'student';
 
 function toMilliseconds(seconds) {
   return Math.max(0, Math.floor(Number(seconds || 0))) * 1000;
@@ -182,39 +192,73 @@ export async function register(req, res, next) {
       dateOfBirth,
       phoneNumber,
       guardianEmail,
-      guardianName,
+      role,
     } = req.body || {};
 
-    if (!email || !password) {
-      throw AppError.badRequest('Email and password are required for registration.');
+    if (!firstName || !firstName.trim()) {
+      throw AppError.badRequest('First name is required for registration.');
     }
 
-    const minor = isMinor(dateOfBirth);
-    if (minor && !guardianEmail) {
-      throw AppError.badRequest('A guardian email address is required for minors.');
+    if (!lastName || !lastName.trim()) {
+      throw AppError.badRequest('Last name is required for registration.');
     }
+
+    if (!email || !validator.isEmail(String(email).trim())) {
+      throw AppError.badRequest('A valid email address is required for registration.');
+    }
+
+    if (!password) {
+      throw AppError.badRequest('Password is required for registration.');
+    }
+
+    if (!dateOfBirth) {
+      throw AppError.badRequest('Date of birth is required for registration.');
+    }
+
+    const normalizedRole = typeof role === 'string' ? role.trim().toLowerCase() : DEFAULT_SELF_REGISTER_ROLE;
+    const selectedRole = SELF_REGISTER_ROLE_SET.has(normalizedRole) ? normalizedRole : DEFAULT_SELF_REGISTER_ROLE;
+
+    const dobDate = new Date(dateOfBirth);
+    if (Number.isNaN(dobDate.getTime())) {
+      throw AppError.badRequest('Provide a valid date of birth.');
+    }
+
+    const minor = selectedRole === 'student' && isMinor(dateOfBirth);
+
+    if (minor) {
+      if (!guardianEmail || !validator.isEmail(String(guardianEmail).trim())) {
+        throw AppError.badRequest('A valid guardian email address is required for minors.');
+      }
+    }
+
+    if (guardianEmail && !validator.isEmail(String(guardianEmail).trim())) {
+      throw AppError.badRequest('Provide a valid guardian email address.');
+    }
+
+    const safeFirstName = firstName.trim();
+    const safeLastName = lastName.trim();
+    const trimmedGuardianEmail = guardianEmail ? String(guardianEmail).trim() : null;
+    const formattedPhoneNumber = typeof phoneNumber === 'string' && phoneNumber.trim() ? phoneNumber.trim() : null;
 
     const passwordHash = await hashPassword(password);
 
     const { user } = await createUser(
       {
-        email,
+        email: String(email).trim(),
         passwordHash,
-        firstName,
-        lastName,
+        firstName: safeFirstName,
+        lastName: safeLastName,
         dateOfBirth,
-        phoneNumber,
-        guardianEmail,
-        guardianName,
-        guardianConsent: false,
+        phoneNumber: formattedPhoneNumber,
+        guardianEmail: minor ? trimmedGuardianEmail : null,
+        guardianConsent: !minor,
       },
-      { roles: ['student'] }
+      { roles: [selectedRole] }
     );
 
-    if (minor && guardianEmail) {
+    if (minor && trimmedGuardianEmail) {
       const guardianLink = await ensureGuardianForStudent(user.id, {
-        guardianEmail,
-        guardianName,
+        guardianEmail: trimmedGuardianEmail,
         actorId: user.id,
       });
 
@@ -228,10 +272,9 @@ export async function register(req, res, next) {
       });
 
       await dispatchGuardianApprovalEmail({
-        guardianEmail,
-        guardianName,
+        guardianEmail: trimmedGuardianEmail,
         token: guardianToken,
-        studentName: firstName,
+        studentName: safeFirstName,
       });
     }
 
