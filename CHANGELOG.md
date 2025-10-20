@@ -1,3 +1,7 @@
+## 2025-10-20 09:28 IST
+- Updated the client Tailwind configuration to consume the shared palette and radius tokens directly instead of relying on ad-hoc CSS variables.
+- Simplified the client base stylesheet so semantic utilities from the shared preset drive the background, foreground, and border colors.
+
 ## 2025-10-20 09:16 IST
 - Removed the redundant `tokens.mjs` re-export now that `tokens.js` ships hybrid module support.
 - Updated the shared theme documentation to point to the canonical token catalogue.

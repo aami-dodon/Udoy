@@ -1,4 +1,8 @@
 const sharedPreset = require('../shared/theme/tailwind.preset');
+const tokens = require('../shared/theme/tokens');
+
+const { colors, layout } = tokens;
+const { surface, neutral, primary, accent, danger } = colors;
 
 module.exports = {
   // Consume the shared theme so the brand palette, typography, spacing, and
@@ -8,44 +12,44 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        border: 'hsl(var(--border))',
-        input: 'hsl(var(--input))',
-        ring: 'hsl(var(--ring))',
-        background: 'hsl(var(--background))',
-        foreground: 'hsl(var(--foreground))',
+        border: neutral[200],
+        input: neutral[200],
+        ring: primary[500],
+        background: surface.base,
+        foreground: neutral[900],
         primary: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))',
+          DEFAULT: primary[500],
+          foreground: surface.raised,
         },
         secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--secondary-foreground))',
+          DEFAULT: neutral[100],
+          foreground: neutral[700],
         },
         muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))',
+          DEFAULT: surface.muted,
+          foreground: neutral[600],
         },
         accent: {
-          DEFAULT: 'hsl(var(--accent))',
-          foreground: 'hsl(var(--accent-foreground))',
+          DEFAULT: accent[500],
+          foreground: surface.raised,
         },
         destructive: {
-          DEFAULT: 'hsl(var(--destructive))',
-          foreground: 'hsl(var(--destructive-foreground))',
+          DEFAULT: danger[500],
+          foreground: surface.raised,
         },
         card: {
-          DEFAULT: 'hsl(var(--card))',
-          foreground: 'hsl(var(--card-foreground))',
+          DEFAULT: surface.raised,
+          foreground: neutral[900],
         },
         popover: {
-          DEFAULT: 'hsl(var(--popover))',
-          foreground: 'hsl(var(--popover-foreground))',
+          DEFAULT: surface.raised,
+          foreground: neutral[900],
         },
       },
       borderRadius: {
-        lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 0.25rem)',
-        sm: 'calc(var(--radius) - 0.5rem)',
+        lg: layout.radius.lg,
+        md: layout.radius.md,
+        sm: layout.radius.sm,
       },
       keyframes: {
         'accordion-down': {
