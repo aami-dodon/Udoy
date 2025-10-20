@@ -38,4 +38,10 @@ const CardContent = forwardRef(({ className, ...props }, ref) => (
 
 CardContent.displayName = 'CardContent';
 
-export { Card, CardHeader, CardTitle, CardDescription, CardContent };
+const CardFooter = forwardRef(({ className, ...props }, ref) => (
+  <div ref={ref} className={cn('mt-4 flex flex-col gap-2 text-sm text-neutral-600', className)} {...props} />
+));
+
+CardFooter.displayName = 'CardFooter';
+
+export { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter };

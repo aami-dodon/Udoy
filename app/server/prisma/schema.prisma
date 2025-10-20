@@ -7,7 +7,192 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model HealthCheck {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  LOCKED
+  INVITED
+}
+
+enum GuardianLinkStatus {
+  PENDING
+  APPROVED
+  REVOKED
+}
+
+enum GuardianRelationship {
+  PARENT
+  LEGAL_GUARDIAN
+  COACH
+  SPONSOR
+  OTHER
+}
+
+enum AuditEventType {
+  USER_REGISTERED
+  USER_LOGIN
+  USER_LOGOUT
+  USER_DEACTIVATED
+  USER_REACTIVATED
+  USER_ROLE_ASSIGNED
+  USER_ROLE_REMOVED
+  USER_PROFILE_UPDATED
+  ROLE_CREATED
+  ROLE_UPDATED
+  PERMISSION_CREATED
+  PERMISSION_UPDATED
+  PASSWORD_RESET_REQUESTED
+  PASSWORD_RESET_COMPLETED
+  EMAIL_VERIFICATION_SENT
+  EMAIL_VERIFIED
+  GUARDIAN_INVITED
+  GUARDIAN_APPROVED
+  SESSION_ISSUED
+  SESSION_REVOKED
+  TOKEN_ROTATED
+}
+
+enum VerificationTokenType {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+  GUARDIAN_APPROVAL
+}
+
+model User {
+  id               String              @id @default(cuid())
+  email            String              @unique
+  passwordHash     String?
+  firstName        String?
+  lastName         String?
+  dateOfBirth      DateTime?
+  phoneNumber      String?
+  isEmailVerified  Boolean             @default(false)
+  status           UserStatus          @default(ACTIVE)
+  lastLoginAt      DateTime?
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  deactivatedAt    DateTime?
+  guardianName     String?
+  guardianEmail    String?
+  guardianConsent  Boolean             @default(false)
+
+  roles             UserRole[]
+  sessions          Session[]
+  auditLogs         AuditLog[]         @relation("UserAuditLogs")
+  guardianLinks     GuardianLink[]     @relation("GuardianLinksGuardian")
+  wardLinks         GuardianLink[]     @relation("GuardianLinksStudent")
+  tokens            VerificationToken[]
+  assignedRoles     UserRole[]         @relation("UserRoleAssignedBy")
+  assignedPermissions RolePermission[] @relation("RolePermissionAssignedBy")
+}
+
+model Role {
+  id              Int              @id @default(autoincrement())
+  name            String           @unique
+  description     String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  rolePermissions RolePermission[]
+  userRoles       UserRole[]
+}
+
+model Permission {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  resource    String
+  action      String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  rolePermissions RolePermission[]
+}
+
+model RolePermission {
+  roleId        Int
+  permissionId  Int
+  assignedAt    DateTime @default(now())
+  assignedById  String?
+
+  role          Role    @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission    Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  assignedBy    User?   @relation("RolePermissionAssignedBy", fields: [assignedById], references: [id])
+
+  @@id([roleId, permissionId])
+}
+
+model UserRole {
+  userId        String
+  roleId        Int
+  assignedAt    DateTime @default(now())
+  assignedById  String?
+
+  user          User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role          Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  assignedBy    User?  @relation("UserRoleAssignedBy", fields: [assignedById], references: [id])
+
+  @@id([userId, roleId])
+}
+
+model Session {
+  id             String   @id @default(cuid())
+  userId         String
+  refreshTokenHash String
+  userAgent      String?
+  ipAddress      String?
+  createdAt      DateTime @default(now())
+  expiresAt      DateTime
+  revokedAt      DateTime?
+  replacedById   String?
+
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  replacedBy     Session? @relation("SessionReplacement", fields: [replacedById], references: [id])
+  replaces       Session[] @relation("SessionReplacement")
+
+  @@unique([refreshTokenHash])
+}
+
+model GuardianLink {
+  id            String               @id @default(cuid())
+  guardianId    String
+  studentId     String
+  relationship  GuardianRelationship?
+  status        GuardianLinkStatus   @default(PENDING)
+  consentedAt   DateTime?
+  revokedAt     DateTime?
+  createdAt     DateTime             @default(now())
+
+  guardian      User @relation("GuardianLinksGuardian", fields: [guardianId], references: [id])
+  student       User @relation("GuardianLinksStudent", fields: [studentId], references: [id])
+
+  @@unique([guardianId, studentId])
+}
+
+model VerificationToken {
+  id         String               @id @default(cuid())
+  userId     String
+  type       VerificationTokenType
+  tokenHash  String
+  expiresAt  DateTime
+  consumedAt DateTime?
+  metadata   Json?
+  createdAt  DateTime             @default(now())
+
+  user       User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, type, expiresAt])
+  @@unique([type, tokenHash])
+}
+
+model AuditLog {
+  id         String         @id @default(cuid())
+  actorId    String?
+  eventType  AuditEventType
+  resource   String
+  resourceId String?
+  metadata   Json?
+  createdAt  DateTime       @default(now())
+
+  actor      User?          @relation("UserAuditLogs", fields: [actorId], references: [id])
 }
