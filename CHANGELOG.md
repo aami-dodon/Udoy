@@ -1,3 +1,6 @@
+## 2025-10-21 01:05 IST
+- Backfilled the Prisma migration to create RBAC, session, guardian, and audit tables so deployments provision the Role catalog on startup.
+
 ## 2025-10-21 00:27 IST
 - Implemented the full UMS authentication stack with registration, login, refresh, logout, email verification, password reset, and guardian approval flows, backed by hashed verification tokens and audit logging.
 - Added Prisma models plus Casbin bootstrap logic for sessions, guardians, verification tokens, audit trails, and synchronized RBAC capability bundles.
