@@ -72,30 +72,42 @@ Follow them strictly to maintain **quality**, **consistency**, **security**, and
 
 ---
 
-## 6. Client Guidelines
+## 6. Client Guidelines (Updated – UI Centralization)
 
-- Use **TailwindCSS with centralized theme configuration** (`app/shared/theme`).  
-  - No local overrides are allowed for colors, spacing, or typography.  
-  - All styling must reference theme tokens or Tailwind utility classes.
+### Theme & Styling
+- Use **TailwindCSS** with a centralized theme (`app/shared/theme`) as the single source of truth.  
+- All **colors**, **spacing**, **typography**, **border radius**, **shadows**, and **transitions** must come from `tailwind.config.js` or theme tokens.  
+- **No local overrides** of colors, spacing, or typography are allowed.  
+- Use `theme()` references or Tailwind utility classes tied to tokens.
 
-- Use **shadcn/ui components** as the **primary building blocks** of the UI.  
-  - Extend components only when necessary and in a reusable, documented way.  
-  - Avoid duplicating components that already exist in the library.
+### Component Library
+- **shadcn/ui** is the primary component library.  
+- All UI components must be used through a **shared wrapper** inside `app/components/ui`.  
+- If extension or customization is needed, **do it once in the shared layer** — never inline.  
+- Document component variants and props for consistency and reuse.
 
-- Use **Lucide Icons** consistently through a shared icon component.  
-  - Do not embed raw SVGs or import icons inconsistently.  
-  - Follow sizing and styling conventions defined in the theme.
+### Icons
+- Icons must be used through a shared wrapper (`app/shared/Icon.tsx`).  
+- Use **Lucide Icons exclusively**.  
+- Do not embed raw SVGs or import icons directly in feature components.  
+- All sizing, stroke width, and colors must follow the theme token rules.
 
-- Use Tailwind utility classes for layout and minor styling adjustments only.  
-  - Do not use inline styles.  
-  - Extract repeating patterns into shared components.
+### Utility Classes & Layout
+- Tailwind utility classes are allowed **only for layout and minor adjustments**.  
+- No inline styles.  
+- No hardcoded colors, fonts, or spacing values.  
+- Repeating patterns must be extracted into reusable layout primitives (`Container`, `Section`, etc.).
 
-- Define all routes in a single route configuration file (`routes.js`) for SPA navigation.  
-  - Use **React Router DOM** for client-side routing.  
-  - Prefer lazy loading for route-level components.
+### Routing
+- Define and maintain routes in a single configuration file (`routes.js`).  
+- Use **React Router DOM** for all client-side routing.  
+- Route-level components must use **lazy loading** for performance.  
+- Use wrappers (e.g., `LayoutWrapper` or `RouteGuard`) for consistent page shells.
 
-- **Tiptap** is the single WYSIWYG editor:  
-  - Videos and other assets (PDFs, images, documents) are uploaded directly to **MinIO** using presigned URLs and embedded in content.
+### Editor & Assets
+- **Tiptap** is the single WYSIWYG editor.
+  - Videos and other assets (PDFs, images, documents) are uploaded directly to **MinIO** using **presigned URLs** and embedded in content.
+
 
 ---
 
