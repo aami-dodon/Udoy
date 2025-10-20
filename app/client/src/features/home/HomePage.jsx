@@ -14,6 +14,7 @@ import {
   Separator,
 } from '@components/ui';
 import SiteFooter from '@/components/SiteFooter';
+import { Link } from 'react-router-dom';
 
 const roles = [
   {
@@ -138,13 +139,18 @@ const HomePage = () => {
           <div className="absolute -left-16 top-32 h-72 w-72 rounded-full bg-ecru blur-3xl" />
           <div className="absolute bottom-20 right-10 h-80 w-80 rounded-full bg-mint-sage/50 blur-3xl" />
         </div>
-        <header className="container relative z-10 flex items-center justify-between py-8">
-          <div>
-            <p className="font-display text-2xl font-semibold text-white">Udoy</p>
-            <p className="text-sm uppercase tracking-widest text-white/70">Emerge, Rise, Thrive</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="lg" className="text-white hover:bg-white/10">
+        <header className="container relative z-10 flex flex-col gap-6 py-8 md:flex-row md:items-center md:justify-between">
+          <Link
+            to="/"
+            className="group inline-flex flex-col gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+          >
+            <span className="font-display text-3xl font-semibold text-white sm:text-4xl">Udoy</span>
+            <span className="text-base uppercase tracking-widest text-white/80 sm:text-lg">
+              Emerge, Rise, Thrive
+            </span>
+          </Link>
+          <div className="flex flex-wrap items-center gap-3 md:justify-end">
+            <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
               Log in
             </Button>
             <Button variant="accent" size="lg">
