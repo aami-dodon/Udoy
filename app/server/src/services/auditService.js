@@ -17,12 +17,17 @@ export async function logAuditEvent({
   }
 
   try {
+    const normalizedResourceId =
+      resourceId === null || resourceId === undefined
+        ? null
+        : String(resourceId);
+
     return await prisma.auditLog.create({
       data: {
         actorId,
         eventType,
         resource,
-        resourceId,
+        resourceId: normalizedResourceId,
         metadata,
       },
     });
