@@ -1,3 +1,6 @@
+## 2025-10-31 12:10 IST
+- Verified `API-SPECS.md` against the Express module registrations to confirm there are no undocumented or missing endpoints.
+
 ## 2025-10-31 11:30 IST
 - Added a shared support contact snippet across all authentication screens driven by the new `VITE_SUPPORT_EMAIL` configuration.
 ## 2025-10-21 01:40 IST
