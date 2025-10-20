@@ -355,14 +355,14 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
       color: 'inherit',
       flexShrink: 0,
     },
-    '.icon--outline': {
+    '.icon--thin': {
+      strokeWidth: '1',
+    },
+    '.icon--regular': {
       strokeWidth: '1.5',
     },
-    '.icon--solid': {
-      strokeWidth: '0',
-    },
-    '.icon--mini': {
-      strokeWidth: '0',
+    '.icon--bold': {
+      strokeWidth: '2',
     },
     '.icon--xs': {
       width: theme('spacing.4'),
