@@ -108,7 +108,7 @@ Follow them strictly to maintain **quality**, **consistency**, **security**, and
   - Videos and other assets (PDFs, images, documents) are uploaded directly to **MinIO** using **presigned URLs** and embedded in content.
 
 ### Screenshots
-- After making the changes **Always** provide a screenshot to preview of the full page when you are making a UI change
+- After making the changes **Always** provide screenshots to preview of the all the pages where you made a UI change
 
 ---
 
