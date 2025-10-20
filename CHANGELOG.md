@@ -1,5 +1,10 @@
 ## 2025-11-01 09:45 IST
 - Added a shared `@icons` Vite alias and refreshed feature pages to consume the centralized Lucide exports without brittle relative paths.
+## 2025-10-31 12:45 IST
+- Audited the React router manifest and expanded `ROUTES.md` with access guards so every implemented SPA path is documented from the live configuration.
+
+## 2025-10-31 12:10 IST
+- Verified `API-SPECS.md` against the Express module registrations to confirm there are no undocumented or missing endpoints.
 
 ## 2025-10-31 11:30 IST
 - Added a shared support contact snippet across all authentication screens driven by the new `VITE_SUPPORT_EMAIL` configuration.
