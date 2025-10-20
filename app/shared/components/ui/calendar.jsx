@@ -14,6 +14,10 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }) {
         month: 'space-y-4',
         caption: 'flex justify-center pt-1 relative items-center',
         caption_label: 'text-sm font-medium',
+        caption_dropdowns: 'flex items-center space-x-2',
+        caption_dropdown:
+          'inline-flex items-center justify-center gap-1 rounded-md border border-input bg-background px-3 py-2 text-sm font-medium ring-offset-background shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+        caption_dropdown_icon: 'hidden',
         nav: 'space-x-1 flex items-center',
         nav_button:
           'h-9 w-9 bg-transparent p-0 opacity-50 hover:opacity-100 focus:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background',
