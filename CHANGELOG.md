@@ -4,6 +4,10 @@
 - Swapped the client dependency from `@heroicons/react` to `lucide-react` for future development.
 
 ## 2025-10-30 12:45 IST
+
+## 2025-10-20 07:35 IST
+- Extended the client Vite alias map with a direct `@components/ui` entry and allowed the dev server to read from `app/components`, resolving the ThemePage import error for the shared shadcn wrappers.
+
 ## 2025-10-20 06:44 IST
 - Converted the shared `tokens.js` design token catalog to support both ES modules and CommonJS, preventing the `module is not defined` runtime in the client while keeping Tailwind consumption working.
 - Updated the `.mjs` re-export to consume the new hybrid module so React pages can continue to import named token sets without changes.
