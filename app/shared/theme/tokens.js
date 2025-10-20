@@ -229,7 +229,7 @@ const motion = {
   },
 };
 
-module.exports = {
+const tokens = {
   colors: {
     primary,
     brand: primary,
@@ -247,4 +247,12 @@ module.exports = {
   motion,
 };
 
-module.exports.default = module.exports;
+const colors = tokens.colors;
+
+export default tokens;
+export { colors, typography, layout, shadows, motion };
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = tokens;
+  module.exports.default = tokens;
+}
