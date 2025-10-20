@@ -1,7 +1,7 @@
 import { lazy } from 'react';
 
 const HomePage = lazy(() => import('./features/home/HomePage.jsx'));
-const ThemePage = lazy(() => import('./features/theme/ThemePage.jsx'));
+
 const ForbiddenPage = lazy(() => import('./features/errors/ForbiddenPage.jsx'));
 const ServerErrorPage = lazy(() => import('./features/errors/ServerErrorPage.jsx'));
 const GenericErrorPage = lazy(() => import('./features/errors/GenericErrorPage.jsx'));
@@ -11,10 +11,6 @@ const routes = [
   {
     path: '/',
     element: <HomePage />,
-  },
-  {
-    path: '/theme',
-    element: <ThemePage />,
   },
   {
     path: '/403',
