@@ -113,8 +113,8 @@ function RoleCard({ role }) {
     <Card className="h-full transition-none hover:translate-y-0 hover:shadow-gentle">
       <CardHeader>
         <div className="flex items-center gap-3">
-          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white shadow-sm ring-2 ring-evergreen">
-            <LucideIcon name={role.icon} size="lg" className="text-evergreen" />
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white shadow-sm ring-2 ring-mint-sage">
+            <LucideIcon name={role.icon} size="lg" className="text-mint-sage" />
           </span>
           <CardTitle>{role.name}</CardTitle>
         </div>
@@ -153,7 +153,7 @@ const HomePage = () => {
             <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
               Log in
             </Button>
-            <Button variant="secondary" size="sm">
+            <Button variant="accent" size="lg">
               Sign up
             </Button>
           </div>
@@ -360,8 +360,8 @@ const HomePage = () => {
             <div className="mt-8 space-y-6">
               {flywheel.map((item) => (
                 <div key={item.title} className="flex items-start gap-4 rounded-2xl bg-porcelain-tint/70 p-4">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white shadow-sm ring-2 ring-evergreen">
-                    <LucideIcon name={item.icon} size="lg" className="text-evergreen" />
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white shadow-sm ring-2 ring-mint-sage">
+                    <LucideIcon name={item.icon} size="lg" className="text-mint-sage" />
                   </div>
                   <div>
                     <p className="font-semibold text-black-olive">{item.title}</p>
