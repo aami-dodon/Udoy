@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
+    "@radix-ui/react-slot": "^1.2.3",
     "@tiptap/core": "^2.6.6",
     "@tiptap/extension-file-handler": "^2.26.3",
     "@tiptap/extension-image": "^2.6.6",
@@ -18,10 +19,13 @@
     "@tiptap/react": "^2.6.6",
     "@tiptap/starter-kit": "^2.6.6",
     "axios": "^1.7.7",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "prop-types": "^15.8.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.27.0"
+    "react-router-dom": "^6.27.0",
+    "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.7",
@@ -29,6 +33,7 @@
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.14",
+    "tailwindcss-animate": "^1.0.7",
     "vite": "^5.4.10"
   }
 }

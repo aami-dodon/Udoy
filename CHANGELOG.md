@@ -1,3 +1,8 @@
+## 2025-10-20 06:03 IST
+- Installed shadcn/ui tooling in the client so new components inherit the shared Udoy Tailwind theme.
+- Added baseline Button, Input, Label, Textarea, and Card primitives that wrap the theme tokens for consistent UI building blocks.
+- Extended the client Tailwind config with design token variables, animations, and a component alias configuration to match shadcn/ui conventions.
+
 # Changelog
 
 ## 2025-10-20 05:39 IST
