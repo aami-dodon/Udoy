@@ -8,7 +8,7 @@ function NotFoundPage() {
       description="The link may be out of date, renamed, or reserved for a future release."
       badgeTone="warning"
       actions={[
-        { label: 'Back to home', to: '/', variant: 'secondary' },
+        { label: 'Back to home', to: '/', variant: 'primary' },
       ]}
     >
       <p className="text-sm text-neutral-600">
