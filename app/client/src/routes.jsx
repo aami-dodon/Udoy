@@ -46,6 +46,10 @@ const routes = [
     element: <VerifyTokenPage />,
   },
   {
+    path: '/verify-email',
+    element: <VerifyTokenPage />,
+  },
+  {
     path: '/dashboard',
     element: (
       <RequireAuth>

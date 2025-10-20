@@ -14,6 +14,7 @@
 | `/forgot-password` | Auth | Collects an email address and triggers the password reset email workflow. |
 | `/reset-password` | Auth | Accepts a reset token + new password to finalize credential recovery. |
 | `/verify-token` | Auth | Handles email verification and guardian approval tokens with contextual messaging. |
+| `/verify-email` | Auth | Alias route for verification emails so emailed links resolve without 404s. |
 | `/dashboard` | Dashboard | Authenticated account hub showing RBAC roles, permissions, and session controls. |
 | `/admin/users` | Admin | Platform admin panel for listing users, toggling roles, and managing lifecycle states. |
 | `/403` | Error Pages | Forbidden access screen that guides users back to the home experience. |

@@ -1,3 +1,6 @@
+## 2025-10-21 21:05 IST
+- Added a `/verify-email` client route alias so verification links delivered by email no longer render a 404 page.
+
 ## 2025-10-21 20:15 IST
 - Normalized audit log writes to coerce resource identifiers to strings so Prisma accepts role and permission bootstrap events.
 
