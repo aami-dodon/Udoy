@@ -150,11 +150,11 @@ const HomePage = () => {
             </span>
           </Link>
           <div className="flex flex-wrap items-center gap-3 md:justify-end">
-            <Button variant="ghost" size="lg" className="text-white hover:bg-white/10">
-              Log in
+            <Button variant="ghost" size="lg" className="text-white hover:bg-white/10" asChild>
+              <Link to="/login">Log in</Link>
             </Button>
-            <Button variant="accent" size="lg">
-              Sign up
+            <Button variant="accent" size="lg" asChild>
+              <Link to="/register">Sign up</Link>
             </Button>
           </div>
         </header>
@@ -173,11 +173,11 @@ const HomePage = () => {
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-4">
-              <Button size="lg" className="bg-white text-black-olive hover:bg-porcelain">
-                Join as a sponsor
+              <Button size="lg" className="bg-white text-black-olive hover:bg-porcelain" asChild>
+                <Link to="/register">Join as a sponsor</Link>
               </Button>
-              <Button variant="secondary" size="lg">
-                Become a mentor
+              <Button variant="secondary" size="lg" asChild>
+                <Link to="/register">Become a mentor</Link>
               </Button>
               <a
                 href="/learning-paths"
@@ -334,20 +334,22 @@ const HomePage = () => {
                 </div>
               </div>
             </div>
-              <div className="flex flex-wrap gap-3 text-sm text-neutral-600">
-                <div className="flex items-center gap-2">
-                  <LucideIcon name="Calendar" size="sm" className="text-evergreen" />
-                  Planned cohort onboarding every quarter
-                </div>
-                <div className="flex items-center gap-2">
-                  <LucideIcon name="Globe" size="sm" className="text-evergreen" />
-                  Designed to be remote-first and globally inclusive
-                </div>
+            <div className="flex flex-wrap gap-3 text-sm text-neutral-600">
+              <div className="flex items-center gap-2">
+                <LucideIcon name="Calendar" size="sm" className="text-evergreen" />
+                Planned cohort onboarding every quarter
               </div>
+              <div className="flex items-center gap-2">
+                <LucideIcon name="Globe" size="sm" className="text-evergreen" />
+                Designed to be remote-first and globally inclusive
+              </div>
+            </div>
             <div className="flex flex-wrap gap-4">
-              <Button size="lg">I want to contribute</Button>
-              <Button variant="outline" size="lg">
-                Talk to our team
+              <Button size="lg" asChild>
+                <Link to="/register">I want to contribute</Link>
+              </Button>
+              <Button variant="outline" size="lg" asChild>
+                <Link to="/login">Talk to our team</Link>
               </Button>
             </div>
           </div>
