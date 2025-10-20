@@ -267,18 +267,23 @@ export default function RegisterPage() {
                           <FormControl>
                             <Button
                               variant="outline"
+                              data-empty={!field.value}
                               className={cn(
-                                'w-full justify-between text-left font-normal',
+                                'w-full justify-start text-left font-normal',
                                 !field.value && 'text-muted-foreground'
                               )}
                               type="button"
                             >
-                              <span>{field.value ? format(field.value, 'PPP') : 'Select date'}</span>
-                              <CalendarIcon className="h-4 w-4 opacity-50" />
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {field.value ? (
+                                format(field.value, 'PPP')
+                              ) : (
+                                <span>Select date</span>
+                              )}
                             </Button>
                           </FormControl>
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+                        <PopoverContent className="w-auto p-0" align="start">
                           <Calendar
                             mode="single"
                             selected={field.value}
