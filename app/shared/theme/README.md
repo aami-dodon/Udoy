@@ -232,16 +232,9 @@ styles.
 
 ## 6. Theme Documentation & Visual Regression
 
-The `/theme` route in the client app renders a living catalog of every token and component. Launch the Vite dev server and open the
-page locally to validate new additions:
+The dedicated `/theme` client route has been retired to keep the shipped bundle leaner. Use this README alongside the token catalogue in `app/shared/theme/tokens.mjs` and the shared UI wrappers under `app/shared/components/ui/` when verifying new work.
 
-```bash
-# from app/client
-npm run dev
-```
-
-Then visit `http://localhost:5173/theme` (or the port shown in the terminal). The page lives at
-`app/client/src/features/theme/ThemeShowcasePage.jsx` and consumes the same shared utilities used across the product.
+For visual QA, spin up the relevant feature screens within the app or build short-lived sandboxes under `app/client/src/features/` that import the shared primitives. Remove any temporary showcase files before merging so the repository stays focused on production surfaces.
 
 ---
 
@@ -250,7 +243,7 @@ Then visit `http://localhost:5173/theme` (or the port shown in the terminal). Th
 Whenever the preset changes:
 
 1. Update this README with any new tokens or components.
-2. Review `/theme` to ensure designers can visually inspect updates.
+2. Validate the changes within feature flows or temporary sandboxes as described above so designers can visually inspect updates.
 3. Note the change in `CHANGELOG.md` with an IST timestamp (see repository root instructions).
 
 Following this flow keeps Udoy’s learning experience coherent while allowing rapid feature delivery.

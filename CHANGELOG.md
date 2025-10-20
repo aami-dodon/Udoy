@@ -1,3 +1,7 @@
+## 2025-10-30 10:50 IST
+- Retired the client `/theme` showcase route and removed the ThemePage bundle so only production surfaces ship in the SPA.
+- Updated theme documentation and route catalog to reflect the removal of the dedicated design reference page.
+
 ## 2025-10-30 09:30 IST
 - Linked the client container `node_modules` directory at `/usr/src/node_modules` so shared `@components` imports can resolve Radix and class-variance dependencies during Vite dev runs.
 
