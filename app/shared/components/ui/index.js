@@ -14,3 +14,5 @@ export * from './select.jsx';
 export * from './separator.jsx';
 export * from './textarea.jsx';
 export * from './scroll-area.jsx';
+export * from './checkbox.jsx';
+export * from './table.jsx';

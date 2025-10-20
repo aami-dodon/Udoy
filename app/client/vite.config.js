@@ -42,6 +42,7 @@ export default defineConfig(({ mode }) => {
         '@radix-ui/react-accordion': path.resolve(clientNodeModules, '@radix-ui/react-accordion'),
         '@radix-ui/react-select': path.resolve(clientNodeModules, '@radix-ui/react-select'),
         '@radix-ui/react-dropdown-menu': path.resolve(clientNodeModules, '@radix-ui/react-dropdown-menu'),
+        '@radix-ui/react-checkbox': path.resolve(clientNodeModules, '@radix-ui/react-checkbox'),
         '@radix-ui/react-popover': path.resolve(clientNodeModules, '@radix-ui/react-popover'),
         '@radix-ui/react-scroll-area': path.resolve(clientNodeModules, '@radix-ui/react-scroll-area'),
         '@radix-ui/react-label': path.resolve(clientNodeModules, '@radix-ui/react-label'),
