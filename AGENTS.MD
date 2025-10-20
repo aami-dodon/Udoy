@@ -87,7 +87,7 @@ Follow them strictly to maintain **quality**, **consistency**, **security**, and
 - Document component variants and props for consistency and reuse.
 
 ### Icons
-- Icons must be used through a shared wrapper (`app/shared/Icon.tsx`).  
+- Icons must be used through the shared Lucide wrapper exported from `app/shared/icons`.  
 - Use **Lucide Icons exclusively**.  
 - Do not embed raw SVGs or import icons directly in feature components.  
 - All sizing, stroke width, and colors must follow the theme token rules.

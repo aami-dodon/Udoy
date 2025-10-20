@@ -2,6 +2,10 @@
 - Updated the client Tailwind configuration to consume the shared palette and radius tokens directly instead of relying on ad-hoc CSS variables.
 - Simplified the client base stylesheet so semantic utilities from the shared preset drive the background, foreground, and border colors.
 
+## 2025-10-20 09:30 IST
+- Removed the unused TypeScript icon wrapper so the shared icon system relies solely on the lucide React implementation.
+- Updated contributor guidelines to point at the canonical `app/shared/icons` exports for Lucide usage.
+
 ## 2025-10-20 09:16 IST
 - Removed the redundant `tokens.mjs` re-export now that `tokens.js` ships hybrid module support.
 - Updated the shared theme documentation to point to the canonical token catalogue.
