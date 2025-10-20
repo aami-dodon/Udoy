@@ -1195,7 +1195,7 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
         ...groupAcc,
         [`.bg-token-${suffix}`]: {
           '--token-color': hex,
-          backgroundColor: 'var(--token-color)',
+          backgroundColor: `var(--token-color, ${hex})`,
         },
       };
     }, acc);
