@@ -341,11 +341,11 @@ export async function ensureGuardianForStudent(studentId, {
         firstName: guardianName || null,
         status: UserStatus.INVITED,
       },
-      { actorId, roles: ['coach-guardian'] }
+      { actorId, roles: ['coach'] }
     );
     guardian = guardianResult.user;
   } else {
-    await ensureUserHasRole(guardian.id, 'coach-guardian', { actorId });
+    await ensureUserHasRole(guardian.id, 'coach', { actorId });
   }
 
   const existingLink = await prisma.guardianLink.findUnique({

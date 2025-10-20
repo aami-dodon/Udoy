@@ -60,7 +60,7 @@ const routes = [
   {
     path: '/admin/users',
     element: (
-      <RequireRole roles='platform-admin'>
+      <RequireRole roles='admin'>
         <AdminUsersPage />
       </RequireRole>
     ),

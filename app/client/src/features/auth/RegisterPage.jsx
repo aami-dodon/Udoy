@@ -40,9 +40,9 @@ import { SupportContactMessage } from './components/SupportContactMessage.jsx';
 const ROLE_OPTIONS = [
   { value: 'student', label: 'Student' },
   { value: 'creator', label: 'Creator' },
-  { value: 'validator', label: 'Validator' },
+  { value: 'teacher', label: 'Teacher' },
   { value: 'coach', label: 'Coach' },
-  { value: 'guardian', label: 'Guardian' },
+  { value: 'sponsor', label: 'Sponsor' },
 ];
 
 const MINIMUM_GUARDIAN_AGE = 16;
@@ -60,7 +60,7 @@ const registerSchema = z
     }),
     role: z.enum(ROLE_OPTIONS.map((role) => role.value)),
     phoneNumber: z.string().optional(),
-    guardianEmail: z.string().trim().email('Enter a valid guardian email.').optional(),
+    guardianEmail: z.string().trim().email('Enter a valid coach email.').optional(),
   })
   .superRefine((data, ctx) => {
     if (isAfter(data.dateOfBirth, new Date())) {
@@ -73,7 +73,7 @@ const registerSchema = z
         ctx.addIssue({
           path: ['guardianEmail'],
           code: z.ZodIssueCode.custom,
-          message: 'Guardian email is required for students under 16.',
+          message: 'Coach email is required for students under 16.',
         });
       }
     }
@@ -157,17 +157,17 @@ export default function RegisterPage() {
               Create an account tailored to your learning role
             </h1>
             <p className="max-w-xl text-base text-muted-foreground">
-              Whether you are exploring courses, coaching a cohort, or validating content, Udoy adapts to your needs with guided onboarding.
+              Whether you are exploring courses, coaching a cohort, or teaching learners, Udoy adapts to your needs with guided onboarding.
             </p>
           </div>
           <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <li className="rounded-xl border border-border bg-card/80 p-4 shadow-sm">
               <p className="text-sm font-semibold text-foreground">Student-ready pathways</p>
-              <p className="text-sm text-muted-foreground">Personalised milestones and guardian oversight keep progress transparent.</p>
+              <p className="text-sm text-muted-foreground">Personalised milestones and coach oversight keep progress transparent.</p>
             </li>
             <li className="rounded-xl border border-border bg-card/80 p-4 shadow-sm">
               <p className="text-sm font-semibold text-foreground">Creator workflows</p>
-              <p className="text-sm text-muted-foreground">Upload curricula, request validators, and publish with quality assurance.</p>
+              <p className="text-sm text-muted-foreground">Upload curricula, collaborate with teachers, and publish with quality assurance.</p>
             </li>
           </ul>
         </div>
@@ -310,7 +310,7 @@ export default function RegisterPage() {
                       <FormControl>
                         <PhoneInput placeholder="Optional" value={field.value || ''} onChange={field.onChange} />
                       </FormControl>
-                      <FormDescription>We’ll use this for guardian updates and urgent alerts.</FormDescription>
+                      <FormDescription>We’ll use this for important updates and urgent alerts.</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -322,11 +322,11 @@ export default function RegisterPage() {
                     name="guardianEmail"
                     render={({ field }) => (
                       <FormItem className="md:col-span-2">
-                        <FormLabel>Guardian email</FormLabel>
+                        <FormLabel>Coach email</FormLabel>
                         <FormControl>
-                          <Input type="email" placeholder="guardian@example.com" {...field} />
+                          <Input type="email" placeholder="coach@example.com" {...field} />
                         </FormControl>
-                        <FormDescription>We’ll request approval from this contact before activating access.</FormDescription>
+                        <FormDescription>We’ll request approval from this coach before activating access.</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -364,7 +364,7 @@ export default function RegisterPage() {
             </p>
             {requiresGuardian ? (
               <p className="text-xs text-muted-foreground">
-                As a student under 16, your guardian will receive an approval request. Access unlocks once they confirm.
+                As a student under 16, your coach will receive an approval request. Access unlocks once they confirm.
               </p>
             ) : null}
             <SupportContactMessage />

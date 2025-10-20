@@ -35,7 +35,7 @@ import validator from 'validator';
 
 const SELF_REGISTER_ROLE_SET = new Set(
   ROLE_DEFINITIONS.filter((definition) =>
-    ['student', 'creator', 'validator', 'coach-guardian', 'sponsor-partner'].includes(definition.name)
+    ['student', 'creator', 'teacher', 'coach', 'sponsor'].includes(definition.name)
   ).map((definition) => definition.name)
 );
 
@@ -164,18 +164,18 @@ async function dispatchGuardianApprovalEmail({ guardianEmail, guardianName, toke
   try {
     await emailService.sendEmail({
       to: guardianEmail,
-      subject: 'Udoy guardian approval required',
+      subject: 'Udoy coach approval required',
       html: `
         <p>Hi ${guardianName || 'there'},</p>
-        <p>A new student (${studentName || 'your ward'}) has been registered on Udoy and listed you as their guardian or coach.</p>
+        <p>A new student (${studentName || 'your ward'}) has been registered on Udoy and listed you as their coach.</p>
         <p>Please confirm their participation by visiting the link below:</p>
         <p><a href="${env.email?.verificationUrl ? `${env.email.verificationUrl}?token=${encodeURIComponent(token)}&type=guardian` : '#'}">Approve student</a></p>
         <p>If you were not expecting this request, you can ignore this email.</p>
       `,
-      text: `Hi ${guardianName || 'there'},\n\nA student (${studentName || 'your ward'}) has been registered on Udoy and listed you as their guardian or coach.\nApprove their participation using the link below:${env.email?.verificationUrl ? ` ${env.email.verificationUrl}?token=${token}&type=guardian` : ''}\nIf you were not expecting this message, you can safely ignore it.`,
+      text: `Hi ${guardianName || 'there'},\n\nA student (${studentName || 'your ward'}) has been registered on Udoy and listed you as their coach.\nApprove their participation using the link below:${env.email?.verificationUrl ? ` ${env.email.verificationUrl}?token=${token}&type=guardian` : ''}\nIf you were not expecting this message, you can safely ignore it.`,
     });
   } catch (error) {
-    logger.error('Failed to dispatch guardian approval email', {
+    logger.error('Failed to dispatch coach approval email', {
       error: error.message,
       guardianEmail,
     });
@@ -227,12 +227,12 @@ export async function register(req, res, next) {
 
     if (minor) {
       if (!guardianEmail || !validator.isEmail(String(guardianEmail).trim())) {
-        throw AppError.badRequest('A valid guardian email address is required for minors.');
+        throw AppError.badRequest('A valid coach email address is required for minors.');
       }
     }
 
     if (guardianEmail && !validator.isEmail(String(guardianEmail).trim())) {
-      throw AppError.badRequest('Provide a valid guardian email address.');
+      throw AppError.badRequest('Provide a valid coach email address.');
     }
 
     const safeFirstName = firstName.trim();
@@ -595,7 +595,7 @@ export async function guardianApproval(req, res, next) {
   try {
     const { token, approve = true } = req.body || {};
     if (!token) {
-      throw AppError.badRequest('Guardian approval token is required.');
+      throw AppError.badRequest('Coach approval token is required.');
     }
 
     const record = await consumeVerificationToken(token, VerificationTokenType.GUARDIAN_APPROVAL);
@@ -603,8 +603,8 @@ export async function guardianApproval(req, res, next) {
     const { guardianLinkId, studentId } = metadata;
 
     if (!guardianLinkId || !studentId) {
-      throw AppError.badRequest('Guardian approval token is missing link metadata.', {
-        code: 'GUARDIAN_TOKEN_INVALID',
+      throw AppError.badRequest('Coach approval token is missing link metadata.', {
+        code: 'COACH_TOKEN_INVALID',
       });
     }
 
@@ -639,7 +639,7 @@ export async function guardianApproval(req, res, next) {
 
     return res.json({
       status: 'success',
-      message: approve ? 'Guardian approval recorded.' : 'Guardian approval revoked.',
+      message: approve ? 'Coach approval recorded.' : 'Coach approval revoked.',
       link,
     });
   } catch (error) {

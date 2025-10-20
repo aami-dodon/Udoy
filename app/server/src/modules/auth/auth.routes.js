@@ -24,7 +24,7 @@ const router = Router();
  *     summary: Register a new user account.
  *     description: |
  *       Creates a new user record, assigns the student role, and dispatches verification emails. If the registrant is a minor,
- *       a guardian approval flow is initiated.
+ *       a coach approval flow is initiated.
  *     requestBody:
  *       required: true
  *       content:
@@ -221,7 +221,7 @@ router.post('/auth/reset-password', resetPassword);
  *   post:
  *     tags:
  *       - Auth
- *     summary: Approve or revoke guardian consent for a student.
+ *     summary: Approve or revoke coach consent for a student.
  *     requestBody:
  *       required: true
  *       content:
@@ -238,7 +238,7 @@ router.post('/auth/reset-password', resetPassword);
  *                 default: true
  *     responses:
  *       '200':
- *         description: Guardian action recorded.
+ *         description: Coach action recorded.
  */
 router.post('/auth/guardian/approve', guardianApproval);
 

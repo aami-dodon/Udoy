@@ -65,7 +65,7 @@ export default function LoginPage() {
               Sign in to continue your Udoy journey
             </h1>
             <p className="max-w-xl text-base text-muted-foreground">
-              Access personalised learning dashboards, approve guardianship requests, and steward your communities with confidence.
+              Access personalised learning dashboards, support coaching approvals, and steward your communities with confidence.
             </p>
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

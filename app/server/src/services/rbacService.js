@@ -4,10 +4,17 @@ import logger from '../utils/logger.js';
 import { logAuditEvent } from './auditService.js';
 import getEnforcer from '../integrations/casbin/enforcer.js';
 
+const ROLE_NAME_MAPPINGS = {
+  'platform-admin': 'admin',
+  validator: 'teacher',
+  'coach-guardian': 'coach',
+  'sponsor-partner': 'sponsor',
+};
+
 export const ROLE_DEFINITIONS = [
   {
-    name: 'platform-admin',
-    label: 'Platform Admin',
+    name: 'admin',
+    label: 'Admin',
     description:
       'Platform administrator with unrestricted access to tenant provisioning, security oversight, and RBAC management.',
     permissions: [
@@ -110,17 +117,17 @@ export const ROLE_DEFINITIONS = [
         description: 'Publish and schedule approved content.',
       },
       {
-        name: 'validator.collaborate',
-        resource: 'content-validator',
+        name: 'teacher.collaborate',
+        resource: 'teacher-collaboration',
         action: 'collaborate',
-        description: 'Collaborate with validators for review cycles.',
+        description: 'Collaborate with teachers for review cycles and classroom readiness.',
       },
     ],
   },
   {
-    name: 'validator',
-    label: 'Validator/Reviewer',
-    description: 'Reviewer tasked with quality and compliance checks prior to publication.',
+    name: 'teacher',
+    label: 'Teacher',
+    description: 'Educator tasked with pedagogy, quality, and compliance checks prior to publication.',
     permissions: [
       {
         name: 'content.review',
@@ -129,23 +136,23 @@ export const ROLE_DEFINITIONS = [
         description: 'Review and approve content drafts.',
       },
       {
-        name: 'compliance.checklist',
-        resource: 'compliance',
-        action: 'maintain',
-        description: 'Maintain compliance checklists and audit evidence.',
+        name: 'curriculum.align',
+        resource: 'curriculum',
+        action: 'align',
+        description: 'Align lessons to curriculum standards and learning outcomes.',
       },
       {
-        name: 'quality.control',
+        name: 'quality.assure',
         resource: 'quality',
-        action: 'control',
+        action: 'assure',
         description: 'Enforce quality standards across published assets.',
       },
     ],
   },
   {
-    name: 'coach-guardian',
-    label: 'Coach/Guardian',
-    description: 'Guardian or coach supporting minors with onboarding and progress tracking.',
+    name: 'coach',
+    label: 'Coach',
+    description: 'Coach supporting students with onboarding, accountability, and progress tracking.',
     permissions: [
       {
         name: 'student.onboard',
@@ -160,17 +167,17 @@ export const ROLE_DEFINITIONS = [
         description: 'Monitor student progress dashboards and alerts.',
       },
       {
-        name: 'credential.reset',
+        name: 'credential.support',
         resource: 'credential',
-        action: 'reset',
-        description: 'Initiate credential recovery for dependent students.',
+        action: 'support',
+        description: 'Support students with credential recovery and approvals.',
       },
     ],
   },
   {
-    name: 'sponsor-partner',
-    label: 'Sponsor/Partner',
-    description: 'Sponsors and partners who manage cohorts, analytics, and billing relationships.',
+    name: 'sponsor',
+    label: 'Sponsor',
+    description: 'Sponsor who manages cohorts, analytics, and billing relationships.',
     permissions: [
       {
         name: 'cohort.manage',
@@ -223,6 +230,19 @@ async function syncRolePolicies(roleName, permissions) {
 }
 
 export async function ensureCoreRbac({ actorId } = {}) {
+  for (const [legacyName, targetName] of Object.entries(ROLE_NAME_MAPPINGS)) {
+    const legacyRole = await prisma.role.findUnique({ where: { name: legacyName } });
+    if (legacyRole) {
+      const collision = await prisma.role.findUnique({ where: { name: targetName } });
+      if (!collision) {
+        await prisma.role.update({
+          where: { id: legacyRole.id },
+          data: { name: targetName },
+        });
+      }
+    }
+  }
+
   for (const roleDefinition of ROLE_DEFINITIONS) {
     const { name, description, permissions } = roleDefinition;
 
@@ -308,6 +328,25 @@ export async function ensureCoreRbac({ actorId } = {}) {
           assignedById: actorId ?? null,
         },
       });
+    }
+
+    const desiredPermissionNames = new Set(permissions.map((permission) => permission.name));
+    const existingRolePermissions = await prisma.rolePermission.findMany({
+      where: { roleId: role.id },
+      include: { permission: true },
+    });
+
+    for (const rolePermission of existingRolePermissions) {
+      if (!desiredPermissionNames.has(rolePermission.permission.name)) {
+        await prisma.rolePermission.delete({
+          where: {
+            roleId_permissionId: {
+              roleId: rolePermission.roleId,
+              permissionId: rolePermission.permissionId,
+            },
+          },
+        });
+      }
     }
 
     try {

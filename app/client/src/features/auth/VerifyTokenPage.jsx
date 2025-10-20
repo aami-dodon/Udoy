@@ -38,7 +38,7 @@ export default function VerifyTokenPage() {
       try {
         if (type === 'guardian') {
           const response = await guardianApproval({ token, approve: true });
-          setMessage(response?.message || 'Guardian approval recorded.');
+          setMessage(response?.message || 'Coach approval recorded.');
         } else {
           const response = await verifyEmail(token);
           setMessage(response?.message || 'Email verified successfully.');
