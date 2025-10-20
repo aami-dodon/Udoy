@@ -1,0 +1,21 @@
+{
+  "javascript.validate.enable": false,
+  "typescript.validate.enable": false,
+  "typescript.tsserver.enable": false,
+  "eslint.enable": false,
+  "editor.errorSquiggles": "disabled",
+  "problems.decorations.enabled": false,
+  "editor.quickSuggestions": {
+    "other": false,
+    "comments": false,
+    "strings": false
+  },
+  "editor.formatOnSave": false,
+  "typescript.disableAutomaticTypeAcquisition": true,
+  "problems.showCurrentInStatus": false,
+  "json.validate.enable": false,
+  "files.associations": {
+    "components.json": "plaintext"
+  },
+  "tailwindCSS.validate": false
+}
