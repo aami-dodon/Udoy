@@ -1,3 +1,8 @@
+## 2025-10-21 01:40 IST
+- Refined the registration flow with role selection, country-aware phone validation, and guardian capture only for students under 16.
+- Hardened `/api/auth/register` validation to require full profile details, enforce email format checks, and honor self-serve role selection.
+- Documented the updated payload requirements and validation rules for the registration endpoint.
+
 ## 2025-10-21 21:05 IST
 - Added a `/verify-email` client route alias so verification links delivered by email no longer render a 404 page.
 

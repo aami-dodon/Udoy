@@ -10,7 +10,7 @@ import logger from '../utils/logger.js';
 import { logAuditEvent } from './auditService.js';
 import { ensureCoreRbac, getRoleDefinition, ROLE_DEFINITIONS } from './rbacService.js';
 
-export const MINIMUM_MAJOR_AGE = 18;
+export const MINIMUM_MAJOR_AGE = 16;
 
 const authRelations = {
   roles: {
