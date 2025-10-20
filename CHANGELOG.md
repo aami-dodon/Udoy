@@ -1,3 +1,6 @@
+## 2025-10-31 11:30 IST
+- Added a shared support contact snippet across all authentication screens driven by the new `VITE_SUPPORT_EMAIL` configuration.
+
 ## 2025-10-21 21:05 IST
 - Added a `/verify-email` client route alias so verification links delivered by email no longer render a 404 page.
 

@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@components/ui/input.jsx';
 import { Label } from '@components/ui/label.jsx';
 import { useAuth } from './AuthProvider.jsx';
+import { SupportContactMessage } from './components/SupportContactMessage.jsx';
 
 function calculateAge(isoDate) {
   if (!isoDate) return null;
@@ -191,6 +192,7 @@ export default function RegisterPage() {
               As a minor, your guardian will receive an approval request. Access will unlock once they confirm.
             </p>
           ) : null}
+          <SupportContactMessage />
         </CardFooter>
       </Card>
     </div>

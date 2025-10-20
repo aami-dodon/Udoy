@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@components/ui/input.jsx';
 import { Label } from '@components/ui/label.jsx';
 import { useAuth } from './AuthProvider.jsx';
+import { SupportContactMessage } from './components/SupportContactMessage.jsx';
 
 export default function ResetPasswordPage() {
   const auth = useAuth();
@@ -97,13 +98,16 @@ export default function ResetPasswordPage() {
             </Button>
           </form>
         </CardContent>
-        <CardFooter className="flex justify-between text-sm text-neutral-700">
-          <Link to="/login" className="text-evergreen hover:underline">
-            Return to login
-          </Link>
-          <Link to="/forgot-password" className="text-evergreen hover:underline">
-            Request a new token
-          </Link>
+        <CardFooter className="flex flex-col gap-2 text-sm text-neutral-700">
+          <div className="flex w-full justify-between gap-3">
+            <Link to="/login" className="text-evergreen hover:underline">
+              Return to login
+            </Link>
+            <Link to="/forgot-password" className="text-evergreen hover:underline">
+              Request a new token
+            </Link>
+          </div>
+          <SupportContactMessage />
         </CardFooter>
       </Card>
     </div>
