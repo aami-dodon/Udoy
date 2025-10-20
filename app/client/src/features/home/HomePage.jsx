@@ -150,7 +150,7 @@ const HomePage = () => {
             </span>
           </Link>
           <div className="flex flex-wrap items-center gap-3 md:justify-end">
-            <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
+            <Button variant="ghost" size="lg" className="text-white hover:bg-white/10">
               Log in
             </Button>
             <Button variant="accent" size="lg">
