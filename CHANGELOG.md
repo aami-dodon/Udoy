@@ -1,3 +1,7 @@
+## 2025-10-20 09:16 IST
+- Removed the redundant `tokens.mjs` re-export now that `tokens.js` ships hybrid module support.
+- Updated the shared theme documentation to point to the canonical token catalogue.
+
 ## 2025-10-30 10:50 IST
 - Retired the client `/theme` showcase route and removed the ThemePage bundle so only production surfaces ship in the SPA.
 - Updated theme documentation and route catalog to reflect the removal of the dedicated design reference page.

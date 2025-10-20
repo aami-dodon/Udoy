@@ -232,7 +232,7 @@ styles.
 
 ## 6. Theme Documentation & Visual Regression
 
-The dedicated `/theme` client route has been retired to keep the shipped bundle leaner. Use this README alongside the token catalogue in `app/shared/theme/tokens.mjs` and the shared UI wrappers under `app/shared/components/ui/` when verifying new work.
+The dedicated `/theme` client route has been retired to keep the shipped bundle leaner. Use this README alongside the token catalogue in `app/shared/theme/tokens.js` and the shared UI wrappers under `app/shared/components/ui/` when verifying new work.
 
 For visual QA, spin up the relevant feature screens within the app or build short-lived sandboxes under `app/client/src/features/` that import the shared primitives. Remove any temporary showcase files before merging so the repository stays focused on production surfaces.
 
