@@ -48,7 +48,6 @@ Follow them strictly to maintain **quality**, **consistency**, **security**, and
 - Shared integrations (Nodemailer, MinIO, Casbin) are in `server/src/integrations`.
 - Shared logic lives in `shared/`.
 - Single `.env` for all services; template in `.env.example`.
-- `.env.local` is used for local development and must **not** be committed.
 
 ---
 
