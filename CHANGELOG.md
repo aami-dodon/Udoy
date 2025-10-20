@@ -1,3 +1,7 @@
+## 2025-10-20 09:51 IST
+- Wired the health dashboard fetches to the environment-aware API base helper so `/api/health` requests succeed when the client and server run on different hosts during development.
+- Introduced a shared `buildApiUrl` utility for future client modules that need consistent endpoint generation from `VITE_API_URL`.
+
 ## 2025-10-20 09:36 IST
 - Added a dedicated `/health` client route that renders a status dashboard backed by the shared shadcn card primitives.
 - Connected the health dashboard to the `/api/health` endpoint with refresh and troubleshooting states for degraded responses.

@@ -8,6 +8,9 @@ import {
   CardTitle,
 } from '@components/ui';
 import { cn } from '@/lib/utils';
+import { buildApiUrl } from '@/lib/api';
+
+const HEALTH_ENDPOINT = buildApiUrl('/health');
 
 const STATUS_VARIANTS = {
   ok: 'bg-success-100 text-success-700 ring-1 ring-inset ring-success-200',
@@ -94,7 +97,7 @@ function HealthPage() {
     }
 
     try {
-      const response = await fetch('/api/health', {
+      const response = await fetch(HEALTH_ENDPOINT, {
         headers: {
           Accept: 'application/json',
         },
@@ -187,7 +190,7 @@ function HealthPage() {
                 </div>
                 <div className="flex flex-col gap-2">
                   <span className="text-body-xs uppercase tracking-[0.2em] text-muted-foreground">API endpoint</span>
-                  <span className="text-body-sm text-foreground">/api/health</span>
+                  <span className="text-body-sm text-foreground">{HEALTH_ENDPOINT}</span>
                 </div>
               </div>
             )}
