@@ -1,3 +1,5 @@
+## 2025-11-01 09:45 IST
+- Added a shared `@icons` Vite alias and refreshed feature pages to consume the centralized Lucide exports without brittle relative paths.
 ## 2025-10-31 12:45 IST
 - Audited the React router manifest and expanded `ROUTES.md` with access guards so every implemented SPA path is documented from the live configuration.
 
@@ -6,6 +8,10 @@
 
 ## 2025-10-31 11:30 IST
 - Added a shared support contact snippet across all authentication screens driven by the new `VITE_SUPPORT_EMAIL` configuration.
+## 2025-10-21 02:56 IST
+- Rebuilt the authentication screens with shadcn blocks, adding form primitives, calendar date picking, and phone input support for consistent onboarding flows.
+- Refreshed the dashboard, admin roster, health, and error pages to use the updated Udoy component palette, including dropdown menus and token-based feedback messaging.
+- Expanded the shared shadcn wrapper library (form, calendar, dropdown menu, popover, phone input) and Vite aliases so cross-app imports resolve against the client node modules.
 ## 2025-10-21 01:40 IST
 - Refined the registration flow with role selection, country-aware phone validation, and guardian capture only for students under 16.
 - Hardened `/api/auth/register` validation to require full profile details, enforce email format checks, and honor self-serve role selection.

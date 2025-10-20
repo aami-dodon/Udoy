@@ -1,25 +1,41 @@
 import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Button } from '@components/ui/button.jsx';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@components/ui/card.jsx';
-import { Input } from '@components/ui/input.jsx';
-import { Label } from '@components/ui/label.jsx';
-import { Select } from '@components/ui/select.jsx';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { differenceInYears, format, isAfter, subYears } from 'date-fns';
+import { isValidPhoneNumber } from 'react-phone-number-input';
+import { cn } from '@/lib/utils';
+import {
+  Button,
+  Calendar,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Input,
+  PhoneInput,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@components/ui';
+import { CalendarIcon } from 'lucide-react';
 import { useAuth } from './AuthProvider.jsx';
 import { SupportContactMessage } from './components/SupportContactMessage.jsx';
-
-function calculateAge(isoDate) {
-  if (!isoDate) return null;
-  const birth = new Date(isoDate);
-  if (Number.isNaN(birth.getTime())) return null;
-  const today = new Date();
-  let age = today.getFullYear() - birth.getFullYear();
-  const monthDiff = today.getMonth() - birth.getMonth();
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-    age -= 1;
-  }
-  return age;
-}
 
 const ROLE_OPTIONS = [
   { value: 'student', label: 'Student' },
@@ -29,358 +45,326 @@ const ROLE_OPTIONS = [
   { value: 'guardian', label: 'Guardian' },
 ];
 
-const COUNTRY_PHONE_RULES = {
-  '+91': {
-    label: 'India (+91)',
-    pattern: /^[6-9]\d{9}$/,
-    example: '9876543210',
-  },
-  '+1': {
-    label: 'United States (+1)',
-    pattern: /^[2-9]\d{9}$/,
-    example: '4155550123',
-  },
-  '+44': {
-    label: 'United Kingdom (+44)',
-    pattern: /^7\d{9}$/,
-    example: '7123456789',
-  },
-  '+61': {
-    label: 'Australia (+61)',
-    pattern: /^4\d{8}$/,
-    example: '412345678',
-  },
-};
-
-const DEFAULT_COUNTRY_CODE = '+91';
 const MINIMUM_GUARDIAN_AGE = 16;
+const EARLIEST_BIRTHDATE = subYears(new Date(), 80);
 
-function isValidEmail(value) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value).trim());
-}
+const registerSchema = z
+  .object({
+    firstName: z.string().trim().min(1, 'First name is required.'),
+    lastName: z.string().trim().min(1, 'Last name is required.'),
+    email: z.string().trim().min(1, 'Email is required.').email('Enter a valid email address.'),
+    password: z.string().min(8, 'Password must be at least 8 characters.'),
+    dateOfBirth: z.coerce.date({
+      required_error: 'Date of birth is required.',
+      invalid_type_error: 'Enter a valid date.',
+    }),
+    role: z.enum(ROLE_OPTIONS.map((role) => role.value)),
+    phoneNumber: z.string().optional(),
+    guardianEmail: z.string().trim().email('Enter a valid guardian email.').optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (isAfter(data.dateOfBirth, new Date())) {
+      ctx.addIssue({ path: ['dateOfBirth'], code: z.ZodIssueCode.custom, message: 'Date of birth cannot be in the future.' });
+    }
+
+    const age = differenceInYears(new Date(), data.dateOfBirth);
+    if (data.role === 'student' && age < MINIMUM_GUARDIAN_AGE) {
+      if (!data.guardianEmail) {
+        ctx.addIssue({
+          path: ['guardianEmail'],
+          code: z.ZodIssueCode.custom,
+          message: 'Guardian email is required for students under 16.',
+        });
+      }
+    }
+
+    if (data.phoneNumber && !isValidPhoneNumber(data.phoneNumber)) {
+      ctx.addIssue({
+        path: ['phoneNumber'],
+        code: z.ZodIssueCode.custom,
+        message: 'Enter a valid phone number.',
+      });
+    }
+  });
 
 export default function RegisterPage() {
   const auth = useAuth();
   const navigate = useNavigate();
-  const [formState, setFormState] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    dateOfBirth: '',
-    role: ROLE_OPTIONS[0].value,
-    countryCode: DEFAULT_COUNTRY_CODE,
-    phoneNumber: '',
-    guardianEmail: '',
+  const [serverFeedback, setServerFeedback] = useState(null);
+
+  const form = useForm({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      dateOfBirth: undefined,
+      role: ROLE_OPTIONS[0].value,
+      phoneNumber: '',
+      guardianEmail: '',
+    },
   });
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [touched, setTouched] = useState({});
 
-  const age = useMemo(() => calculateAge(formState.dateOfBirth), [formState.dateOfBirth]);
-  const requiresGuardian =
-    formState.role === 'student' && typeof age === 'number' && age < MINIMUM_GUARDIAN_AGE;
-  const selectedCountry = COUNTRY_PHONE_RULES[formState.countryCode] || COUNTRY_PHONE_RULES[DEFAULT_COUNTRY_CODE];
+  const dateOfBirth = form.watch('dateOfBirth');
+  const role = form.watch('role');
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormState((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleBlur = (event) => {
-    const { name } = event.target;
-    setTouched((prev) => ({ ...prev, [name]: true }));
-  };
-
-  const emailInvalid = touched.email && !isValidEmail(formState.email);
-  const guardianEmailInvalid =
-    requiresGuardian && touched.guardianEmail && !isValidEmail(formState.guardianEmail);
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setError('');
-    setSuccess('');
-
-    const firstName = formState.firstName.trim();
-    const lastName = formState.lastName.trim();
-    const email = formState.email.trim();
-    const guardianEmail = formState.guardianEmail.trim();
-    const phoneDigits = formState.phoneNumber.replace(/\D/g, '');
-
-    if (!firstName) {
-      setError('First name is required.');
-      return;
+  const age = useMemo(() => {
+    if (!dateOfBirth) return null;
+    try {
+      return differenceInYears(new Date(), dateOfBirth);
+    } catch (error) {
+      return null;
     }
+  }, [dateOfBirth]);
 
-    if (!lastName) {
-      setError('Last name is required.');
-      return;
-    }
+  const requiresGuardian = role === 'student' && typeof age === 'number' && age < MINIMUM_GUARDIAN_AGE;
 
-    if (!email || !isValidEmail(email)) {
-      setTouched((prev) => ({ ...prev, email: true }));
-      setError('Enter a valid email address.');
-      return;
-    }
+  const onSubmit = async (values) => {
+    setServerFeedback(null);
 
-    if (!formState.password) {
-      setError('Password is required.');
-      return;
-    }
-
-    if (!formState.dateOfBirth) {
-      setError('Date of birth is required.');
-      return;
-    }
-
-    if (!formState.role) {
-      setError('Select a role to continue.');
-      return;
-    }
-
-    if (!selectedCountry) {
-      setError('Select a valid country code.');
-      return;
-    }
-
-    if (requiresGuardian) {
-      if (!guardianEmail || !isValidEmail(guardianEmail)) {
-        setTouched((prev) => ({ ...prev, guardianEmail: true }));
-        setError('A valid guardian email is required for students under 16.');
-        return;
-      }
-    }
-
-    if (formState.phoneNumber) {
-      if (!selectedCountry.pattern.test(phoneDigits)) {
-        setError(`Enter a valid phone number for ${selectedCountry.label}.`);
-        return;
-      }
-    }
-
-    setSubmitting(true);
+    const payload = {
+      firstName: values.firstName.trim(),
+      lastName: values.lastName.trim(),
+      email: values.email.trim(),
+      password: values.password,
+      dateOfBirth: format(values.dateOfBirth, 'yyyy-MM-dd'),
+      role: values.role,
+      phoneNumber: values.phoneNumber ? values.phoneNumber.trim() : undefined,
+      guardianEmail: requiresGuardian && values.guardianEmail ? values.guardianEmail.trim() : undefined,
+    };
 
     try {
-      await auth.register({
-        firstName,
-        lastName,
-        email,
-        password: formState.password,
-        dateOfBirth: formState.dateOfBirth,
-        role: formState.role,
-        countryCode: formState.countryCode,
-        phoneNumber: formState.phoneNumber ? `${formState.countryCode}${phoneDigits}` : undefined,
-        guardianEmail: requiresGuardian ? guardianEmail : undefined,
-      });
-      setSuccess('Registration successful! Please verify your email before signing in.');
-      setTimeout(() => navigate('/login'), 1200);
-    } catch (submitError) {
-      const message = submitError?.response?.data?.message || 'We were unable to create your account.';
-      setError(message);
-    } finally {
-      setSubmitting(false);
+      await auth.register(payload);
+      setServerFeedback({ type: 'success', message: 'Registration successful! Please verify your email before signing in.' });
+      setTimeout(() => navigate('/login'), 1600);
+    } catch (error) {
+      const message = error?.response?.data?.message || 'We were unable to create your account.';
+      setServerFeedback({ type: 'error', message });
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-porcelain">
-      <Card className="w-full max-w-2xl border-none bg-white shadow-xl">
-        <CardHeader className="space-y-2">
-          <CardTitle className="text-2xl text-evergreen">Join Udoy</CardTitle>
-          <CardDescription className="text-sm text-neutral-600">
-            Create an account to start learning, mentoring, or managing cohorts. Guardians can register on behalf of students.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form className="grid gap-4 md:grid-cols-2" onSubmit={handleSubmit}>
-            <div className="space-y-2">
-              <Label htmlFor="firstName">
-                First name <span className="text-rose-600">*</span>
-              </Label>
-              <Input
-                id="firstName"
-                name="firstName"
-                placeholder="Anita"
-                required
-                value={formState.firstName}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="lastName">
-                Last name <span className="text-rose-600">*</span>
-              </Label>
-              <Input
-                id="lastName"
-                name="lastName"
-                placeholder="Sharma"
-                required
-                value={formState.lastName}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="role">
-                Role <span className="text-rose-600">*</span>
-              </Label>
-              <Select
-                id="role"
-                name="role"
-                required
-                value={formState.role}
-                onChange={handleChange}
-                onBlur={handleBlur}
-              >
-                {ROLE_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">
-                Email address <span className="text-rose-600">*</span>
-              </Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                required
-                placeholder="you@example.com"
-                value={formState.email}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                aria-invalid={emailInvalid || undefined}
-                className={emailInvalid ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-400/50' : undefined}
-              />
-              {emailInvalid ? (
-                <p className="text-xs text-rose-600">Enter a valid email address.</p>
-              ) : null}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">
-                Password <span className="text-rose-600">*</span>
-              </Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                required
-                minLength={8}
-                placeholder="Choose a strong password"
-                value={formState.password}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="dateOfBirth">
-                Date of birth <span className="text-rose-600">*</span>
-              </Label>
-              <Input
-                id="dateOfBirth"
-                name="dateOfBirth"
-                type="date"
-                required
-                value={formState.dateOfBirth}
-                onChange={handleChange}
-                onBlur={handleBlur}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="countryCode">
-                Country code <span className="text-rose-600">*</span>
-              </Label>
-              <Select
-                id="countryCode"
-                name="countryCode"
-                required
-                value={formState.countryCode}
-                onChange={handleChange}
-                onBlur={handleBlur}
-              >
-                {Object.entries(COUNTRY_PHONE_RULES).map(([code, details]) => (
-                  <option key={code} value={code}>
-                    {details.label}
-                  </option>
-                ))}
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="phoneNumber">Phone number</Label>
-              <Input
-                id="phoneNumber"
-                name="phoneNumber"
-                type="tel"
-                placeholder={selectedCountry?.example ? `Optional · e.g. ${selectedCountry.example}` : 'Optional'}
-                value={formState.phoneNumber}
-                onChange={handleChange}
-                onBlur={handleBlur}
-              />
-            </div>
-            {requiresGuardian ? (
-              <div className="space-y-2 md:col-span-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="guardianEmail">
-                    Guardian email <span className="text-rose-600">*</span>
-                  </Label>
-                  <span className="text-xs font-medium text-rose-600">Required for students under 16</span>
-                </div>
-                <Input
-                  id="guardianEmail"
-                  name="guardianEmail"
-                  type="email"
-                  required={requiresGuardian}
-                  placeholder="guardian@example.com"
-                  value={formState.guardianEmail}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  aria-invalid={guardianEmailInvalid || undefined}
-                  className={
-                    guardianEmailInvalid
-                      ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-400/50'
-                      : undefined
-                  }
-                />
-                {guardianEmailInvalid ? (
-                  <p className="text-xs text-rose-600">Enter a valid guardian email address.</p>
-                ) : null}
-              </div>
-            ) : null}
-            {error ? (
-              <div className="md:col-span-2">
-                <p className="rounded-lg bg-rose-100/80 px-3 py-2 text-sm text-rose-700">{error}</p>
-              </div>
-            ) : null}
-            {success ? (
-              <div className="md:col-span-2">
-                <p className="rounded-lg bg-mint-sage/20 px-3 py-2 text-sm text-evergreen">{success}</p>
-              </div>
-            ) : null}
-            <div className="md:col-span-2">
-              <Button type="submit" className="w-full" disabled={submitting}>
-                {submitting ? 'Creating your account…' : 'Create account'}
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-        <CardFooter className="flex flex-col gap-2 text-sm text-neutral-700">
-          <p>
-            Already have an account?{' '}
-            <Link to="/login" className="font-semibold text-evergreen hover:underline">
-              Sign in
-            </Link>
-            .
-          </p>
-          {requiresGuardian ? (
-            <p className="text-xs text-neutral-500">
-              As a student under 16, your guardian will receive an approval request. Access unlocks after they confirm.
+    <div className="min-h-screen bg-background">
+      <div className="mx-auto grid min-h-screen w-full max-w-6xl grid-cols-1 items-center gap-10 px-6 py-10 lg:grid-cols-[1.1fr_0.9fr] lg:px-12">
+        <div className="space-y-6">
+          <div className="inline-flex items-center gap-2 rounded-full bg-muted px-4 py-1 text-xs font-semibold uppercase tracking-[0.35em] text-muted-foreground">
+            Join Udoy
+          </div>
+          <div className="space-y-4">
+            <h1 className="font-display text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
+              Create an account tailored to your learning role
+            </h1>
+            <p className="max-w-xl text-base text-muted-foreground">
+              Whether you are exploring courses, coaching a cohort, or validating content, Udoy adapts to your needs with guided onboarding.
             </p>
-          ) : null}
-          <SupportContactMessage />
-        </CardFooter>
-      </Card>
+          </div>
+          <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <li className="rounded-xl border border-border bg-card/80 p-4 shadow-sm">
+              <p className="text-sm font-semibold text-foreground">Student-ready pathways</p>
+              <p className="text-sm text-muted-foreground">Personalised milestones and guardian oversight keep progress transparent.</p>
+            </li>
+            <li className="rounded-xl border border-border bg-card/80 p-4 shadow-sm">
+              <p className="text-sm font-semibold text-foreground">Creator workflows</p>
+              <p className="text-sm text-muted-foreground">Upload curricula, request validators, and publish with quality assurance.</p>
+            </li>
+          </ul>
+        </div>
+        <Card className="w-full max-w-2xl justify-self-center">
+          <CardHeader>
+            <CardTitle className="text-2xl">Let’s get you started</CardTitle>
+            <CardDescription>Complete the details below to activate your Udoy profile.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-6 md:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="firstName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>First name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Anita" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="lastName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Last name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Sharma" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="role"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Role</FormLabel>
+                      <Select value={field.value} onValueChange={field.onChange}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select your role" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {ROLE_OPTIONS.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email address</FormLabel>
+                      <FormControl>
+                        <Input type="email" autoComplete="email" placeholder="you@example.com" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input type="password" autoComplete="new-password" placeholder="Choose a strong password" {...field} />
+                      </FormControl>
+                      <FormDescription>Minimum 8 characters.</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="dateOfBirth"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Date of birth</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                'justify-start text-left font-normal',
+                                !field.value && 'text-muted-foreground'
+                              )}
+                              type="button"
+                            >
+                              {field.value ? format(field.value, 'PPP') : 'Pick a date'}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            captionLayout="dropdown-buttons"
+                            fromYear={EARLIEST_BIRTHDATE.getFullYear()}
+                            toYear={new Date().getFullYear()}
+                            toDate={new Date()}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormDescription>This helps us personalise age-appropriate pathways.</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="phoneNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Phone number</FormLabel>
+                      <FormControl>
+                        <PhoneInput placeholder="Optional" value={field.value || ''} onChange={field.onChange} />
+                      </FormControl>
+                      <FormDescription>We’ll use this for guardian updates and urgent alerts.</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                {requiresGuardian ? (
+                  <FormField
+                    key="guardianEmail"
+                    control={form.control}
+                    name="guardianEmail"
+                    render={({ field }) => (
+                      <FormItem className="md:col-span-2">
+                        <FormLabel>Guardian email</FormLabel>
+                        <FormControl>
+                          <Input type="email" placeholder="guardian@example.com" {...field} />
+                        </FormControl>
+                        <FormDescription>We’ll request approval from this contact before activating access.</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                ) : null}
+                {serverFeedback ? (
+                  <div className="md:col-span-2">
+                    <div
+                      className={cn(
+                        'rounded-lg border px-3 py-2 text-sm',
+                        serverFeedback.type === 'success'
+                          ? 'border-secondary/40 bg-secondary/20 text-secondary-foreground'
+                          : 'border-destructive/40 bg-destructive/10 text-destructive'
+                      )}
+                    >
+                      {serverFeedback.message}
+                    </div>
+                  </div>
+                ) : null}
+                <div className="md:col-span-2">
+                  <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+                    {form.formState.isSubmitting ? 'Creating your account…' : 'Create account'}
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </CardContent>
+          <CardFooter className="flex flex-col items-start gap-4 text-sm text-muted-foreground">
+            <p>
+              Already have an account?{' '}
+              <Link to="/login" className="font-semibold text-primary hover:underline">
+                Sign in
+              </Link>
+              .
+            </p>
+            {requiresGuardian ? (
+              <p className="text-xs text-muted-foreground">
+                As a student under 16, your guardian will receive an approval request. Access unlocks once they confirm.
+              </p>
+            ) : null}
+            <SupportContactMessage />
+          </CardFooter>
+        </Card>
+      </div>
     </div>
   );
 }

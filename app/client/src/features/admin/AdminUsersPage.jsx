@@ -1,12 +1,22 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Button } from '@components/ui/button.jsx';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@components/ui/card.jsx';
-import { Badge } from '@components/ui/badge.jsx';
-import { Input } from '@components/ui/input.jsx';
-import { Label } from '@components/ui/label.jsx';
-import { Separator } from '@components/ui/separator.jsx';
+import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  Input,
+  Label,
+  Separator,
+} from '@components/ui';
 import { cn } from '@/lib/utils';
-import { LucideIcon } from '../../../../shared/icons';
+import { LucideIcon } from '@icons';
 import { useAuth } from '../auth/AuthProvider.jsx';
 import adminApi from './api.js';
 
@@ -22,13 +32,8 @@ function RoleSelector({ availableRoles, activeRoles, onToggle }) {
             key={role.name}
             type="button"
             size="sm"
-            variant={isActive ? 'primary' : 'outline'}
-            className={cn(
-              'rounded-full px-4 text-xs',
-              isActive
-                ? 'shadow-none'
-                : 'border-porcelain-shade bg-porcelain-tint text-neutral-700 hover:border-evergreen hover:text-evergreen'
-            )}
+            variant={isActive ? 'default' : 'outline'}
+            className={cn('rounded-full px-4 text-xs', !isActive && 'text-muted-foreground')}
             onClick={() => onToggle(role.name, !isActive)}
           >
             {role.label}
@@ -105,73 +110,86 @@ export default function AdminUsersPage() {
   };
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-6xl flex-col gap-6 bg-porcelain px-6 py-10">
+    <div className="mx-auto flex min-h-screen max-w-6xl flex-col gap-6 bg-background px-6 py-10">
       <header className="flex flex-col gap-2">
-        <h1 className="text-3xl font-semibold text-evergreen">User management</h1>
-        <p className="max-w-2xl text-sm text-neutral-600">
+        <h1 className="text-3xl font-semibold text-foreground">User management</h1>
+        <p className="max-w-2xl text-sm text-muted-foreground">
           Provision roles, adjust account states, and monitor onboarding progress across all Udoy cohorts.
         </p>
       </header>
       {feedback ? (
-        <p className="rounded-lg bg-mint-sage/20 px-3 py-2 text-sm text-evergreen">{feedback}</p>
+        <p className="rounded-lg border border-secondary/40 bg-secondary/20 px-3 py-2 text-sm text-secondary-foreground">
+          {feedback}
+        </p>
       ) : null}
-      {error ? <p className="rounded-lg bg-rose-100/80 px-3 py-2 text-sm text-rose-700">{error}</p> : null}
+      {error ? (
+        <p className="rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p>
+      ) : null}
       <section className="grid gap-6">
-        {loading ? (
-          <Card className="border-none bg-white shadow-lg">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg text-evergreen">
-                <LucideIcon name="Loader" className="animate-spin" /> Loading users…
-              </CardTitle>
-              <CardDescription>Fetching the latest account roster.</CardDescription>
-            </CardHeader>
-          </Card>
-        ) : null}
-        {!loading && users.length === 0 ? (
-          <Card className="border-none bg-white shadow-lg">
-            <CardHeader>
-              <CardTitle className="text-lg text-evergreen">No users yet</CardTitle>
-              <CardDescription>Accounts created through onboarding will appear here automatically.</CardDescription>
-            </CardHeader>
-          </Card>
-        ) : null}
-        {users.map((user) => (
-          <Card key={user.id} className="border-none bg-white shadow-lg">
-            <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <CardTitle className="text-lg text-evergreen">{user.firstName || user.email}</CardTitle>
-                <CardDescription>{user.email}</CardDescription>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {user.roles?.map((role) => (
-                  <Badge key={role} variant="accent" className="text-xs uppercase tracking-wide text-evergreen">
-                    {role}
-                  </Badge>
-                ))}
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor={`status-${user.id}`}>Account status</Label>
-                  <select
-                    id={`status-${user.id}`}
-                    className="w-full rounded-md border border-porcelain-shade bg-white px-3 py-2 text-sm text-neutral-700 focus:outline-none focus:ring-2 focus:ring-evergreen"
-                    value={user.status}
-                    onChange={(event) => handleStatusChange(user.id, event.target.value)}
-                  >
+      {loading ? (
+        <Card className="shadow-lg">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg text-foreground">
+              <LucideIcon name="Loader" className="animate-spin text-primary" /> Loading users…
+            </CardTitle>
+            <CardDescription>Fetching the latest account roster.</CardDescription>
+          </CardHeader>
+        </Card>
+      ) : null}
+      {!loading && users.length === 0 ? (
+        <Card className="shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-lg text-foreground">No users yet</CardTitle>
+            <CardDescription>Accounts created through onboarding will appear here automatically.</CardDescription>
+          </CardHeader>
+        </Card>
+      ) : null}
+      {users.map((user) => (
+        <Card key={user.id} className="shadow-lg">
+          <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <CardTitle className="text-lg text-foreground">{user.firstName || user.email}</CardTitle>
+              <CardDescription>{user.email}</CardDescription>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {user.roles?.map((role) => (
+                <Badge key={role} variant="secondary" className="text-xs uppercase tracking-wide">
+                  {role}
+                </Badge>
+              ))}
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label>Account status</Label>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="w-full justify-between">
+                      <span>{user.status}</span>
+                      <LucideIcon name="ChevronDown" className="h-4 w-4 opacity-60" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-48">
                     {STATUS_OPTIONS.map((option) => (
-                      <option key={option} value={option}>
+                      <DropdownMenuItem
+                        key={option}
+                        onSelect={(event) => {
+                          event.preventDefault();
+                          handleStatusChange(user.id, option);
+                        }}
+                      >
                         {option}
-                      </option>
+                      </DropdownMenuItem>
                     ))}
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <Label>Email verified</Label>
-                  <Input value={user.isEmailVerified ? 'Yes' : 'Pending'} readOnly className="bg-porcelain-tint text-neutral-700" />
-                </div>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
+              <div className="space-y-2">
+                <Label>Email verified</Label>
+                <Input value={user.isEmailVerified ? 'Yes' : 'Pending'} readOnly className="bg-muted text-muted-foreground" />
+              </div>
+            </div>
               <Separator />
               <div className="space-y-2">
                 <Label>Assigned roles</Label>
