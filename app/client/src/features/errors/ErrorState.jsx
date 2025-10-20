@@ -1,11 +1,16 @@
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import { Button } from '@components/ui';
 
-const ACTION_VARIANT_CLASS = {
-  primary: 'btn btn--primary',
-  accent: 'btn btn--accent',
-  ghost: 'btn btn--ghost',
-  secondary: 'btn btn--secondary',
+const ACTION_VARIANT_MAP = {
+  primary: 'default',
+  accent: 'accent',
+  ghost: 'ghost',
+  secondary: 'secondary',
+  default: 'default',
+  destructive: 'destructive',
+  outline: 'outline',
+  link: 'link',
 };
 
 function ErrorState({ statusCode, title, description, badgeTone, actions, children }) {
@@ -30,38 +35,30 @@ function ErrorState({ statusCode, title, description, badgeTone, actions, childr
           {actions?.length ? (
             <div className="flex flex-wrap items-center justify-center gap-3">
               {actions.map(({ label, to, onClick, variant = 'accent', external }, index) => {
-                const className = ACTION_VARIANT_CLASS[variant] || ACTION_VARIANT_CLASS.accent;
+                const buttonVariant = ACTION_VARIANT_MAP[variant] || ACTION_VARIANT_MAP.accent;
 
                 if (to) {
                   if (external) {
                     return (
-                      <a
-                        key={label || index}
-                        href={to}
-                        className={className}
-                        rel="noopener noreferrer"
-                      >
-                        {label}
-                      </a>
+                      <Button key={label || index} variant={buttonVariant} asChild>
+                        <a href={to} rel="noopener noreferrer">
+                          {label}
+                        </a>
+                      </Button>
                     );
                   }
 
                   return (
-                    <Link key={label || index} to={to} className={className}>
-                      {label}
-                    </Link>
+                    <Button key={label || index} variant={buttonVariant} asChild>
+                      <Link to={to}>{label}</Link>
+                    </Button>
                   );
                 }
 
                 return (
-                  <button
-                    key={label || index}
-                    type="button"
-                    className={className}
-                    onClick={onClick}
-                  >
+                  <Button key={label || index} type="button" variant={buttonVariant} onClick={onClick}>
                     {label}
-                  </button>
+                  </Button>
                 );
               })}
             </div>
@@ -82,7 +79,7 @@ ErrorState.propTypes = {
       label: PropTypes.string.isRequired,
       to: PropTypes.string,
       onClick: PropTypes.func,
-      variant: PropTypes.oneOf(['primary', 'accent', 'ghost', 'secondary']),
+      variant: PropTypes.oneOf(Object.keys(ACTION_VARIANT_MAP)),
       external: PropTypes.bool,
     })
   ),
