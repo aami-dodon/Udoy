@@ -144,10 +144,10 @@ const HomePage = () => {
             <p className="text-sm uppercase tracking-widest text-white/70">Emerge, Rise, Thrive</p>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
+            <Button variant="ghost" size="lg" className="text-white hover:bg-white/10">
               Log in
             </Button>
-            <Button variant="secondary" size="sm">
+            <Button variant="accent" size="lg">
               Sign up
             </Button>
           </div>
