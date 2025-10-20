@@ -18,6 +18,29 @@ function parsePagination(query = {}) {
   return { page, pageSize };
 }
 
+function assertAdminSelfModificationNotAllowed(req, targetUserId) {
+  const actorId = req.user?.sub || null;
+  if (!targetUserId || !actorId) {
+    return actorId;
+  }
+
+  const normalizedTargetId = String(targetUserId).trim();
+  const normalizedActorId = String(actorId).trim();
+
+  if (!normalizedTargetId || normalizedActorId !== normalizedTargetId) {
+    return actorId;
+  }
+
+  const actorRoles = Array.isArray(req.user?.roles) ? req.user.roles : [];
+  if (actorRoles.includes('admin')) {
+    throw AppError.forbidden('Administrators are not allowed to modify their own account.', {
+      code: 'ADMIN_SELF_EDIT_FORBIDDEN',
+    });
+  }
+
+  return actorId;
+}
+
 export async function listUsers(req, res, next) {
   try {
     const { page, pageSize } = parsePagination(req.query);
@@ -67,7 +90,7 @@ export async function updateUser(req, res, next) {
     }
 
     let updatedUser = null;
-    const actorId = req.user?.sub || null;
+    const actorId = assertAdminSelfModificationNotAllowed(req, id);
 
     if (Object.keys(profile).length > 0) {
       updatedUser = await updateUserProfile(id, profile, { actorId });
@@ -120,7 +143,7 @@ export async function setUserRoles(req, res, next) {
       )
     );
 
-    const actorId = req.user?.sub || null;
+    const actorId = assertAdminSelfModificationNotAllowed(req, id);
     const user = await getUserById(id);
     if (!user) {
       throw AppError.notFound('User not found.', {
@@ -169,7 +192,9 @@ export async function removeUserRoleBinding(req, res, next) {
       throw AppError.badRequest('User ID and role name are required.');
     }
 
-    await removeUserRole(id, normalizedRole, { actorId: req.user?.sub || null });
+    const actorId = assertAdminSelfModificationNotAllowed(req, id);
+
+    await removeUserRole(id, normalizedRole, { actorId });
 
     const updatedUser = await getUserById(id);
     if (!updatedUser) {

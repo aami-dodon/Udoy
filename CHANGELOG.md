@@ -1,3 +1,6 @@
+## 2025-11-02 12:30 IST
+- Blocked administrators from updating their own account records through the management APIs to prevent self-edit escalations.
+
 ## 2025-11-02 10:45 IST
 - Required a `DEFAULT_ADMIN_PASSWORD` environment setting and hash it during startup so the seeded admin can sign in securely.
 - Documented the new configuration knob alongside the default admin identifiers in the environment templates.
