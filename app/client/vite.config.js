@@ -47,5 +47,16 @@ export default defineConfig(({ mode }) => {
       },
     },
     preview: { ...baseServerConfig },
+    test: {
+      globals: true,
+      environment: 'jsdom',
+      setupFiles: path.resolve(__dirname, './src/test/setup.js'),
+      css: true,
+      coverage: {
+        reporter: ['text', 'lcov'],
+        include: ['src/**/*.{js,jsx}'],
+        exclude: ['src/main.jsx', 'src/test/**'],
+      },
+    },
   };
 });
