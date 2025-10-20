@@ -1,9 +1,11 @@
-import ForbiddenPage from './features/errors/ForbiddenPage.jsx';
-import NotFoundPage from './features/errors/NotFoundPage.jsx';
-import ServerErrorPage from './features/errors/ServerErrorPage.jsx';
-import GenericErrorPage from './features/errors/GenericErrorPage.jsx';
-import HomePage from './features/home/HomePage.jsx';
-import ThemePage from './features/theme/ThemePage.jsx';
+import { lazy } from 'react';
+
+const HomePage = lazy(() => import('./features/home/HomePage.jsx'));
+const ThemePage = lazy(() => import('./features/theme/ThemePage.jsx'));
+const ForbiddenPage = lazy(() => import('./features/errors/ForbiddenPage.jsx'));
+const ServerErrorPage = lazy(() => import('./features/errors/ServerErrorPage.jsx'));
+const GenericErrorPage = lazy(() => import('./features/errors/GenericErrorPage.jsx'));
+const NotFoundPage = lazy(() => import('./features/errors/NotFoundPage.jsx'));
 
 const routes = [
   {
