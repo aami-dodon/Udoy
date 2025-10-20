@@ -30,6 +30,8 @@ const tokens = require('./tokens');
 const { colors, typography, layout, shadows, motion } = tokens;
 const { primary, accent, neutral, info, success, warning, danger, surface } = colors;
 const radius = layout.radius;
+const colorTokenGroups = { primary, accent, neutral, info, success, warning, danger, surface };
+const sanitizeSpacingToken = (token) => token.replace(/\./g, '-');
 
 const hexToRgba = (hex, alpha) => {
   const normalized = hex.replace('#', '');
@@ -1186,8 +1188,44 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
     },
   });
 
+  const colorTokenUtilities = Object.entries(colorTokenGroups).reduce((acc, [group, palette]) => {
+    return Object.entries(palette).reduce((groupAcc, [shade, hex]) => {
+      const suffix = `${group}-${shade}`;
+      return {
+        ...groupAcc,
+        [`.bg-token-${suffix}`]: {
+          '--token-color': hex,
+          backgroundColor: 'var(--token-color)',
+        },
+      };
+    }, acc);
+  }, {});
+
+  const spacingPreviewUtilities = Object.entries(layout.spacing).reduce((acc, [token, size]) => {
+    const suffix = sanitizeSpacingToken(token);
+    return {
+      ...acc,
+      [`.w-spacing-${suffix}`]: {
+        '--spacing-token': size,
+        width: 'min(100%, calc(var(--spacing-token) * 2))',
+      },
+    };
+  }, {});
+
+  const progressWidthUtilities = Array.from({ length: 101 }).reduce((acc, _, index) => {
+    return {
+      ...acc,
+      [`.w-progress-${index}`]: {
+        width: `${index}%`,
+      },
+    };
+  }, {});
+
   addUtilities(
     {
+      ...colorTokenUtilities,
+      ...spacingPreviewUtilities,
+      ...progressWidthUtilities,
       '.text-subdued': {
         color: theme('colors.neutral.400'),
       },
