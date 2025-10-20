@@ -82,7 +82,7 @@ Follow them strictly to maintain **quality**, **consistency**, **security**, and
 
 ### Component Library
 - **shadcn/ui** is the primary component library.  
-- All UI components must be used through a **shared wrapper** inside `app/components/ui`.  
+- All UI components must be used through a **shared wrapper** inside `app/shared/components/ui`.  
 - If extension or customization is needed, **do it once in the shared layer** — never inline.  
 - Document component variants and props for consistency and reuse.
 
