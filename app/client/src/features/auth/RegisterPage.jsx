@@ -24,9 +24,9 @@ function calculateAge(isoDate) {
 const ROLE_OPTIONS = [
   { value: 'student', label: 'Student' },
   { value: 'creator', label: 'Creator' },
-  { value: 'validator', label: 'Validator/Reviewer' },
-  { value: 'coach-guardian', label: 'Coach / Guardian' },
-  { value: 'sponsor-partner', label: 'Sponsor / Partner' },
+  { value: 'validator', label: 'Validator' },
+  { value: 'coach', label: 'Coach' },
+  { value: 'guardian', label: 'Guardian' },
 ];
 
 const COUNTRY_PHONE_RULES = {
@@ -76,6 +76,7 @@ export default function RegisterPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [touched, setTouched] = useState({});
 
   const age = useMemo(() => calculateAge(formState.dateOfBirth), [formState.dateOfBirth]);
   const requiresGuardian =
@@ -86,6 +87,15 @@ export default function RegisterPage() {
     const { name, value } = event.target;
     setFormState((prev) => ({ ...prev, [name]: value }));
   };
+
+  const handleBlur = (event) => {
+    const { name } = event.target;
+    setTouched((prev) => ({ ...prev, [name]: true }));
+  };
+
+  const emailInvalid = touched.email && !isValidEmail(formState.email);
+  const guardianEmailInvalid =
+    requiresGuardian && touched.guardianEmail && !isValidEmail(formState.guardianEmail);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -109,6 +119,7 @@ export default function RegisterPage() {
     }
 
     if (!email || !isValidEmail(email)) {
+      setTouched((prev) => ({ ...prev, email: true }));
       setError('Enter a valid email address.');
       return;
     }
@@ -135,6 +146,7 @@ export default function RegisterPage() {
 
     if (requiresGuardian) {
       if (!guardianEmail || !isValidEmail(guardianEmail)) {
+        setTouched((prev) => ({ ...prev, guardianEmail: true }));
         setError('A valid guardian email is required for students under 16.');
         return;
       }
@@ -183,7 +195,9 @@ export default function RegisterPage() {
         <CardContent>
           <form className="grid gap-4 md:grid-cols-2" onSubmit={handleSubmit}>
             <div className="space-y-2">
-              <Label htmlFor="firstName">First name</Label>
+              <Label htmlFor="firstName">
+                First name <span className="text-rose-600">*</span>
+              </Label>
               <Input
                 id="firstName"
                 name="firstName"
@@ -194,7 +208,9 @@ export default function RegisterPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="lastName">Last name</Label>
+              <Label htmlFor="lastName">
+                Last name <span className="text-rose-600">*</span>
+              </Label>
               <Input
                 id="lastName"
                 name="lastName"
@@ -205,8 +221,17 @@ export default function RegisterPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="role">Role</Label>
-              <Select id="role" name="role" required value={formState.role} onChange={handleChange}>
+              <Label htmlFor="role">
+                Role <span className="text-rose-600">*</span>
+              </Label>
+              <Select
+                id="role"
+                name="role"
+                required
+                value={formState.role}
+                onChange={handleChange}
+                onBlur={handleBlur}
+              >
                 {ROLE_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label}
@@ -215,7 +240,9 @@ export default function RegisterPage() {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email address</Label>
+              <Label htmlFor="email">
+                Email address <span className="text-rose-600">*</span>
+              </Label>
               <Input
                 id="email"
                 name="email"
@@ -224,10 +251,18 @@ export default function RegisterPage() {
                 placeholder="you@example.com"
                 value={formState.email}
                 onChange={handleChange}
+                onBlur={handleBlur}
+                aria-invalid={emailInvalid || undefined}
+                className={emailInvalid ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-400/50' : undefined}
               />
+              {emailInvalid ? (
+                <p className="text-xs text-rose-600">Enter a valid email address.</p>
+              ) : null}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">
+                Password <span className="text-rose-600">*</span>
+              </Label>
               <Input
                 id="password"
                 name="password"
@@ -240,7 +275,9 @@ export default function RegisterPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="dateOfBirth">Date of birth</Label>
+              <Label htmlFor="dateOfBirth">
+                Date of birth <span className="text-rose-600">*</span>
+              </Label>
               <Input
                 id="dateOfBirth"
                 name="dateOfBirth"
@@ -248,11 +285,21 @@ export default function RegisterPage() {
                 required
                 value={formState.dateOfBirth}
                 onChange={handleChange}
+                onBlur={handleBlur}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="countryCode">Country code</Label>
-              <Select id="countryCode" name="countryCode" required value={formState.countryCode} onChange={handleChange}>
+              <Label htmlFor="countryCode">
+                Country code <span className="text-rose-600">*</span>
+              </Label>
+              <Select
+                id="countryCode"
+                name="countryCode"
+                required
+                value={formState.countryCode}
+                onChange={handleChange}
+                onBlur={handleBlur}
+              >
                 {Object.entries(COUNTRY_PHONE_RULES).map(([code, details]) => (
                   <option key={code} value={code}>
                     {details.label}
@@ -269,12 +316,15 @@ export default function RegisterPage() {
                 placeholder={selectedCountry?.example ? `Optional · e.g. ${selectedCountry.example}` : 'Optional'}
                 value={formState.phoneNumber}
                 onChange={handleChange}
+                onBlur={handleBlur}
               />
             </div>
             {requiresGuardian ? (
               <div className="space-y-2 md:col-span-2">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="guardianEmail">Guardian email</Label>
+                  <Label htmlFor="guardianEmail">
+                    Guardian email <span className="text-rose-600">*</span>
+                  </Label>
                   <span className="text-xs font-medium text-rose-600">Required for students under 16</span>
                 </div>
                 <Input
@@ -285,7 +335,17 @@ export default function RegisterPage() {
                   placeholder="guardian@example.com"
                   value={formState.guardianEmail}
                   onChange={handleChange}
+                  onBlur={handleBlur}
+                  aria-invalid={guardianEmailInvalid || undefined}
+                  className={
+                    guardianEmailInvalid
+                      ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-400/50'
+                      : undefined
+                  }
                 />
+                {guardianEmailInvalid ? (
+                  <p className="text-xs text-rose-600">Enter a valid guardian email address.</p>
+                ) : null}
               </div>
             ) : null}
             {error ? (
