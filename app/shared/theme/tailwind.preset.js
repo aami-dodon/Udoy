@@ -26,123 +26,30 @@ const loadPresetPlugin = (moduleName) => {
 const forms = loadPresetPlugin('@tailwindcss/forms');
 const plugin = loadPresetPlugin('tailwindcss/plugin');
 
-const brand = {
-  50: '#f5f8f3',
-  100: '#e6efe2',
-  200: '#cce0c8',
-  300: '#b0d2ae',
-  400: '#8ec291',
-  500: '#6ba876',
-  600: '#4f8a5d',
-  700: '#3c6d48',
-  800: '#285035',
-  900: '#1b3925',
-  950: '#0c1f14',
+const tokens = require('./tokens');
+const { colors, typography, layout, shadows, motion } = tokens;
+const { primary, accent, neutral, info, success, warning, danger, surface } = colors;
+const radius = layout.radius;
+
+const hexToRgba = (hex, alpha) => {
+  const normalized = hex.replace('#', '');
+  const chunkSize = normalized.length === 3 ? 1 : 2;
+  const expanded = chunkSize === 1 ? normalized.split('').map((char) => char + char).join('') : normalized;
+  const parts = expanded.match(new RegExp(`.{${2}}`, 'g')).map((part) => parseInt(part, 16));
+  return `rgba(${parts[0]}, ${parts[1]}, ${parts[2]}, ${alpha})`;
 };
 
-const accent = {
-  50: '#fef5eb',
-  100: '#fbe3c6',
-  200: '#f6c68d',
-  300: '#eda561',
-  400: '#df853a',
-  500: '#c46a20',
-  600: '#a15519',
-  700: '#7d4115',
-  800: '#5a2d10',
-  900: '#371b09',
-  950: '#1d0e05',
-};
+const alpha = (palette, shade, value) => hexToRgba(palette[shade], value);
 
-const neutral = {
-  50: '#fafaf7',
-  100: '#f1f3ed',
-  200: '#e3e7dc',
-  300: '#ccd4c0',
-  400: '#aab79b',
-  500: '#879677',
-  600: '#647558',
-  700: '#49573d',
-  800: '#32402a',
-  900: '#1e2617',
-  950: '#0f140b',
-};
-
-const surface = {
-  base: '#f6f8f4',
-  muted: '#edf1e7',
-  raised: '#ffffff',
-  subtle: '#f1f5ec',
-  overlay: 'rgba(18, 43, 28, 0.45)',
-  inverted: '#ffffff',
-};
-
-const info = {
-  50: '#e7f6f1',
-  100: '#c4eadd',
-  200: '#8fd6c1',
-  300: '#58c1a5',
-  400: '#2ca488',
-  500: '#1a8970',
-  600: '#136d5a',
-  700: '#0f5748',
-  800: '#0c4236',
-  900: '#072a23',
-  950: '#041714',
-};
-
-const success = {
-  50: '#edf9eb',
-  100: '#cff0c8',
-  200: '#9fdfa0',
-  300: '#6dca75',
-  400: '#46b35a',
-  500: '#338d45',
-  600: '#2a7038',
-  700: '#235830',
-  800: '#1a4024',
-  900: '#112918',
-  950: '#08160d',
-};
-
-const warning = {
-  50: '#fff7e8',
-  100: '#fde9c2',
-  200: '#f9d18d',
-  300: '#f5b760',
-  400: '#f09c34',
-  500: '#d97f16',
-  600: '#b5630f',
-  700: '#8f4a0f',
-  800: '#64330d',
-  900: '#3a1d08',
-  950: '#1f0e04',
-};
-
-const danger = {
-  50: '#fef2f1',
-  100: '#fbd7d3',
-  200: '#f5a9a4',
-  300: '#ed7c79',
-  400: '#e05355',
-  500: '#c9363c',
-  600: '#a72630',
-  700: '#831c27',
-  800: '#5c121b',
-  900: '#360a10',
-  950: '#1d0408',
-};
-
-const radius = {
-  xs: '0.25rem',
-  sm: '0.5rem',
-  md: '0.75rem',
-  lg: '1rem',
-  xl: '1.25rem',
-  '2xl': '1.75rem',
-  '3xl': '2.25rem',
-  pill: '9999px',
-};
+const fontSizeScale = Object.fromEntries(
+  Object.entries(typography.scale).map(([token, config]) => {
+    const meta = {};
+    if (config.lineHeight) meta.lineHeight = config.lineHeight;
+    if (config.letterSpacing) meta.letterSpacing = config.letterSpacing;
+    if (config.weight) meta.fontWeight = config.weight;
+    return [token, [config.size, meta]];
+  })
+);
 
 const animationKeyframes = {
   'pulse-soft': {
@@ -201,11 +108,12 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
   addBase({
     ':root': {
       colorScheme: 'light',
-      '--shadow-color-strong': '0 32px 60px -28px rgba(24, 68, 44, 0.25)',
-      '--shadow-color-soft': '0 20px 40px -24px rgba(24, 68, 44, 0.18)',
-      '--transition-fast': '160ms',
-      '--transition-normal': '240ms',
-      '--transition-slow': '420ms',
+      '--shadow-color-strong': shadows.strong,
+      '--shadow-color-soft': shadows.soft,
+      '--transition-fast': motion.transition.fast,
+      '--transition-normal': motion.transition.normal,
+      '--transition-slow': motion.transition.slow,
+      '--transition-slower': motion.transition.slower,
     },
     '*': {
       boxSizing: 'border-box',
@@ -353,11 +261,11 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
       background: 'transparent',
     },
     '::-webkit-scrollbar-thumb': {
-      backgroundColor: 'rgba(31, 86, 53, 0.22)',
+      backgroundColor: alpha(primary, 600, 0.22),
       borderRadius: theme('borderRadius.full'),
     },
     '::-webkit-scrollbar-thumb:hover': {
-      backgroundColor: 'rgba(31, 86, 53, 0.3)',
+      backgroundColor: alpha(primary, 600, 0.32),
     },
     '@media (prefers-reduced-motion: reduce)': {
       '*': {
@@ -542,27 +450,27 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
       color: theme('colors.brand.700'),
     },
     '.badge--info': {
-      backgroundColor: 'rgba(26, 137, 112, 0.12)',
-      borderColor: 'rgba(26, 137, 112, 0.35)',
+      backgroundColor: alpha(info, 500, 0.12),
+      borderColor: alpha(info, 500, 0.35),
       color: theme('colors.info.600'),
     },
     '.badge--success': {
-      backgroundColor: 'rgba(51, 141, 69, 0.12)',
-      borderColor: 'rgba(51, 141, 69, 0.35)',
+      backgroundColor: alpha(success, 500, 0.12),
+      borderColor: alpha(success, 500, 0.32),
       color: theme('colors.success.600'),
     },
     '.badge--warning': {
-      backgroundColor: 'rgba(217, 127, 22, 0.12)',
-      borderColor: 'rgba(217, 127, 22, 0.35)',
+      backgroundColor: alpha(warning, 500, 0.14),
+      borderColor: alpha(warning, 500, 0.34),
       color: theme('colors.warning.600'),
     },
     '.badge--danger': {
-      backgroundColor: 'rgba(201, 54, 60, 0.12)',
-      borderColor: 'rgba(201, 54, 60, 0.35)',
+      backgroundColor: alpha(danger, 500, 0.12),
+      borderColor: alpha(danger, 500, 0.35),
       color: theme('colors.danger.600'),
     },
     '.badge--neutral': {
-      backgroundColor: 'rgba(72, 86, 65, 0.08)',
+      backgroundColor: alpha(neutral, 500, 0.12),
       borderColor: theme('colors.neutral.200'),
       color: theme('colors.neutral.700'),
     },
@@ -696,7 +604,7 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
     },
     '.input:focus, .textarea:focus, .select:focus': {
       borderColor: theme('colors.brand.400'),
-      boxShadow: `0 0 0 3px rgba(79, 138, 93, 0.24)`,
+      boxShadow: `0 0 0 3px ${alpha(primary, 600, 0.24)}`,
       backgroundColor: theme('colors.surface.subtle'),
     },
     '.form-grid': {
@@ -732,32 +640,32 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
     },
     '.alert': {
       ...alertBase,
-      backgroundColor: 'rgba(26, 137, 112, 0.12)',
-      borderColor: 'rgba(26, 137, 112, 0.3)',
+      backgroundColor: alpha(info, 500, 0.12),
+      borderColor: alpha(info, 500, 0.35),
       color: theme('colors.info.700'),
     },
     '.alert--info': {
       ...alertBase,
-      backgroundColor: 'rgba(26, 137, 112, 0.12)',
-      borderColor: 'rgba(26, 137, 112, 0.3)',
+      backgroundColor: alpha(info, 500, 0.12),
+      borderColor: alpha(info, 500, 0.35),
       color: theme('colors.info.700'),
     },
     '.alert--success': {
       ...alertBase,
-      backgroundColor: 'rgba(51, 141, 69, 0.12)',
-      borderColor: 'rgba(51, 141, 69, 0.3)',
+      backgroundColor: alpha(success, 500, 0.12),
+      borderColor: alpha(success, 500, 0.32),
       color: theme('colors.success.700'),
     },
     '.alert--warning': {
       ...alertBase,
-      backgroundColor: 'rgba(217, 127, 22, 0.12)',
-      borderColor: 'rgba(217, 127, 22, 0.3)',
+      backgroundColor: alpha(warning, 500, 0.14),
+      borderColor: alpha(warning, 500, 0.34),
       color: theme('colors.warning.700'),
     },
     '.alert--danger': {
       ...alertBase,
-      backgroundColor: 'rgba(201, 54, 60, 0.12)',
-      borderColor: 'rgba(201, 54, 60, 0.3)',
+      backgroundColor: alpha(danger, 500, 0.12),
+      borderColor: alpha(danger, 500, 0.3),
       color: theme('colors.danger.700'),
     },
     '.toast': {
@@ -784,7 +692,7 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
       borderRadius: theme('borderRadius.full'),
       display: 'grid',
       placeItems: 'center',
-      background: 'linear-gradient(135deg, rgba(111, 169, 127, 0.3), rgba(223, 133, 58, 0.3))',
+      background: `linear-gradient(135deg, ${alpha(primary, 500, 0.32)}, ${alpha(accent, 500, 0.28)})`,
       color: theme('colors.brand.700'),
       fontSize: headingLgFontSize,
       boxShadow: theme('boxShadow.brand'),
@@ -888,31 +796,31 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
       outlineOffset: theme('outlineOffset.2'),
     },
     '.data-table__action--edit': {
-      backgroundColor: 'rgba(196, 106, 32, 0.12)',
-      borderColor: 'rgba(196, 106, 32, 0.35)',
+      backgroundColor: alpha(accent, 500, 0.14),
+      borderColor: alpha(accent, 500, 0.35),
       color: theme('colors.accent.600'),
     },
     '.data-table__action--edit:hover': {
-      backgroundColor: 'rgba(196, 106, 32, 0.18)',
-      borderColor: 'rgba(196, 106, 32, 0.45)',
+      backgroundColor: alpha(accent, 500, 0.2),
+      borderColor: alpha(accent, 500, 0.45),
     },
     '.data-table__action--modify': {
-      backgroundColor: 'rgba(79, 138, 93, 0.14)',
-      borderColor: 'rgba(79, 138, 93, 0.35)',
+      backgroundColor: alpha(primary, 500, 0.16),
+      borderColor: alpha(primary, 500, 0.38),
       color: theme('colors.brand.600'),
     },
     '.data-table__action--modify:hover': {
-      backgroundColor: 'rgba(79, 138, 93, 0.2)',
-      borderColor: 'rgba(79, 138, 93, 0.42)',
+      backgroundColor: alpha(primary, 500, 0.22),
+      borderColor: alpha(primary, 500, 0.45),
     },
     '.data-table__action--delete': {
-      backgroundColor: 'rgba(201, 54, 60, 0.14)',
-      borderColor: 'rgba(201, 54, 60, 0.38)',
+      backgroundColor: alpha(danger, 500, 0.16),
+      borderColor: alpha(danger, 500, 0.42),
       color: theme('colors.danger.600'),
     },
     '.data-table__action--delete:hover': {
-      backgroundColor: 'rgba(201, 54, 60, 0.22)',
-      borderColor: 'rgba(201, 54, 60, 0.48)',
+      backgroundColor: alpha(danger, 500, 0.24),
+      borderColor: alpha(danger, 500, 0.5),
     },
     '.table-card': {
       ...cardBase,
@@ -1020,7 +928,7 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
       color: theme('colors.brand.700'),
     },
     '.sidebar__item--active': {
-      backgroundColor: 'rgba(79, 138, 93, 0.18)',
+      backgroundColor: alpha(primary, 500, 0.18),
       color: theme('colors.brand.700'),
     },
     '.breadcrumbs': {
@@ -1106,7 +1014,7 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
     },
     '.progress-bar__value': {
       height: '100%',
-      backgroundImage: 'linear-gradient(90deg, rgba(82, 157, 117, 0.95), rgba(204, 125, 51, 0.95))',
+      backgroundImage: `linear-gradient(90deg, ${alpha(primary, 500, 0.95)}, ${alpha(accent, 500, 0.95)})`,
       borderRadius: theme('borderRadius.pill'),
     },
     '.timeline': {
@@ -1135,7 +1043,7 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
       width: theme('spacing.3'),
       height: theme('spacing.3'),
       borderRadius: theme('borderRadius.full'),
-      backgroundImage: 'linear-gradient(135deg, rgba(82, 157, 117, 0.9), rgba(204, 125, 51, 0.9))',
+      backgroundImage: `linear-gradient(135deg, ${alpha(primary, 500, 0.9)}, ${alpha(accent, 500, 0.9)})`,
       boxShadow: theme('boxShadow.brand'),
     },
     '.calendar-grid': {
@@ -1182,13 +1090,13 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
     },
     '.dashboard-widget': {
       ...cardBase,
-      backgroundImage: 'linear-gradient(135deg, rgba(82, 157, 117, 0.25), rgba(204, 125, 51, 0.25))',
+      backgroundImage: `linear-gradient(135deg, ${alpha(primary, 500, 0.25)}, ${alpha(accent, 500, 0.25)})`,
     },
     '.course-card': {
       ...cardBase,
       display: 'grid',
       gap: theme('spacing.4'),
-      borderColor: 'rgba(79, 138, 93, 0.28)',
+      borderColor: alpha(primary, 600, 0.28),
     },
     '.course-card__meta': {
       display: 'flex',
@@ -1215,22 +1123,22 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
       cursor: 'pointer',
     },
     '.quiz-option:hover': {
-      backgroundColor: 'rgba(82, 157, 117, 0.16)',
+      backgroundColor: alpha(primary, 500, 0.16),
       borderColor: theme('colors.brand.500'),
     },
     '.quiz-option--correct': {
-      backgroundColor: 'rgba(52, 144, 53, 0.16)',
+      backgroundColor: alpha(success, 500, 0.16),
       borderColor: theme('colors.success.400'),
     },
     '.quiz-option--incorrect': {
-      backgroundColor: 'rgba(214, 51, 73, 0.16)',
+      backgroundColor: alpha(danger, 500, 0.16),
       borderColor: theme('colors.danger.400'),
     },
     '.profile-avatar': {
       width: theme('spacing.12'),
       height: theme('spacing.12'),
       borderRadius: theme('borderRadius.full'),
-      backgroundImage: 'linear-gradient(135deg, rgba(82, 157, 117, 0.4), rgba(204, 125, 51, 0.4))',
+      backgroundImage: `linear-gradient(135deg, ${alpha(primary, 500, 0.4)}, ${alpha(accent, 500, 0.4)})`,
       color: theme('colors.brand.700'),
       display: 'grid',
       placeItems: 'center',
@@ -1238,8 +1146,8 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
     },
     '.certificate-card': {
       ...cardBase,
-      border: `1px solid rgba(82, 157, 117, 0.4)`,
-      backgroundImage: 'linear-gradient(160deg, rgba(82, 157, 117, 0.14), rgba(204, 125, 51, 0.14))',
+      border: `1px solid ${alpha(primary, 500, 0.4)}`,
+      backgroundImage: `linear-gradient(160deg, ${alpha(primary, 500, 0.14)}, ${alpha(accent, 500, 0.14)})`,
     },
     '.discussion-thread': {
       ...cardBase,
@@ -1251,7 +1159,7 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
       gap: theme('spacing.2'),
       padding: theme('spacing.4'),
       borderRadius: theme('borderRadius.lg'),
-      backgroundColor: 'rgba(79, 138, 93, 0.12)',
+      backgroundColor: alpha(primary, 500, 0.12),
     },
     '.skeleton': {
       position: 'relative',
@@ -1272,7 +1180,7 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
       borderRadius: theme('borderRadius.full'),
       borderWidth: '3px',
       borderStyle: 'solid',
-      borderColor: 'rgba(31, 86, 53, 0.2)',
+      borderColor: alpha(primary, 700, 0.2),
       borderTopColor: theme('colors.brand.500'),
       animation: `${theme('animation.spin-slow')}`,
     },
@@ -1330,7 +1238,7 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
         maxWidth: theme('maxWidth.content-md'),
       },
       '.hero-gradient': {
-        backgroundImage: 'radial-gradient(circle at 20% 0%, rgba(111, 169, 127, 0.45), transparent 55%), radial-gradient(circle at 80% 120%, rgba(223, 133, 58, 0.35), transparent 65%), linear-gradient(180deg, rgba(246, 248, 244, 1), rgba(231, 239, 226, 1))',
+        backgroundImage: `radial-gradient(circle at 20% 0%, ${alpha(primary, 500, 0.45)}, transparent 55%), radial-gradient(circle at 80% 120%, ${alpha(accent, 500, 0.35)}, transparent 65%), linear-gradient(180deg, ${surface.base}, #eef1f8)`,
       },
       '.shadow-soft': {
         boxShadow: theme('boxShadow.soft'),
@@ -1363,23 +1271,13 @@ module.exports = {
   theme: {
     container: {
       center: true,
-      padding: {
-        DEFAULT: '1.5rem',
-        sm: '2rem',
-        lg: '2.5rem',
-      },
+      padding: { ...layout.container.padding },
     },
-    screens: {
-      xs: '480px',
-      sm: '640px',
-      md: '768px',
-      lg: '1024px',
-      xl: '1280px',
-      '2xl': '1536px',
-    },
+    screens: { ...layout.breakpoints },
     extend: {
       colors: {
-        brand,
+        primary,
+        brand: primary,
         accent,
         neutral,
         surface,
@@ -1389,76 +1287,34 @@ module.exports = {
         danger,
         clay: neutral,
       },
-      fontFamily: {
-        sans: ['"DM Sans"', 'Inter', 'system-ui', 'sans-serif'],
-        display: ['"Fraunces"', '"DM Sans"', 'serif'],
-        mono: ['JetBrains Mono', 'SFMono-Regular', 'Menlo', 'monospace'],
-      },
-      fontSize: {
-        'display-3xl': ['4.5rem', { lineHeight: '1.05', letterSpacing: '-0.04em', fontWeight: '700' }],
-        'display-2xl': ['3.75rem', { lineHeight: '1.06', letterSpacing: '-0.035em', fontWeight: '700' }],
-        'display-xl': ['3rem', { lineHeight: '1.08', letterSpacing: '-0.03em', fontWeight: '700' }],
-        'display-lg': ['2.5rem', { lineHeight: '1.1', letterSpacing: '-0.025em', fontWeight: '600' }],
-        'heading-2xl': ['2.25rem', { lineHeight: '1.18', fontWeight: '600' }],
-        'heading-xl': ['2rem', { lineHeight: '1.2', fontWeight: '600' }],
-        'heading-lg': ['1.75rem', { lineHeight: '1.28', fontWeight: '600' }],
-        'heading-md': ['1.5rem', { lineHeight: '1.32', fontWeight: '600' }],
-        'heading-sm': ['1.25rem', { lineHeight: '1.35', fontWeight: '600' }],
-        'body-lg': ['1.125rem', { lineHeight: '1.65' }],
-        'body-base': ['1rem', { lineHeight: '1.7' }],
-        'body-sm': ['0.875rem', { lineHeight: '1.6' }],
-        'body-xs': ['0.75rem', { lineHeight: '1.45', letterSpacing: '0.04em' }],
-        eyebrow: ['0.75rem', { lineHeight: '1.5', letterSpacing: '0.2em' }],
-      },
+      fontFamily: { ...typography.fonts },
+      fontSize: fontSizeScale,
       lineHeight: {
         cozy: '1.7',
         snug: '1.4',
         tight: '1.2',
       },
-      spacing: {
-        '2.5': '0.625rem',
-        '3.5': '0.875rem',
-        '4.5': '1.125rem',
-        '7.5': '1.875rem',
-        11: '2.75rem',
-        13: '3.25rem',
-        18: '4.5rem',
-        22: '5.5rem',
-        26: '6.5rem',
-        30: '7.5rem',
-        34: '8.5rem',
-        42: '10.5rem',
-        108: '27rem',
-      },
-      maxWidth: {
-        'content-xs': '24rem',
-        'content-sm': '32rem',
-        'content-md': '44rem',
-        'content-lg': '64rem',
-        'content-xl': '80rem',
-        'content-2xl': '90rem',
-        page: '96rem',
-        dashboard: '110rem',
-      },
+      spacing: { ...layout.spacing },
+      maxWidth: { ...layout.maxWidth },
       borderRadius: radius,
       boxShadow: {
         soft: 'var(--shadow-color-soft)',
-        brand: '0 24px 45px -22px rgba(79, 138, 93, 0.35)',
-        focus: '0 0 0 4px rgba(196, 106, 32, 0.28)',
+        brand: shadows.brand,
+        focus: shadows.focus,
         raised: 'var(--shadow-color-strong)',
-        accent: '0 20px 38px -20px rgba(196, 106, 32, 0.32)',
-        outline: '0 0 0 1px rgba(31, 86, 53, 0.18)',
+        accent: shadows.accent,
+        outline: shadows.outline,
       },
       transitionDuration: {
-        fast: '150ms',
-        normal: '240ms',
-        slow: '420ms',
-        slower: '680ms',
+        fast: motion.transition.fast,
+        normal: motion.transition.normal,
+        slow: motion.transition.slow,
+        slower: motion.transition.slower,
       },
       transitionTimingFunction: {
-        emphasized: 'cubic-bezier(0.2, 0.8, 0.2, 1)',
-        entrance: 'cubic-bezier(0.16, 1, 0.3, 1)',
-        exit: 'cubic-bezier(0.7, 0, 0.84, 0)',
+        emphasized: motion.easing.emphasized,
+        entrance: motion.easing.entrance,
+        exit: motion.easing.exit,
       },
       animation: {
         'pulse-soft': 'pulse-soft 3s ease-in-out infinite',
@@ -1468,7 +1324,7 @@ module.exports = {
       },
       keyframes: animationKeyframes,
       backgroundImage: {
-        mesh: 'radial-gradient(circle at 15% 20%, rgba(111, 169, 127, 0.28), transparent 48%), radial-gradient(circle at 85% 30%, rgba(223, 133, 58, 0.24), transparent 56%), linear-gradient(180deg, #f6f8f4 0%, #e9efe3 100%)',
+        mesh: `radial-gradient(circle at 15% 20%, ${alpha(primary, 500, 0.28)}, transparent 48%), radial-gradient(circle at 85% 30%, ${alpha(accent, 500, 0.24)}, transparent 56%), linear-gradient(180deg, ${surface.base} 0%, #f1f3f8 100%)`,
       },
       backdropBlur: {
         xs: '4px',

@@ -1,3 +1,8 @@
+## 2025-10-30 12:45 IST
+- Centralized the LMS yellow/grey/red palette inside the shared Tailwind tokens and mapped the values to shadcn CSS variables for light and dark modes.
+- Refined button, card, and form primitives so hover, focus, and disabled states rely exclusively on the new brand tokens.
+- Introduced the `/theme` design reference route that documents colors, typography, components, layout primitives, interactions, and Heroicons in both themes.
+
 ## 2025-10-20 06:03 IST
 - Installed shadcn/ui tooling in the client so new components inherit the shared Udoy Tailwind theme.
 - Added baseline Button, Input, Label, Textarea, and Card primitives that wrap the theme tokens for consistent UI building blocks.
