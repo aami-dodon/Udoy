@@ -5,6 +5,7 @@ COPY app/client/package*.json ./
 RUN npm install
 
 COPY app/client ./
+COPY app/components /usr/src/components
 COPY app/shared /usr/src/shared
 
 EXPOSE 6004
