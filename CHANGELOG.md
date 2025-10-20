@@ -1,3 +1,8 @@
+## 2025-10-20 09:36 IST
+- Added a dedicated `/health` client route that renders a status dashboard backed by the shared shadcn card primitives.
+- Connected the health dashboard to the `/api/health` endpoint with refresh and troubleshooting states for degraded responses.
+- Documented the new SPA entry in `ROUTES.md` so navigation references stay aligned.
+
 ## 2025-10-20 09:28 IST
 - Updated the client Tailwind configuration to consume the shared palette and radius tokens directly instead of relying on ad-hoc CSS variables.
 - Simplified the client base stylesheet so semantic utilities from the shared preset drive the background, foreground, and border colors.

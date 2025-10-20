@@ -1,6 +1,7 @@
 import { lazy } from 'react';
 
 const HomePage = lazy(() => import('./features/home/HomePage.jsx'));
+const HealthPage = lazy(() => import('./features/health/HealthPage.jsx'));
 
 const ForbiddenPage = lazy(() => import('./features/errors/ForbiddenPage.jsx'));
 const ServerErrorPage = lazy(() => import('./features/errors/ServerErrorPage.jsx'));
@@ -11,6 +12,10 @@ const routes = [
   {
     path: '/',
     element: <HomePage />,
+  },
+  {
+    path: '/health',
+    element: <HealthPage />,
   },
   {
     path: '/403',
