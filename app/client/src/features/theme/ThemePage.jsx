@@ -7,6 +7,7 @@ import {
   BarChart3,
   Bell,
   BookOpen,
+  Check,
   CheckCircle,
   Clock3,
   FileText,
