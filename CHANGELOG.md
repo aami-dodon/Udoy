@@ -177,6 +177,10 @@
 - Introduced a refreshed Evergreen-forward design system with centralised Tailwind tokens, gradients, and typography aligning to the new palette.
 - Replaced the shared UI kit and Lucide wrapper with streamlined components that consume the updated theme across the client.
 
+## 2025-10-21 03:28 IST
+- Updated the registration date picker to use the shadcn dropdown calendar interaction and close the popover when a date is chosen.
+- Synced the date picker trigger styling with the shared calendar UI so the button spans the field width and matches shadcn defaults.
+
 ## 2025-10-19 17:24 IST
 - Added Casbin with a file-backed policy and enforcer singleton under `server/src/integrations/casbin/`.
 - Created authorization middleware and an admin overview route gated by JWT + Casbin checks.
