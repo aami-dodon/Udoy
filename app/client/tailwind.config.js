@@ -4,7 +4,7 @@ module.exports = {
   // Consume the shared theme so the brand palette, typography, spacing, and
   // form styles stay consistent with the rest of the platform.
   presets: [sharedPreset],
-  content: ['./index.html', './src/**/*.{js,jsx}', '../components/ui/**/*.{js,jsx}'],
+  content: ['./index.html', './src/**/*.{js,jsx}', '../shared/components/ui/**/*.{js,jsx}'],
   theme: {
     extend: {
       colors: {
