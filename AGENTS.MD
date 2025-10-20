@@ -99,7 +99,7 @@ Follow them strictly to maintain **quality**, **consistency**, **security**, and
 - Repeating patterns must be extracted into reusable layout primitives (`Container`, `Section`, etc.).
 
 ### Routing
-- Define and maintain routes in a single configuration file (`routes.js`).  
+- Define and maintain routes in a single configuration file (`routes.jsx`).  
 - Use **React Router DOM** for all client-side routing.  
 - Route-level components must use **lazy loading** for performance.  
 - Use wrappers (e.g., `LayoutWrapper` or `RouteGuard`) for consistent page shells.
