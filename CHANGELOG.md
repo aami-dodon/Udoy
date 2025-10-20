@@ -8,6 +8,10 @@
 
 ## 2025-10-31 11:30 IST
 - Added a shared support contact snippet across all authentication screens driven by the new `VITE_SUPPORT_EMAIL` configuration.
+## 2025-10-21 03:35 IST
+- Upgraded the shared phone input to use shadcn popover, command, and scroll area primitives with searchable country selection and improved flag rendering.
+- Added reusable `Command` and `ScrollArea` wrappers plus Lucide-based adornments for consistent UI composition.
+- Installed `cmdk` and `@radix-ui/react-scroll-area` with matching Vite aliases so shared components resolve client dependencies during builds.
 ## 2025-10-21 02:56 IST
 - Rebuilt the authentication screens with shadcn blocks, adding form primitives, calendar date picking, and phone input support for consistent onboarding flows.
 - Refreshed the dashboard, admin roster, health, and error pages to use the updated Udoy component palette, including dropdown menus and token-based feedback messaging.

@@ -1,6 +1,7 @@
 export * from './accordion.jsx';
 export * from './badge.jsx';
 export * from './button.jsx';
+export * from './command.jsx';
 export * from './calendar.jsx';
 export * from './card.jsx';
 export * from './dropdown-menu.jsx';
@@ -12,3 +13,4 @@ export * from './popover.jsx';
 export * from './select.jsx';
 export * from './separator.jsx';
 export * from './textarea.jsx';
+export * from './scroll-area.jsx';
