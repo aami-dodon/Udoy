@@ -128,7 +128,8 @@ function RoleCard({ role }) {
 
 const HomePage = () => {
   return (
-    <main className="flex flex-col gap-24 pb-24">
+    <>
+      <main className="flex flex-col gap-24">
       <section id="hero" className="relative overflow-hidden bg-hero-gradient text-white">
         <div className="absolute inset-0 opacity-40" aria-hidden>
           <div className="absolute -left-16 top-32 h-72 w-72 rounded-full bg-ecru blur-3xl" />
@@ -364,6 +365,8 @@ const HomePage = () => {
         </div>
       </section>
 
+      </main>
+
       <footer className="bg-black-olive text-porcelain">
         <div className="container py-16">
           <div className="grid gap-12 md:grid-cols-[2fr,1fr]">
@@ -421,7 +424,7 @@ const HomePage = () => {
           </div>
         </div>
       </footer>
-    </main>
+    </>
   );
 };
 
