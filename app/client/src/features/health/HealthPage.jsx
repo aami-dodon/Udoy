@@ -14,7 +14,7 @@ import {
 } from '@components/ui';
 import { cn } from '@/lib/utils';
 import { buildApiUrl } from '@/lib/api';
-import { LucideIcon } from '../../../../shared/icons';
+import { LucideIcon } from '@icons';
 
 const HEALTH_ENDPOINT = buildApiUrl('/health');
 const EMAIL_TEST_ENDPOINT = buildApiUrl('/email/test');
@@ -31,12 +31,12 @@ const DEFAULT_EMAIL_TEST_PAYLOAD = {
 };
 
 const STATUS_VARIANTS = {
-  ok: 'bg-mint-sage/20 text-evergreen ring-1 ring-inset ring-mint-sage/40',
-  up: 'bg-mint-sage/20 text-evergreen ring-1 ring-inset ring-mint-sage/40',
-  error: 'bg-ecru/20 text-black-olive ring-1 ring-inset ring-ecru/40',
-  down: 'bg-ecru/25 text-black-olive ring-1 ring-inset ring-ecru/40',
-  skipped: 'bg-porcelain-tint text-neutral-600 ring-1 ring-inset ring-porcelain-shade',
-  unknown: 'bg-porcelain text-neutral-600 ring-1 ring-inset ring-porcelain-shade',
+  ok: 'bg-secondary/20 text-secondary-foreground ring-1 ring-inset ring-secondary/40',
+  up: 'bg-secondary/20 text-secondary-foreground ring-1 ring-inset ring-secondary/40',
+  error: 'bg-destructive/10 text-destructive ring-1 ring-inset ring-destructive/40',
+  down: 'bg-destructive/15 text-destructive ring-1 ring-inset ring-destructive/40',
+  skipped: 'bg-muted text-muted-foreground ring-1 ring-inset ring-border',
+  unknown: 'bg-muted text-muted-foreground ring-1 ring-inset ring-border',
 };
 
 const STATUS_LABELS = {
@@ -255,7 +255,7 @@ function HealthPage() {
   const isHealthy = health?.status?.toLowerCase() === 'ok';
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-porcelain">
+    <main className="relative min-h-screen overflow-hidden bg-background">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -left-24 top-28 h-[26rem] w-[26rem] rounded-full bg-spotlight-gradient opacity-80 blur-3xl" />
         <div className="absolute -bottom-32 right-[-6rem] h-[28rem] w-[28rem] rounded-full bg-mint-sage/35 blur-3xl" />
@@ -263,46 +263,46 @@ function HealthPage() {
       <div className="container relative z-10 flex flex-col gap-16 py-16 md:py-24">
         <header className="grid gap-10 lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1fr)] lg:items-end">
           <div className="space-y-6">
-            <Badge variant="subtle" className="w-max">
+            <Badge variant="secondary" className="w-max">
               Operations
             </Badge>
-            <h1 className="font-display text-4xl font-semibold text-black-olive md:text-5xl">
+            <h1 className="font-display text-4xl font-semibold text-foreground md:text-5xl">
               Platform health dashboard
             </h1>
             <p className="body-large">
               Monitor uptime, dependencies, and transactional email delivery to keep Udoy reliable for every learner.
             </p>
-            <div className="flex flex-wrap gap-3 text-sm text-neutral-600">
+            <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
               {OVERVIEW_HIGHLIGHTS.map((item) => (
                 <span
                   key={item.label}
-                  className="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 shadow-gentle backdrop-blur"
+                  className="inline-flex items-center gap-2 rounded-full border border-border bg-card/80 px-4 py-2 text-foreground shadow-gentle backdrop-blur"
                 >
-                  <LucideIcon name={item.icon} size="sm" className="text-evergreen" />
+                  <LucideIcon name={item.icon} size="sm" className="text-primary" />
                   {item.label}
                 </span>
               ))}
             </div>
           </div>
-          <div className="rounded-3xl border border-porcelain-shade bg-white/80 p-8 shadow-gentle backdrop-blur">
+          <div className="rounded-3xl border border-border bg-card/80 p-8 shadow-gentle backdrop-blur">
             <div className="flex flex-col gap-4 text-left">
               <div className="flex flex-col gap-2">
-                <span className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">API endpoint</span>
-                <span className="break-all text-sm text-neutral-600">{HEALTH_ENDPOINT}</span>
+                <span className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">API endpoint</span>
+                <span className="break-all text-sm text-muted-foreground">{HEALTH_ENDPOINT}</span>
               </div>
-              <Separator className="bg-porcelain-shade/80" />
+              <Separator />
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="flex flex-col gap-2">
-                  <span className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">
+                  <span className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
                     Last refreshed
                   </span>
-                  <span className="text-sm text-neutral-600">
+                  <span className="text-sm text-muted-foreground">
                     {isLoading && !health ? 'Loading…' : formattedTimestamp}
                   </span>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <span className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">Server uptime</span>
-                  <span className="text-sm text-neutral-600">{formattedUptime}</span>
+                  <span className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">Server uptime</span>
+                  <span className="text-sm text-muted-foreground">{formattedUptime}</span>
                 </div>
               </div>
             </div>
@@ -325,13 +325,13 @@ function HealthPage() {
           </CardHeader>
           <CardContent className="text-left">
             {error ? (
-              <div className="rounded-2xl border border-ecru/60 bg-ecru/20 px-4 py-3 text-sm text-black-olive">
+              <div className="rounded-2xl border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
                 {error}
               </div>
             ) : (
               <div className="grid gap-6 md:grid-cols-2">
                 <div className="flex flex-col gap-2">
-                  <span className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">
+                  <span className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
                     Overall status
                   </span>
                   <span
@@ -344,18 +344,18 @@ function HealthPage() {
                   </span>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <span className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">Last checked</span>
-                  <span className="text-sm text-neutral-600">
+                  <span className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">Last checked</span>
+                  <span className="text-sm text-muted-foreground">
                     {isLoading && !health ? 'Loading…' : formattedTimestamp}
                   </span>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <span className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">Server uptime</span>
-                  <span className="text-sm text-neutral-600">{formattedUptime}</span>
+                  <span className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">Server uptime</span>
+                  <span className="text-sm text-muted-foreground">{formattedUptime}</span>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <span className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">API endpoint</span>
-                  <span className="break-all text-sm text-neutral-600">{HEALTH_ENDPOINT}</span>
+                  <span className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">API endpoint</span>
+                  <span className="break-all text-sm text-muted-foreground">{HEALTH_ENDPOINT}</span>
                 </div>
               </div>
             )}
@@ -372,7 +372,7 @@ function HealthPage() {
                 </CardHeader>
                 <CardContent className="text-left">
                   {checks.length === 0 ? (
-                    <p className="text-sm text-neutral-500">No health checks were reported.</p>
+                    <p className="text-sm text-muted-foreground">No health checks were reported.</p>
                   ) : (
                     <div className="grid gap-4 md:grid-cols-2">
                       {checks.map(([key, value]) => {
@@ -380,15 +380,15 @@ function HealthPage() {
                         const statusClasses = resolveStatusClasses(value?.status);
 
                         return (
-                          <div key={key} className="rounded-2xl border border-porcelain-shade bg-white/80 p-5 shadow-gentle">
+                          <div key={key} className="rounded-2xl border border-border bg-card/80 p-5 shadow-gentle">
                             <div className="flex items-center justify-between gap-3">
                               <div className="flex flex-col gap-1 text-left">
-                                <span className="text-sm font-semibold capitalize text-black-olive">{key}</span>
+                                <span className="text-sm font-semibold capitalize text-foreground">{key}</span>
                                 {value?.bucket ? (
-                                  <span className="text-xs text-neutral-500">Bucket: {value.bucket}</span>
+                                  <span className="text-xs text-muted-foreground">Bucket: {value.bucket}</span>
                                 ) : null}
                                 {value?.message ? (
-                                  <span className="text-xs text-neutral-500">{value.message}</span>
+                                  <span className="text-xs text-muted-foreground">{value.message}</span>
                                 ) : null}
                               </div>
                               <span
@@ -416,27 +416,27 @@ function HealthPage() {
                   </CardHeader>
                   <CardContent className="space-y-4 text-left">
                     <div className="flex flex-col gap-2">
-                      <span className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">Enabled</span>
-                      <span className="text-sm text-neutral-600">{corsDetails.enabled ? 'Yes' : 'No'}</span>
+                      <span className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">Enabled</span>
+                      <span className="text-sm text-muted-foreground">{corsDetails.enabled ? 'Yes' : 'No'}</span>
                     </div>
                     <div className="flex flex-col gap-2">
-                      <span className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">
+                      <span className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
                         Allow credentials
                       </span>
-                      <span className="text-sm text-neutral-600">{corsDetails.allowCredentials ? 'Yes' : 'No'}</span>
+                      <span className="text-sm text-muted-foreground">{corsDetails.allowCredentials ? 'Yes' : 'No'}</span>
                     </div>
                     <div className="flex flex-col gap-2">
-                      <span className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">
+                      <span className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
                         Allowed origins
                       </span>
                       {corsDetails.allowedOrigins?.length ? (
-                        <ul className="list-disc space-y-2 pl-5 text-sm text-neutral-600">
+                        <ul className="list-disc space-y-2 pl-5 text-sm text-muted-foreground">
                           {corsDetails.allowedOrigins.map((origin) => (
                             <li key={origin}>{origin}</li>
                           ))}
                         </ul>
                       ) : (
-                        <span className="text-sm text-neutral-500">No origins configured.</span>
+                        <span className="text-sm text-muted-foreground">No origins configured.</span>
                       )}
                     </div>
                   </CardContent>
@@ -454,10 +454,10 @@ function HealthPage() {
                 </CardHeader>
                 <CardContent className="space-y-6 text-left">
                   <div className="flex flex-col gap-2">
-                    <span className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">Endpoint</span>
-                    <span className="break-all text-sm text-neutral-600">{EMAIL_TEST_ENDPOINT}</span>
+                    <span className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">Endpoint</span>
+                    <span className="break-all text-sm text-muted-foreground">{EMAIL_TEST_ENDPOINT}</span>
                   </div>
-                  <Separator className="bg-porcelain-shade/80" />
+                  <Separator />
                   <div className="space-y-4">
                     <div className="grid gap-4 md:grid-cols-2">
                       <div className="space-y-2">
@@ -530,14 +530,14 @@ function HealthPage() {
                       {isEmailTestLoading ? 'Sending…' : 'Send test email'}
                     </Button>
                     {emailTestError ? (
-                      <div className="rounded-lg border border-ecru/60 bg-ecru/20 px-4 py-3 text-sm text-black-olive">
+                      <div className="rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
                         {emailTestError}
                       </div>
                     ) : null}
                     {emailTestResult ? (
                       <div className="space-y-2">
-                        <span className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">Response</span>
-                        <pre className="max-h-60 overflow-auto rounded-lg border border-porcelain-shade bg-porcelain-tint/70 px-4 py-3 text-left text-[13px] leading-relaxed text-neutral-700">
+                        <span className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">Response</span>
+                        <pre className="max-h-60 overflow-auto rounded-lg border border-border bg-muted/60 px-4 py-3 text-left text-[13px] leading-relaxed text-foreground">
                           {JSON.stringify(emailTestResult, null, 2)}
                         </pre>
                       </div>
@@ -566,9 +566,9 @@ function HealthPage() {
         ) : null}
 
         {health && !isHealthy ? (
-          <Card className="border-ecru/70 bg-ecru/20 transition-none hover:translate-y-0 hover:shadow-uplift">
+          <Card className="border border-destructive/40 bg-destructive/10 transition-none hover:translate-y-0 hover:shadow-uplift">
             <CardHeader>
-              <CardTitle className="text-black-olive">Degraded performance detected</CardTitle>
+              <CardTitle className="text-foreground">Degraded performance detected</CardTitle>
               <CardDescription>
                 One or more dependencies are reporting an unhealthy state. Review the checks above for details.
               </CardDescription>

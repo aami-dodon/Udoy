@@ -10,9 +10,9 @@ export function SupportContactMessage({ className }) {
   }
 
   return (
-    <p className={cn('text-xs text-neutral-500', className)}>
+    <p className={cn('text-xs text-muted-foreground', className)}>
       Need help? Write to{' '}
-      <a className="text-evergreen hover:underline" href={supportMailto}>
+      <a className="text-primary hover:underline" href={supportMailto}>
         {supportEmail}
       </a>
       .

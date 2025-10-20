@@ -1,115 +1,160 @@
 import { useState } from 'react';
-import { useSearchParams, Link, useNavigate } from 'react-router-dom';
-import { Button } from '@components/ui/button.jsx';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@components/ui/card.jsx';
-import { Input } from '@components/ui/input.jsx';
-import { Label } from '@components/ui/label.jsx';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import {
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Input,
+} from '@components/ui';
 import { useAuth } from './AuthProvider.jsx';
 import { SupportContactMessage } from './components/SupportContactMessage.jsx';
+
+const resetPasswordSchema = z
+  .object({
+    token: z.string().trim().min(1, 'Reset token is required.'),
+    password: z.string().min(8, 'Password must be at least 8 characters.'),
+    confirmPassword: z.string().min(8, 'Confirm your new password.'),
+  })
+  .superRefine((data, ctx) => {
+    if (data.password !== data.confirmPassword) {
+      ctx.addIssue({
+        path: ['confirmPassword'],
+        code: z.ZodIssueCode.custom,
+        message: 'Passwords do not match.',
+      });
+    }
+  });
 
 export default function ResetPasswordPage() {
   const auth = useAuth();
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const initialToken = params.get('token') || '';
-  const [formState, setFormState] = useState({ token: initialToken, password: '', confirmPassword: '' });
-  const [status, setStatus] = useState({ submitting: false, error: '', message: '' });
+  const [serverFeedback, setServerFeedback] = useState(null);
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormState((prev) => ({ ...prev, [name]: value }));
-  };
+  const form = useForm({
+    resolver: zodResolver(resetPasswordSchema),
+    defaultValues: {
+      token: initialToken,
+      password: '',
+      confirmPassword: '',
+    },
+  });
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    if (formState.password !== formState.confirmPassword) {
-      setStatus({ submitting: false, error: 'Passwords do not match.', message: '' });
-      return;
-    }
-
-    setStatus({ submitting: true, error: '', message: '' });
-
+  const onSubmit = async (values) => {
+    setServerFeedback(null);
     try {
-      const response = await auth.resetPassword({ token: formState.token, password: formState.password });
-      setStatus({ submitting: false, error: '', message: response?.message || 'Password updated successfully.' });
-      setTimeout(() => navigate('/login'), 1200);
+      const response = await auth.resetPassword({ token: values.token.trim(), password: values.password });
+      setServerFeedback({ type: 'success', message: response?.message || 'Password updated successfully.' });
+      setTimeout(() => navigate('/login'), 1500);
     } catch (error) {
       const message = error?.response?.data?.message || 'Unable to reset the password with this token.';
-      setStatus({ submitting: false, error: message, message: '' });
+      setServerFeedback({ type: 'error', message });
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-porcelain">
-      <Card className="w-full max-w-md border-none bg-white shadow-xl">
-        <CardHeader className="space-y-2">
-          <CardTitle className="text-2xl text-evergreen">Choose a new password</CardTitle>
-          <CardDescription className="text-sm text-neutral-600">
-            Paste the reset token from your email and set a new password to regain access.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <div className="space-y-2">
-              <Label htmlFor="token">Reset token</Label>
-              <Input
-                id="token"
-                name="token"
-                required
-                value={formState.token}
-                onChange={handleChange}
-                placeholder="Paste token from email"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">New password</Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                required
-                minLength={8}
-                placeholder="Create a strong password"
-                value={formState.password}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm password</Label>
-              <Input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                required
-                minLength={8}
-                placeholder="Re-enter your password"
-                value={formState.confirmPassword}
-                onChange={handleChange}
-              />
-            </div>
-            {status.error ? (
-              <p className="rounded-lg bg-rose-100/80 px-3 py-2 text-sm text-rose-700">{status.error}</p>
-            ) : null}
-            {status.message ? (
-              <p className="rounded-lg bg-mint-sage/20 px-3 py-2 text-sm text-evergreen">{status.message}</p>
-            ) : null}
-            <Button type="submit" className="w-full" disabled={status.submitting}>
-              {status.submitting ? 'Updating password…' : 'Update password'}
-            </Button>
-          </form>
-        </CardContent>
-        <CardFooter className="flex flex-col gap-2 text-sm text-neutral-700">
-          <div className="flex w-full justify-between gap-3">
-            <Link to="/login" className="text-evergreen hover:underline">
-              Return to login
-            </Link>
-            <Link to="/forgot-password" className="text-evergreen hover:underline">
-              Request a new token
-            </Link>
+    <div className="min-h-screen bg-background">
+      <div className="mx-auto flex min-h-screen w-full max-w-4xl flex-col justify-center px-6 py-12 lg:flex-row lg:items-center lg:gap-16 lg:px-12">
+        <div className="space-y-4 text-left lg:flex-1">
+          <h1 className="font-display text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">Choose a new password</h1>
+          <p className="max-w-lg text-base text-muted-foreground">
+            Paste the reset token from your email and set a new password to regain access to your Udoy account.
+          </p>
+          <div className="rounded-xl border border-border bg-card/60 p-4 text-sm text-muted-foreground shadow-sm">
+            For security, reset links expire quickly. If the link has expired, request a new one from the login page.
           </div>
-          <SupportContactMessage />
-        </CardFooter>
-      </Card>
+        </div>
+        <Card className="w-full max-w-md lg:flex-1">
+          <CardHeader>
+            <CardTitle className="text-2xl">Reset credentials</CardTitle>
+            <CardDescription>Provide the token and your new password below.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <FormField
+                  control={form.control}
+                  name="token"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Reset token</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Paste token from email" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>New password</FormLabel>
+                      <FormControl>
+                        <Input type="password" autoComplete="new-password" placeholder="Create a strong password" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="confirmPassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Confirm password</FormLabel>
+                      <FormControl>
+                        <Input type="password" autoComplete="new-password" placeholder="Re-enter your password" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                {serverFeedback ? (
+                  <div
+                    className={
+                      serverFeedback.type === 'success'
+                        ? 'rounded-lg border border-secondary/40 bg-secondary/20 px-3 py-2 text-sm text-secondary-foreground'
+                        : 'rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive'
+                    }
+                  >
+                    {serverFeedback.message}
+                  </div>
+                ) : null}
+                <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+                  {form.formState.isSubmitting ? 'Updating password…' : 'Update password'}
+                </Button>
+              </form>
+            </Form>
+          </CardContent>
+          <CardFooter className="flex flex-col items-start gap-3 text-sm text-muted-foreground">
+            <div className="flex w-full flex-wrap gap-3">
+              <Link to="/login" className="font-semibold text-primary hover:underline">
+                Return to login
+              </Link>
+              <Link to="/forgot-password" className="font-semibold text-primary hover:underline">
+                Request a new token
+              </Link>
+            </div>
+            <SupportContactMessage />
+          </CardFooter>
+        </Card>
+      </div>
     </div>
   );
 }

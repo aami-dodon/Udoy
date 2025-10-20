@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { Button } from '@components/ui/button.jsx';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@components/ui/card.jsx';
+import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@components/ui';
 import { useAuth } from './AuthProvider.jsx';
 import { SupportContactMessage } from './components/SupportContactMessage.jsx';
 
@@ -61,27 +60,29 @@ export default function VerifyTokenPage() {
   const copy = STATUS_COPY[status];
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-porcelain">
-      <Card className="w-full max-w-lg border-none bg-white shadow-xl">
-        <CardHeader className="space-y-2">
-          <CardTitle className="text-2xl text-evergreen">{copy.title}</CardTitle>
-          <CardDescription className="text-sm text-neutral-600">{copy.description}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {message ? <p className="text-sm text-neutral-700">{message}</p> : null}
-        </CardContent>
-        <CardFooter className="flex flex-col gap-3 text-sm text-neutral-700">
-          <div className="flex flex-wrap gap-3">
-            <Button asChild variant="primary">
-              <Link to="/login">Go to login</Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link to="/forgot-password">Need another link?</Link>
-            </Button>
-          </div>
-          <SupportContactMessage />
-        </CardFooter>
-      </Card>
+    <div className="min-h-screen bg-background">
+      <div className="mx-auto flex min-h-screen w-full max-w-3xl items-center justify-center px-6 py-12">
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle className="text-2xl">{copy.title}</CardTitle>
+            <CardDescription>{copy.description}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {message ? <p className="text-sm text-muted-foreground">{message}</p> : null}
+          </CardContent>
+          <CardFooter className="flex flex-col gap-3 text-sm text-muted-foreground">
+            <div className="flex flex-wrap gap-3">
+              <Button asChild>
+                <Link to="/login">Go to login</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link to="/forgot-password">Need another link?</Link>
+              </Button>
+            </div>
+            <SupportContactMessage />
+          </CardFooter>
+        </Card>
+      </div>
     </div>
   );
 }

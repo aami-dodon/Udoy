@@ -11,10 +11,10 @@ function ForbiddenPage() {
         { label: 'Back to home', to: '/', variant: 'primary' },
       ]}
     >
-      <p className="text-sm text-neutral-600">
+      <p className="text-sm text-muted-foreground">
         If you believe this is an error, connect with your Udoy administrator and request the relevant role assignment.
       </p>
-      <p className="text-sm text-neutral-600">
+      <p className="text-sm text-muted-foreground">
         We’ll keep your progress safe in the meantime—you’ll regain full access as soon as permissions are updated.
       </p>
     </ErrorState>

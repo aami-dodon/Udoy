@@ -1,9 +1,6 @@
 import { useState } from 'react';
-import { Button } from '@components/ui/button.jsx';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@components/ui/card.jsx';
-import { Badge } from '@components/ui/badge.jsx';
-import { Separator } from '@components/ui/separator.jsx';
-import { LucideIcon } from '../../../../shared/icons';
+import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Separator } from '@components/ui';
+import { LucideIcon } from '@icons';
 import { useAuth } from '../auth/AuthProvider.jsx';
 
 function InfoRow({ label, value }) {
@@ -30,18 +27,18 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-6xl flex-col gap-6 bg-porcelain px-6 py-10">
+    <div className="mx-auto flex min-h-screen max-w-6xl flex-col gap-6 bg-background px-6 py-10">
       <header className="flex flex-col gap-2">
-        <h1 className="text-3xl font-semibold text-evergreen">Welcome, {user?.firstName || user?.email}</h1>
-        <p className="max-w-2xl text-sm text-neutral-600">
+        <h1 className="text-3xl font-semibold text-foreground">Welcome, {user?.firstName || user?.email}</h1>
+        <p className="max-w-2xl text-sm text-muted-foreground">
           This is your unified Udoy workspace. Monitor account health, explore available capabilities, and manage sessions.
         </p>
       </header>
       <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-        <Card className="border-none bg-white shadow-lg">
+        <Card className="shadow-lg">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg text-evergreen">
-              <LucideIcon name="UserCircle" className="text-evergreen" /> Account overview
+            <CardTitle className="flex items-center gap-2 text-lg text-foreground">
+              <LucideIcon name="UserCircle" className="text-primary" /> Account overview
             </CardTitle>
             <CardDescription>Your core profile information and RBAC footprint.</CardDescription>
           </CardHeader>
@@ -55,41 +52,41 @@ export default function DashboardPage() {
             <InfoRow label="Guardian consent" value={user?.guardianConsent ? 'Approved' : 'Pending'} />
             <Separator />
             <div className="space-y-2">
-              <span className="text-sm font-medium text-neutral-600">Roles</span>
+              <span className="text-sm font-medium text-muted-foreground">Roles</span>
               <div className="flex flex-wrap gap-2">
                 {(user?.roles || []).length > 0 ? (
                   user.roles.map((role) => (
-                    <Badge key={role} variant="accent" className="text-xs uppercase tracking-wide text-evergreen">
+                    <Badge key={role} variant="secondary" className="text-xs uppercase tracking-wide">
                       {role}
                     </Badge>
                   ))
                 ) : (
-                  <span className="text-sm text-neutral-500">No roles assigned yet.</span>
+                  <span className="text-sm text-muted-foreground">No roles assigned yet.</span>
                 )}
               </div>
             </div>
             <div className="space-y-2">
-              <span className="text-sm font-medium text-neutral-600">Capabilities</span>
+              <span className="text-sm font-medium text-muted-foreground">Capabilities</span>
               <div className="grid gap-2 md:grid-cols-2">
                 {(user?.permissions || []).map((permission) => (
-                  <div key={`${permission.resource}:${permission.action}`} className="rounded-lg bg-porcelain-tint px-3 py-2 text-xs text-neutral-600">
-                    <p className="font-semibold text-neutral-700">{permission.name}</p>
+                  <div key={`${permission.resource}:${permission.action}`} className="rounded-lg border border-border bg-muted/60 px-3 py-2 text-xs text-muted-foreground">
+                    <p className="font-semibold text-foreground">{permission.name}</p>
                     <p>
                       {permission.resource} · {permission.action}
                     </p>
                   </div>
                 ))}
                 {(user?.permissions || []).length === 0 ? (
-                  <p className="text-sm text-neutral-500">Permissions will appear here once roles are assigned.</p>
+                  <p className="text-sm text-muted-foreground">Permissions will appear here once roles are assigned.</p>
                 ) : null}
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card className="border-none bg-white shadow-lg">
+        <Card className="shadow-lg">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg text-evergreen">
-              <LucideIcon name="ShieldCheck" className="text-evergreen" /> Session security
+            <CardTitle className="flex items-center gap-2 text-lg text-foreground">
+              <LucideIcon name="ShieldCheck" className="text-primary" /> Session security
             </CardTitle>
             <CardDescription>Manage active session tokens and refresh credentials when needed.</CardDescription>
           </CardHeader>
@@ -100,7 +97,7 @@ export default function DashboardPage() {
             <Button onClick={handleRefresh} disabled={refreshing} className="w-full">
               {refreshing ? 'Refreshing session…' : 'Refresh session tokens'}
             </Button>
-            <Button onClick={auth.logout} variant="ghost" className="w-full text-rose-600 hover:bg-rose-100/60">
+            <Button onClick={auth.logout} variant="destructive" className="w-full">
               Sign out
             </Button>
           </CardContent>

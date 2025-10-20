@@ -1,54 +1,54 @@
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { Badge, Button } from '@components/ui';
-import { LucideIcon } from '../../../../shared/icons';
+import { LucideIcon } from '@icons';
 
 const ACTION_VARIANT_MAP = {
-  primary: 'primary',
+  primary: 'default',
   secondary: 'secondary',
   ghost: 'ghost',
   outline: 'outline',
   link: 'link',
   accent: 'secondary',
-  default: 'primary',
-  destructive: 'primary',
+  default: 'default',
+  destructive: 'destructive',
 };
 
 const TONE_CONFIG = {
   danger: {
     icon: 'OctagonAlert',
-    badgeVariant: 'accent',
+    badgeVariant: 'destructive',
     badgeLabel: 'Needs attention',
-    spotlightClass: 'bg-ecru/45',
-    iconContainerClass: 'bg-ecru/25 text-black-olive',
+    spotlightClass: 'bg-destructive/30',
+    iconContainerClass: 'bg-destructive/15 text-destructive',
   },
   warning: {
     icon: 'AlertTriangle',
-    badgeVariant: 'accent',
+    badgeVariant: 'secondary',
     badgeLabel: 'Heads up',
-    spotlightClass: 'bg-ecru/40',
-    iconContainerClass: 'bg-ecru/20 text-black-olive',
+    spotlightClass: 'bg-secondary/30',
+    iconContainerClass: 'bg-secondary/20 text-secondary-foreground',
   },
   success: {
     icon: 'CircleCheckBig',
-    badgeVariant: 'subtle',
+    badgeVariant: 'secondary',
     badgeLabel: 'All clear',
-    spotlightClass: 'bg-mint-sage/35',
-    iconContainerClass: 'bg-mint-sage/25 text-evergreen',
+    spotlightClass: 'bg-secondary/25',
+    iconContainerClass: 'bg-secondary/15 text-secondary-foreground',
   },
   info: {
     icon: 'Info',
-    badgeVariant: 'subtle',
+    badgeVariant: 'muted',
     badgeLabel: 'For your awareness',
-    spotlightClass: 'bg-porcelain-tint/80',
-    iconContainerClass: 'bg-porcelain-tint text-evergreen',
+    spotlightClass: 'bg-muted/70',
+    iconContainerClass: 'bg-muted text-foreground',
   },
   neutral: {
     icon: 'Compass',
-    badgeVariant: 'subtle',
+    badgeVariant: 'muted',
     badgeLabel: 'Update',
-    spotlightClass: 'bg-porcelain-tint/70',
-    iconContainerClass: 'bg-porcelain text-evergreen',
+    spotlightClass: 'bg-muted/60',
+    iconContainerClass: 'bg-muted text-foreground',
   },
 };
 
@@ -62,13 +62,13 @@ function ErrorState({ statusCode, title, description, badgeTone, actions, childr
   const tone = resolveToneConfig(badgeTone);
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-porcelain">
+    <main className="relative min-h-screen overflow-hidden bg-background">
       <div className="pointer-events-none absolute inset-0">
         <div className={`absolute -left-20 top-32 h-72 w-72 rounded-full blur-3xl ${tone.spotlightClass}`} />
-        <div className="absolute bottom-10 right-0 h-96 w-96 rounded-full bg-mint-sage/30 blur-3xl" />
+        <div className="absolute bottom-10 right-0 h-96 w-96 rounded-full bg-secondary/20 blur-3xl" />
       </div>
       <div className="container relative z-10 flex min-h-screen items-center justify-center py-20">
-        <div className="w-full max-w-3xl rounded-3xl border border-porcelain-shade bg-white/90 p-12 text-center shadow-uplift backdrop-blur-lg">
+        <div className="w-full max-w-3xl rounded-3xl border border-border bg-card/90 p-12 text-center shadow-uplift backdrop-blur-lg">
           <div className="flex flex-col items-center gap-6">
             <span className={`flex h-20 w-20 items-center justify-center rounded-2xl shadow-gentle ${tone.iconContainerClass}`}>
               <LucideIcon name={tone.icon} size="lg" />
@@ -77,16 +77,16 @@ function ErrorState({ statusCode, title, description, badgeTone, actions, childr
               {tone.badgeLabel}
             </Badge>
             {statusCode ? (
-              <p className="font-display text-5xl font-semibold text-black-olive">{statusCode}</p>
+              <p className="font-display text-5xl font-semibold text-foreground">{statusCode}</p>
             ) : null}
             <div className="space-y-4">
-              <h1 className="font-display text-3xl font-semibold text-black-olive md:text-4xl">{title}</h1>
-              <p className="text-base text-neutral-600">{description}</p>
+              <h1 className="font-display text-3xl font-semibold text-foreground md:text-4xl">{title}</h1>
+              <p className="text-base text-muted-foreground">{description}</p>
             </div>
           </div>
 
           {children ? (
-            <div className="mt-8 space-y-3 rounded-2xl bg-porcelain-tint/70 p-6 text-left text-sm text-neutral-600 shadow-gentle">
+            <div className="mt-8 space-y-3 rounded-2xl bg-muted/60 p-6 text-left text-sm text-muted-foreground shadow-gentle">
               {children}
             </div>
           ) : null}
