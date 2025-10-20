@@ -159,6 +159,13 @@ Component classes live in the preset (`@layer components`). Compose them with ut
 - Drawers: `.drawer`.
 - Tooltips & popovers: `.tooltip`, `.tooltip__content`.
 
+### Iconography
+
+- `.icon` enforces alignment, color inheritance, and flex behavior for all SVGs.
+- Size modifiers (`.icon--xs`, `.icon--sm`, `.icon--base`, `.icon--md`, `.icon--lg`, `.icon--xl`) map to the shared spacing scale.
+- Style modifiers (`.icon--outline`, `.icon--solid`, `.icon--mini`) tune stroke widths to match the Heroicons families.
+- Consume icons via `<HeroIcon />` from `app/shared/icons` to automatically wire accessibility helpers and theme sizing.
+
 ---
 
 ## 4. LMS Essentials
