@@ -11,6 +11,7 @@ const VARIANT_STYLES = {
   outline: 'border border-neutral-200 bg-white text-black-olive hover:bg-porcelain-tint hover:text-evergreen',
   ghost: 'bg-transparent text-black-olive hover:bg-porcelain-tint/80',
   link: 'bg-transparent text-evergreen underline underline-offset-4 hover:text-evergreen-soft',
+  accent: 'bg-ecru text-black-olive shadow-gentle hover:bg-ecru-bright hover:shadow-none',
 };
 
 const SIZE_STYLES = {

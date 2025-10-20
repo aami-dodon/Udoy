@@ -1,3 +1,6 @@
+## 2025-10-20 18:54 IST
+- Enlarged the hero login and sign-up CTAs to match the sponsor button footprint and introduced an accent button variant using the ecru palette for sign-up emphasis.
+
 ## 2025-10-20 09:51 IST
 - Wired the health dashboard fetches to the environment-aware API base helper so `/api/health` requests succeed when the client and server run on different hosts during development.
 - Introduced a shared `buildApiUrl` utility for future client modules that need consistent endpoint generation from `VITE_API_URL`.
