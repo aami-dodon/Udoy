@@ -26,7 +26,7 @@ Follow them strictly to maintain **quality**, **consistency**, **security**, and
 | Tiptap Editor            | Headless WYSIWYG editor with React integration and theme control. Extended with custom video support for **direct uploads to MinIO** (used for all media: video, images, docs). |
 | Prisma ORM               | Schema and database management for Postgres.                                               |
 | JWT                      | Authentication strategy using JWT tokens to secure API routes and sessions.                |
-| Casbin (RBAC)            | Policy-based role and permission control integrated with Express.js.                       |
+| Casbin                   | Policy-based role and permission control integrated with Express.js.                       |
 | dotenv                   | Environment variable management for configuration across frontend and backend.             |
 | CORS Middleware          | Enables secure cross-origin communication between Vite frontend and Express backend.       |
 | Nodemailer               | Server-side email sending.                                                                 |
