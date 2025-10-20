@@ -3,7 +3,10 @@
 These guidelines apply to **all contributors and agents** working on the project.  
 Follow them strictly to maintain **quality**, **consistency**, **security**, and **scalability** across all environments.
 
-TL;DR: The .env.local file is preconfigured with working public database, SMTP, and other settings, so you can run and test the project without extra setup. If you change any environment variables, update both .env.local (for your local tests) and .env.example (as a template for others). After making changes, atest with .env.local as and when required to ensure everything works and no errors occur.
+> 📝 **TL;DR**:  
+> The `.env.local` file is preconfigured with working public database, SMTP, and other settings, so you can run and test the project without extra setup.  
+> If you change any environment variables, update both `.env.local` (for your local tests) and `.env.example` (as a template for others).  
+> After making changes, **test with `.env.local`** as and when required to ensure everything works and no errors occur.
 
 ---
 
@@ -22,7 +25,7 @@ TL;DR: The .env.local file is preconfigured with working public database, SMTP, 
 | Lucide React Icons       | Modern icon library used with shadcn/ui components (replacing Heroicons).                  |
 | Tiptap Editor            | Headless WYSIWYG editor with React integration and theme control. Extended with custom video support for **direct uploads to MinIO** (used for all media: video, images, docs). |
 | Prisma ORM               | Schema and database management for Postgres.                                               |
-| JWT                      | Authentication strategy (JWT tokens or sessions) to secure API routes and user sessions.    |
+| JWT                      | Authentication strategy using JWT tokens to secure API routes and sessions.                |
 | Casbin (RBAC)            | Policy-based role and permission control integrated with Express.js.                       |
 | dotenv                   | Environment variable management for configuration across frontend and backend.             |
 | CORS Middleware          | Enables secure cross-origin communication between Vite frontend and Express backend.       |
@@ -30,38 +33,22 @@ TL;DR: The .env.local file is preconfigured with working public database, SMTP, 
 | Winston + Morgan         | Structured JSON logging for server monitoring and debugging.                               |
 | Swagger (OpenAPI)        | API documentation for all backend routes.                                                  |
 | MinIO                    | **Externally hosted** object storage for **all file uploads including video**, using presigned URLs. |
+| Socket.io                | Real-time communication layer between client and server.                                   |
+| Meilisearch              | Search engine used for content indexing and retrieval.                                     |
 
 ---
 
 ## 3. Code and Project Structure
 
-```
-.
-├── app/
-│   ├── client/     # Client-side application (React)
-│   ├── server/     # Server-side application (Express, Node)
-│   ├── shared/     # Shared code (types, utils, constants, theme, editor config)
-│   └── mobile/     # (Future - mobile app)
-├── docs/           # Project documentation
-├── docker-compose.yml   # Multi-service configuration
-├── .env.example         # Centralized env template
-├── infra/          # (Optional - Terraform, K8s, deployment scripts)
-├── scripts/        # Utility scripts
-└── README.md
-```
-
-**Structure Conventions**
-
 - All apps live in `app/`.
-- Product Requirement Documents (PRD) and its Features and User Stories lives in `docs/`.
-- You **must have** Feature-based organization:
-  ```
-  client/src/features/<feature>
-  server/src/modules/<feature>
-  ```
-- Shared integrations (`Nodemailer`, `MinIO`, `Casbin`) in `server/src/integrations`.
-- Shared logic in `shared/`.
+- Product Requirement Documents (PRD), Features, and User Stories live in `docs/`.
+- Feature-based organization is required:
+  - Client features under `client/src/features/<feature>`
+  - Server modules under `server/src/modules/<feature>`
+- Shared integrations (Nodemailer, MinIO, Casbin) are in `server/src/integrations`.
+- Shared logic lives in `shared/`.
 - Single `.env` for all services; template in `.env.example`.
+- `.env.local` is used for local development and must **not** be committed.
 
 ---
 
@@ -69,54 +56,62 @@ TL;DR: The .env.local file is preconfigured with working public database, SMTP, 
 
 - All APIs must be documented in **Swagger (OpenAPI)**.  
 - Use **Winston + Morgan** for structured JSON logging.  
-- Centralized error handling in:
-  ```
-  server/src/middlewares/errorHandler.js
-  ```
-- RBAC enforced via **Casbin middleware**.
+- Centralized error handling is located in `server/src/middlewares/errorHandler.js`.  
+- RBAC is enforced via **Casbin middleware**.  
+- Socket.io should be used for all real-time communication.
 
 ---
 
 ## 5. Database and Models
 
 - **Single source of truth:** Postgres.  
-- **ORM:** Prisma.
-
-**Schema location:**  
-```
-app/server/prisma/schema.prisma
-```
-
-**Migrations:**  
-```bash
-npm run prisma:migrate
-```
-
-- When `DEMO` variable in `.env` is set, seed demo data automatically.
+- **ORM:** Prisma.  
+- Prisma schema is located in `app/server/prisma/schema.prisma`.  
+- Run database migrations using `npm run prisma:migrate`.  
+- When the `DEMO` variable in `.env` is set (e.g., `DEMO=true`), demo data is seeded automatically.
 
 ---
 
 ## 6. Client Guidelines
 
-- Use **TailwindCSS with centralized theme** (`app/shared/theme`). No local overrides allowed.  
-- Routes must be defined only in `routes.js`.  
-- Use **utility classes** and reusable components — no inline CSS.  
+- Use **TailwindCSS with centralized theme configuration** (`app/shared/theme`).  
+  - No local overrides are allowed for colors, spacing, or typography.  
+  - All styling must reference theme tokens or Tailwind utility classes.
+
+- Use **shadcn/ui components** as the **primary building blocks** of the UI.  
+  - Extend components only when necessary and in a reusable, documented way.  
+  - Avoid duplicating components that already exist in the library.
+
+- Use **Lucide Icons** consistently through a shared icon component.  
+  - Do not embed raw SVGs or import icons inconsistently.  
+  - Follow sizing and styling conventions defined in the theme.
+
+- Use Tailwind utility classes for layout and minor styling adjustments only.  
+  - Do not use inline styles.  
+  - Extract repeating patterns into shared components.
+
+- Define all routes in a single route configuration file (`routes.js`) for SPA navigation.  
+  - Use **React Router DOM** for client-side routing.  
+  - Prefer lazy loading for route-level components.
+
 - **Tiptap** is the single WYSIWYG editor:  
-  - Videos and other assets (PDFs, images, documents) are uploaded directly to **MinIO** using pre-signed URLs and embedded in content.
+  - Videos and other assets (PDFs, images, documents) are uploaded directly to **MinIO** using presigned URLs and embedded in content.
 
 ---
 
 ## 7. Environment and Configuration
 
-- Centralized `.env` file at root.  
+- Centralized `.env` file at the root.  
 - `.env.example` is the **only** template reference.  
-- All external services are connected using `.env` variables.
-- No need to containerzie Minio and Posgress, as they are hosted externally.
+- `.env.local` comes preconfigured with external Postgres and MinIO credentials for local development.  
+- All external services are connected using `.env` variables.  
+- No need to **containerize MinIO and Postgres**, as they are hosted externally.
 
 ---
 
 ## 8. Documentation and Communication
 
-- All project-wide changes must be recorded in `CHANGELOG.md`. Include a **Date–Time Stamp (IST)** with every entry.
-- All server APIs must be recorded in `API-SPECS.md`.
-- All client Routes must be recorded in `ROUTES.md`.
+- All project-wide changes must be recorded in `CHANGELOG.md`. Include a **Date–Time Stamp (IST)** with every entry.  
+- All server APIs must be recorded in `API-SPECS.md`.  
+- All client routes must be recorded in `ROUTES.md`.  
+- Swagger Docs should be kept up-to-date with actual backend implementation.
