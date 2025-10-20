@@ -127,4 +127,5 @@ Follow them strictly to maintain **quality**, **consistency**, **security**, and
 - All project-wide changes must be recorded in `CHANGELOG.md`. Include a **Date–Time Stamp (IST)** with every entry.  
 - All server APIs must be recorded in `API-SPECS.md`.  
 - All client routes must be recorded in `ROUTES.md`.  
+- All RBAC polcies must be recorded in `RBAC.md`.  
 - Swagger Docs should be kept up-to-date with actual backend implementation.
