@@ -3,7 +3,17 @@ import logger from '../utils/logger.js';
 import getEnforcer from '../integrations/casbin/enforcer.js';
 
 function defaultSubjectExtractor(req) {
-  return req.user?.role || req.user?.email || req.user?.id || null;
+  const { roles, role, email, id, sub } = req.user || {};
+
+  if (Array.isArray(roles) && roles.length > 0) {
+    return roles.map((roleName) => `role:${roleName}`);
+  }
+
+  if (role) {
+    return [`role:${role}`];
+  }
+
+  return email || sub || id || null;
 }
 
 function resolveValue(valueOrFactory, req) {
@@ -37,44 +47,48 @@ export default function authorize({
         );
       }
 
-      const sub = subjectExtractor(req);
+      const subjects = subjectExtractor(req);
       const obj = resolveValue(resource, req);
       const act = resolveValue(action, req);
 
-      if (!sub || !obj || !act) {
+      const subjectList = Array.isArray(subjects) ? subjects.filter(Boolean) : [subjects].filter(Boolean);
+
+      if (subjectList.length === 0 || !obj || !act) {
         logger.error('Authorization check missing required parameters', {
-          sub,
+          subjects: subjectList,
           obj,
           act,
         });
         return next(
           AppError.forbidden('Forbidden', {
             code: 'AUTHORIZATION_PARAMETERS_MISSING',
-            details: { sub, obj, act },
+            details: { subjects: subjectList, obj, act },
           })
         );
       }
 
       const enforcer = await getEnforcer();
-      const allowed = await enforcer.enforce(sub, obj, act);
 
-      if (!allowed) {
-        logger.warn('Request blocked by Casbin policy', {
-          sub,
-          obj,
-          act,
-          path: req.originalUrl,
-          method: req.method,
-        });
-        return next(
-          AppError.forbidden('Forbidden', {
-            code: 'AUTHORIZATION_DENIED',
-            details: { sub, obj, act },
-          })
-        );
+      for (const subject of subjectList) {
+        const allowed = await enforcer.enforce(subject, obj, act);
+        if (allowed) {
+          return next();
+        }
       }
 
-      return next();
+      logger.warn('Request blocked by Casbin policy', {
+        subjects: subjectList,
+        obj,
+        act,
+        path: req.originalUrl,
+        method: req.method,
+      });
+      return next(
+        AppError.forbidden('Forbidden', {
+          code: 'AUTHORIZATION_DENIED',
+          details: { subjects: subjectList, obj, act },
+        })
+      );
     } catch (error) {
       logger.error('Casbin authorization failed', {
         error: error.message,
