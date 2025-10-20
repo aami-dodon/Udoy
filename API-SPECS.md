@@ -36,7 +36,7 @@
 ## Endpoints
 
 ### POST /api/auth/register
-Creates a new Udoy account. If the registrant is a minor (determined client-side), guardian details should be supplied so that a guardian approval token is emailed.
+Creates a new Udoy account. The registrant selects a role during sign-up. Students younger than 16 years must provide a guardian email address so an approval token can be dispatched.
 
 - **Auth:** Not required.
 - **Body:**
@@ -47,11 +47,17 @@ Creates a new Udoy account. If the registrant is a minor (determined client-side
     "firstName": "Aarav",
     "lastName": "Singh",
     "dateOfBirth": "2012-05-18",
-    "phoneNumber": "+91-9000000000",
-    "guardianEmail": "guardian@example.com",
-    "guardianName": "Riya Singh"
+    "role": "student",
+    "countryCode": "+91",
+    "phoneNumber": "+919000000000",
+    "guardianEmail": "guardian@example.com"
   }
   ```
+- **Validation Notes:**
+  - `firstName`, `lastName`, `email`, `password`, `dateOfBirth`, and `role` are required.
+  - `email` and `guardianEmail` must be valid addresses.
+  - `guardianEmail` is mandatory only when `role` is `student` and the registrant is younger than 16.
+  - `phoneNumber` is optional but, when present, must include the selected country code prefix.
 - **Responses:**
   - `201 Created` – returns `{ status, message, user }` and dispatches verification + guardian emails.
   - `400 Bad Request` – duplicate email or validation failure.

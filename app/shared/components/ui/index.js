@@ -6,3 +6,4 @@ export * from './separator.jsx';
 export * from './input.jsx';
 export * from './label.jsx';
 export * from './textarea.jsx';
+export * from './select.jsx';
