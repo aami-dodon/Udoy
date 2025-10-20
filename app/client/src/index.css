@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,7 +10,38 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply bg-porcelain text-black-olive antialiased;
     font-feature-settings: 'rlig' 1, 'calt' 1;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display tracking-tight text-black-olive;
+  }
+
+  ::selection {
+    @apply bg-ecru text-black-olive;
+  }
+}
+
+@layer components {
+  .section {
+    @apply relative overflow-hidden py-16 md:py-24;
+  }
+
+  .section-heading {
+    @apply font-display text-4xl font-semibold leading-tight text-black-olive md:text-5xl;
+  }
+
+  .body-large {
+    @apply text-lg leading-relaxed text-neutral-600;
+  }
+
+  .surface-card {
+    @apply rounded-3xl border border-porcelain-shade bg-white/80 p-8 shadow-gentle backdrop-blur;
   }
 }

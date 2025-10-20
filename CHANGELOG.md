@@ -134,6 +134,12 @@
 ## 2025-10-20 00:25 IST
 - Refined the server middleware README to document actual token sources, Casbin requirements, and response codes.
 
+
+## 2025-10-22 14:05 IST
+- Rebuilt the Udoy landing experience with a narrative-driven layout highlighting the hero story, mission, ecosystem roles, impact loop, engagement paths, and FAQ using shadcn/ui primitives.
+- Introduced a refreshed Evergreen-forward design system with centralised Tailwind tokens, gradients, and typography aligning to the new palette.
+- Replaced the shared UI kit and Lucide wrapper with streamlined components that consume the updated theme across the client.
+
 ## 2025-10-19 17:24 IST
 - Added Casbin with a file-backed policy and enforcer singleton under `server/src/integrations/casbin/`.
 - Created authorization middleware and an admin overview route gated by JWT + Casbin checks.
