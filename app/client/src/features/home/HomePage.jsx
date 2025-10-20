@@ -301,23 +301,31 @@ const HomePage = () => {
               circumstance once Udoy launches.
             </p>
             <div className="grid gap-6 sm:grid-cols-2">
-              <div className="rounded-2xl border border-porcelain-shade bg-white/70 p-6">
-                <h3 className="text-lg font-semibold text-evergreen">Sponsor a cohort</h3>
-                <p className="mt-2 text-sm text-neutral-600">
-                  Plan to fund achievement tokens, devices, and community labs. Track every learner you empower.
-                </p>
-                <Button variant="link" className="mt-4 px-0 text-evergreen">
-                  View sponsor playbook
-                </Button>
+              <div className="flex h-full flex-col rounded-2xl border border-porcelain-shade bg-white/70 p-6">
+                <div className="space-y-2">
+                  <h3 className="text-lg font-semibold text-evergreen">Sponsor a cohort</h3>
+                  <p className="text-sm text-neutral-600">
+                    Plan to fund achievement tokens, devices, and community labs. Track every learner you empower.
+                  </p>
+                </div>
+                <div className="mt-auto pt-6">
+                  <Button variant="link" className="px-0 text-left text-evergreen">
+                    View sponsor playbook
+                  </Button>
+                </div>
               </div>
-              <div className="rounded-2xl border border-porcelain-shade bg-white/70 p-6">
-                <h3 className="text-lg font-semibold text-evergreen">Volunteer to coach</h3>
-                <p className="mt-2 text-sm text-neutral-600">
-                  Guide 2–3 learners weekly, with structured prompts and support from lead mentors once programs open.
-                </p>
-                <Button variant="link" className="mt-4 px-0 text-evergreen">
-                  Explore mentor training
-                </Button>
+              <div className="flex h-full flex-col rounded-2xl border border-porcelain-shade bg-white/70 p-6">
+                <div className="space-y-2">
+                  <h3 className="text-lg font-semibold text-evergreen">Volunteer to coach</h3>
+                  <p className="text-sm text-neutral-600">
+                    Guide 2–3 learners weekly, with structured prompts and support from lead mentors once programs open.
+                  </p>
+                </div>
+                <div className="mt-auto pt-6">
+                  <Button variant="link" className="px-0 text-left text-evergreen">
+                    Explore mentor training
+                  </Button>
+                </div>
               </div>
             </div>
               <div className="flex flex-wrap gap-3 text-sm text-neutral-600">
