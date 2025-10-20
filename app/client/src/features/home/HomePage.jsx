@@ -170,9 +170,12 @@ const HomePage = () => {
               <Button variant="secondary" size="lg">
                 Become a mentor
               </Button>
-              <Button variant="ghost" size="lg" className="text-white hover:bg-white/10">
+              <a
+                href="/learning-paths"
+                className="w-full text-left text-base font-semibold text-white underline decoration-white/60 underline-offset-4 transition-colors hover:text-white md:w-auto"
+              >
                 Explore learning paths
-              </Button>
+              </a>
             </div>
             <div className="flex flex-wrap gap-6 text-sm text-white/70">
               <div className="flex items-center gap-3">
