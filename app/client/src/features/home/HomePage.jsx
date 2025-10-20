@@ -13,6 +13,7 @@ import {
   CardTitle,
   Separator,
 } from '@components/ui';
+import SiteFooter from '@/components/SiteFooter';
 
 const roles = [
   {
@@ -25,9 +26,10 @@ const roles = [
   {
     name: 'Creators',
     description:
-      'Alumni who will return to craft relevant lessons rooted in their lived experiences and local realities.',
+      'Middle-aged and retired alumni who return to craft relevant lessons rooted in decades of lived experience.',
     icon: 'PenTool',
-    highlight: 'Content will stay authentic, relatable, and deeply actionable for every learner.',
+    highlight:
+      'Seasoned creators are giving back to society with relatable, compassionate content for every learner.',
   },
   {
     name: 'Teachers',
@@ -60,7 +62,8 @@ const flywheel = [
   },
   {
     title: 'Create',
-    description: 'Graduates will become creators, translating success stories into fresh lessons and tools.',
+    description:
+      'Seasoned alumni creators will transform their journeys into fresh lessons and tools for today’s students.',
     icon: 'Loop',
   },
   {
@@ -93,9 +96,9 @@ const faqs = [
       'Absolutely. Udoy is being built for remote collaboration. Coaches will receive training, digital toolkits, and timezone-friendly schedules to mentor from anywhere.',
   },
   {
-    question: 'What support do creators receive?',
+    question: 'What support do alumni creators receive?',
     answer:
-      'Creators will co-build with teachers and product mentors, ensuring every lesson is technically sound, accessible in low-bandwidth environments, and ready for review before launch.',
+      'Returning alumni creators collaborate with teachers and product mentors, ensuring every lesson channels their experience, stays accessible in low-bandwidth environments, and is review-ready before launch.',
   },
   {
     question: 'How are students onboarded?',
@@ -109,7 +112,7 @@ function RoleCard({ role }) {
     <Card className="h-full transition-none hover:translate-y-0 hover:shadow-gentle">
       <CardHeader>
         <div className="flex items-center gap-3">
-          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-sm">
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white shadow-sm ring-2 ring-ecru">
             <LucideIcon name={role.icon} size="lg" className="text-evergreen" />
           </span>
           <CardTitle>{role.name}</CardTitle>
@@ -217,9 +220,9 @@ const HomePage = () => {
               Empowering students to not only catch up — but to outshine.
             </h2>
             <p className="body-large">
-              Udoy aims to orchestrate a supportive ecosystem where alumni creators, seasoned teachers, remote coaches, and
-              transparent sponsors rally around each learner. Together, they will form an unbroken chain of belonging, mastery,
-              and purpose.
+              Udoy aims to orchestrate a supportive ecosystem where middle-aged alumni creators, seasoned teachers, remote
+              coaches, and transparent sponsors rally around each learner. Together, they will form an unbroken chain of
+              belonging, mastery, and purpose.
             </p>
             <div className="grid gap-6 sm:grid-cols-2">
               <div className="rounded-2xl bg-white/80 p-6 shadow-gentle">
@@ -339,9 +342,9 @@ const HomePage = () => {
             </p>
             <div className="mt-8 space-y-6">
               {flywheel.map((item) => (
-                <div key={item.title} className="flex gap-4 rounded-2xl bg-porcelain-tint/70 p-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-sm">
-                    <LucideIcon name={item.icon} className="text-evergreen" />
+                <div key={item.title} className="flex items-start gap-4 rounded-2xl bg-porcelain-tint/70 p-4">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white shadow-sm ring-2 ring-ecru">
+                    <LucideIcon name={item.icon} size="lg" className="text-evergreen" />
                   </div>
                   <div>
                     <p className="font-semibold text-black-olive">{item.title}</p>
@@ -384,63 +387,7 @@ const HomePage = () => {
 
       </main>
 
-      <footer className="bg-black-olive text-porcelain">
-        <div className="container py-16">
-          <div className="grid gap-12 md:grid-cols-[2fr,1fr]">
-            <div className="space-y-4">
-              <Badge variant="accent" className="bg-ecru text-black-olive">
-                Udoy
-              </Badge>
-              <h3 className="text-3xl font-semibold text-white">Rise beyond circumstances.</h3>
-              <p className="max-w-xl text-sm text-white/70">
-                Udoy aims to build equitable access to future-ready learning. Together, we will nurture resilience, celebrate
-                progress, and make opportunity undeniable.
-              </p>
-              <div className="flex flex-wrap gap-4">
-                <Button className="bg-white text-black-olive hover:bg-porcelain">Pledge to sponsor a learner</Button>
-                <Button variant="ghost" className="text-white hover:bg-white/10">
-                  Register interest in the mentorship network
-                </Button>
-              </div>
-            </div>
-            <div className="space-y-6 text-sm text-white/70">
-              <div>
-                <h4 className="font-display text-2xl font-semibold text-white">Stay in the loop</h4>
-                <p className="mt-2">Future updates will share wins, stories, and open cohorts.</p>
-              </div>
-              <div className="flex flex-col gap-3">
-                <label className="text-xs uppercase tracking-wide text-white/60" htmlFor="newsletter-email">
-                  Email address
-                </label>
-                <div className="flex flex-wrap gap-3">
-                  <input
-                    id="newsletter-email"
-                    type="email"
-                    placeholder="you@example.com"
-                    className="w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-ecru focus:outline-none focus:ring-2 focus:ring-ecru"
-                  />
-                  <Button className="bg-ecru text-black-olive hover:bg-ecru-bright">Subscribe</Button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <Separator className="my-12 bg-white/10" />
-          <div className="flex flex-wrap items-center justify-between gap-4 text-xs text-white/50">
-            <p>© {new Date().getFullYear()} Udoy Collective. All rights reserved.</p>
-            <div className="flex gap-6">
-              <a href="#mission" className="transition hover:text-white">
-                Mission
-              </a>
-              <a href="#roles" className="transition hover:text-white">
-                Ecosystem
-              </a>
-              <a href="#impact" className="transition hover:text-white">
-                Impact
-              </a>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
     </>
   );
 };
