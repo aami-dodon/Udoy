@@ -171,18 +171,18 @@ const HomePage = () => {
             </div>
           </div>
           <div className="relative">
-            <div className="surface-card animate-float border-0 bg-white/10 p-10 text-black-olive shadow-2xl backdrop-blur">
-              <h2 className="font-display text-2xl text-black-olive">The Udoy Flywheel</h2>
+            <div className="surface-card animate-float border-0 bg-white/10 p-10 text-white shadow-2xl backdrop-blur">
+              <h2 className="font-display text-2xl text-white">The Udoy Flywheel</h2>
               <Separator className="my-6 bg-white/30" />
-              <ol className="space-y-4 text-sm text-black-olive/90">
+              <ol className="space-y-4 text-sm text-white/80">
                 {flywheel.map((item, index) => (
                   <li key={item.title} className="flex items-start gap-4">
                     <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-white/70 font-semibold text-evergreen">
                       {index + 1}
                     </span>
                     <div>
-                      <p className="text-base font-semibold text-black-olive">{item.title}</p>
-                      <p className="text-sm text-black-olive/80">{item.description}</p>
+                      <p className="text-base font-semibold text-white">{item.title}</p>
+                      <p className="text-sm text-white/70">{item.description}</p>
                     </div>
                   </li>
                 ))}
