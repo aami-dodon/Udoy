@@ -47,7 +47,7 @@ const PhoneInput = React.forwardRef(
         flags={flags}
         inputComponent={InputComponent}
         className={cn(
-          'flex w-full items-stretch overflow-hidden rounded-lg border border-input bg-background text-sm focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2',
+          'flex w-full items-stretch overflow-hidden rounded border border-input bg-background pl-4 text-sm focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2',
           disabled && 'opacity-60',
           className
         )}

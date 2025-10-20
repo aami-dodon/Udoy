@@ -195,6 +195,11 @@
 ## 2025-10-21 12:30 IST
 - Simplified the default admin bootstrap to rely on email-only upserts and removed the `DEFAULT_ADMIN_USER_ID` variable.
 - Hardcoded the seeded admin's profile details to "Super" and "Admin" so the account has consistent display information.
+## 2025-10-21 04:25 IST
+- Shortened the register date of birth helper text copy for clarity and tighter layout.
+- Removed the extra flex wrapper from the register date picker so its label/input aligns with neighboring fields.
+- Updated the shared select trigger radius to match the standard input silhouette used across forms.
+- Added leading padding on the phone number input shell so the country flag aligns with other field content.
 
 ## 2025-10-19 17:24 IST
 - Added Casbin with a file-backed policy and enforcer singleton under `server/src/integrations/casbin/`.

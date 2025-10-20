@@ -260,7 +260,7 @@ export default function RegisterPage() {
                   control={form.control}
                   name="dateOfBirth"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col">
+                    <FormItem>
                       <FormLabel>Date of birth</FormLabel>
                       <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
                         <PopoverTrigger asChild>
@@ -301,7 +301,7 @@ export default function RegisterPage() {
                           />
                         </PopoverContent>
                       </Popover>
-                      <FormDescription>This helps us personalise age-appropriate pathways.</FormDescription>
+                      <FormDescription>Tailors age-fit paths</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -315,7 +315,7 @@ export default function RegisterPage() {
                       <FormControl>
                         <PhoneInput placeholder="Optional" value={field.value || ''} onChange={field.onChange} />
                       </FormControl>
-                      <FormDescription>We’ll use this for important updates and urgent alerts.</FormDescription>
+                      <FormDescription>For vital updates and alerts.</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}

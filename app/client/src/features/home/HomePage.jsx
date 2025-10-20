@@ -153,14 +153,14 @@ const HomePage = () => {
             <Button variant="ghost" size="lg" className="text-white hover:bg-white/10" asChild>
               <Link to="/login">Log in</Link>
             </Button>
-            <Button variant="accent" size="lg" asChild>
+            <Button size="lg" className="bg-ecru text-black-olive hover:bg-ecru-bright" asChild>
               <Link to="/register">Sign up</Link>
             </Button>
           </div>
         </header>
         <div className="container relative z-10 grid gap-12 pb-24 pt-10 md:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] md:items-center">
           <div className="space-y-8">
-            <Badge variant="accent" className="text-sm font-medium text-black-olive">
+            <Badge variant="accent" className="text-sm font-medium text-white">
               Where potential meets opportunity
             </Badge>
             <div className="space-y-4">
