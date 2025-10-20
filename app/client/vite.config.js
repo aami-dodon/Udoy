@@ -5,6 +5,8 @@ import path from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const sharedComponentsPath = path.resolve(__dirname, '../components');
+const sharedUiEntryPath = path.resolve(sharedComponentsPath, 'ui/index.js');
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
@@ -27,9 +29,16 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
+        '@components': sharedComponentsPath,
+        '@components/ui': sharedUiEntryPath,
       },
     },
-    server: { ...baseServerConfig },
+    server: {
+      ...baseServerConfig,
+      fs: {
+        allow: [sharedComponentsPath],
+      },
+    },
     preview: { ...baseServerConfig },
   };
 });

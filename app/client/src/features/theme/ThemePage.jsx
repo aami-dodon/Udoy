@@ -29,11 +29,17 @@ import {
   XCircle,
 } from 'lucide-react';
 import { colors, layout, motion, typography } from '../../../../shared/theme/tokens.mjs';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import {
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Input,
+  Label,
+  Textarea,
+} from '@components/ui';
 
 const ColorSwatch = ({ label, value }) => (
   <div className="flex flex-col gap-2">
