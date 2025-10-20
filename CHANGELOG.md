@@ -1,3 +1,6 @@
+## 2025-10-30 09:30 IST
+- Linked the client container `node_modules` directory at `/usr/src/node_modules` so shared `@components` imports can resolve Radix and class-variance dependencies during Vite dev runs.
+
 ## 2025-10-30 09:05 IST
 - Copied the shared shadcn component library into the client Docker image so the `@components/ui` alias resolves during dev-server builds inside containers.
 
