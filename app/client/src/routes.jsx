@@ -1,6 +1,6 @@
 import { lazy } from 'react';
 
-const HomePage = lazy(() => import('./features/home/HomePage.jsx'));
+import HomePage from './features/home/HomePage.jsx';
 const HealthPage = lazy(() => import('./features/health/HealthPage.jsx'));
 
 const ForbiddenPage = lazy(() => import('./features/errors/ForbiddenPage.jsx'));

@@ -1,6 +1,7 @@
-import { Component } from 'react';
+import { Component, Suspense, lazy } from 'react';
 import PropTypes from 'prop-types';
-import GenericErrorPage from '../features/errors/GenericErrorPage.jsx';
+
+const LazyGenericErrorPage = lazy(() => import('../features/errors/GenericErrorPage.jsx'));
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -27,7 +28,17 @@ class ErrorBoundary extends Component {
     const { children } = this.props;
 
     if (hasError) {
-      return <GenericErrorPage onRetry={this.handleRetry} />;
+      return (
+        <Suspense
+          fallback={(
+            <div role="alert" className="flex h-screen items-center justify-center p-6 text-body-sm text-foreground">
+              Something went wrong. Please try again.
+            </div>
+          )}
+        >
+          <LazyGenericErrorPage onRetry={this.handleRetry} />
+        </Suspense>
+      );
     }
 
     return children;
