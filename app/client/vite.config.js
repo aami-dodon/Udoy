@@ -24,6 +24,8 @@ export default defineConfig(({ mode }) => {
     baseServerConfig.allowedHosts = allowedHosts;
   }
 
+  const projectRoot = path.resolve(__dirname);
+
   return {
     plugins: [react()],
     resolve: {
@@ -36,7 +38,7 @@ export default defineConfig(({ mode }) => {
     server: {
       ...baseServerConfig,
       fs: {
-        allow: [sharedComponentsPath],
+        allow: [projectRoot, sharedComponentsPath],
       },
     },
     preview: { ...baseServerConfig },
