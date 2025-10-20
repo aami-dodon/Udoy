@@ -19,9 +19,10 @@ TL;DR: The .env.local file is preconfigured with working public database, SMTP, 
 | Axios                    | HTTP client for communication between frontend and backend.                                |
 | Node.js                  | Server runtime environment.                                                                |
 | TailwindCSS + Theme      | Utility-first CSS framework with centralized, shared design system across all apps.        |
+| Heroicons                | Official SVG icon library for Tailwind — lightweight, customizable icons for UI components. |
 | Tiptap Editor            | Headless WYSIWYG editor with React integration and theme control. Extended with custom video support for **direct uploads to MinIO** (used for all media: video, images, docs). |
 | Prisma ORM               | Schema and database management for Postgres.                                               |
-| JWT                     | Authentication strategy (JWT tokens or sessions) to secure API routes and user sessions.    |
+| JWT                      | Authentication strategy (JWT tokens or sessions) to secure API routes and user sessions.    |
 | Casbin (RBAC)            | Policy-based role and permission control integrated with Express.js.                       |
 | dotenv                   | Environment variable management for configuration across frontend and backend.             |
 | CORS Middleware          | Enables secure cross-origin communication between Vite frontend and Express backend.       |
