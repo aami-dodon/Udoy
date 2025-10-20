@@ -440,6 +440,46 @@ const themePlugin = plugin(({ addBase, addComponents, addUtilities, theme }) => 
       flexDirection: 'column',
       gap: theme('spacing.10'),
     },
+    '.icon': {
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: 'inherit',
+      flexShrink: 0,
+    },
+    '.icon--outline': {
+      strokeWidth: '1.5',
+    },
+    '.icon--solid': {
+      strokeWidth: '0',
+    },
+    '.icon--mini': {
+      strokeWidth: '0',
+    },
+    '.icon--xs': {
+      width: theme('spacing.4'),
+      height: theme('spacing.4'),
+    },
+    '.icon--sm': {
+      width: theme('spacing.5'),
+      height: theme('spacing.5'),
+    },
+    '.icon--base': {
+      width: theme('spacing.6'),
+      height: theme('spacing.6'),
+    },
+    '.icon--md': {
+      width: theme('spacing.7'),
+      height: theme('spacing.7'),
+    },
+    '.icon--lg': {
+      width: theme('spacing.8'),
+      height: theme('spacing.8'),
+    },
+    '.icon--xl': {
+      width: theme('spacing.10'),
+      height: theme('spacing.10'),
+    },
     '.card': {
       ...cardBase,
     },

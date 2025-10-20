@@ -1,5 +1,10 @@
 # Changelog
 
+## 2025-10-20 05:39 IST
+- Installed `@heroicons/react` in the client and exposed centralized helpers under `app/shared/icons` for consistent usage.
+- Added theme-level `.icon` component classes to the Tailwind preset so Heroicons inherit Udoy sizing, alignment, and stroke rules.
+- Documented the icon system in the shared theme and iconography READMEs to guide developers.
+
 ## 2025-10-28 09:15 IST
 - Removed the marketing landing, health dashboard, and theme showcase routes from the client.
 - Replaced the home experience with a minimal "hello world" placeholder for future development.
