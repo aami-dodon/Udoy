@@ -49,7 +49,7 @@ export default function DashboardPage() {
             <InfoRow label="Phone" value={user?.phoneNumber} />
             <InfoRow label="Status" value={user?.status} />
             <InfoRow label="Email verified" value={user?.isEmailVerified ? 'Yes' : 'Pending'} />
-            <InfoRow label="Guardian consent" value={user?.guardianConsent ? 'Approved' : 'Pending'} />
+            <InfoRow label="Coach consent" value={user?.guardianConsent ? 'Approved' : 'Pending'} />
             <Separator />
             <div className="space-y-2">
               <span className="text-sm font-medium text-muted-foreground">Roles</span>
