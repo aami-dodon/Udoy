@@ -1,12 +1,10 @@
-## 2025-10-30 16:00 IST
+## 2025-10-20 07:35 IST
+- Extended the client Vite alias map with a direct `@components/ui` entry and allowed the dev server to read from `app/components`, resolving the ThemePage import error for the shared shadcn wrappers.
+
+## 2025-10-30 07:00 IST
 - Replaced Heroicons with Lucide React icons across the shared registry and theme showcase, including the `/theme` reference page.
 - Updated the shared Tailwind icon utilities and documentation to reflect Lucide stroke weights and component usage.
 - Swapped the client dependency from `@heroicons/react` to `lucide-react` for future development.
-
-## 2025-10-30 12:45 IST
-
-## 2025-10-20 07:35 IST
-- Extended the client Vite alias map with a direct `@components/ui` entry and allowed the dev server to read from `app/components`, resolving the ThemePage import error for the shared shadcn wrappers.
 
 ## 2025-10-20 06:44 IST
 - Converted the shared `tokens.js` design token catalog to support both ES modules and CommonJS, preventing the `module is not defined` runtime in the client while keeping Tailwind consumption working.
@@ -20,8 +18,6 @@
 - Installed shadcn/ui tooling in the client so new components inherit the shared Udoy Tailwind theme.
 - Added baseline Button, Input, Label, Textarea, and Card primitives that wrap the theme tokens for consistent UI building blocks.
 - Extended the client Tailwind config with design token variables, animations, and a component alias configuration to match shadcn/ui conventions.
-
-# Changelog
 
 ## 2025-10-20 05:39 IST
 - Installed `@heroicons/react` in the client and exposed centralized helpers under `app/shared/icons` for consistent usage.
