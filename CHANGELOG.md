@@ -1,3 +1,6 @@
+## 2025-10-30 08:45 IST
+- Restored the client Vite dev server root to the allow list so `/index.html` loads without triggering 403 errors during local development.
+
 ## 2025-10-20 07:35 IST
 - Extended the client Vite alias map with a direct `@components/ui` entry and allowed the dev server to read from `app/components`, resolving the ThemePage import error for the shared shadcn wrappers.
 
