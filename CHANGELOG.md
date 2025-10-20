@@ -1,3 +1,10 @@
+## 2025-11-02 10:45 IST
+- Required a `DEFAULT_ADMIN_PASSWORD` environment setting and hash it during startup so the seeded admin can sign in securely.
+- Documented the new configuration knob alongside the default admin identifiers in the environment templates.
+
+## 2025-11-02 10:15 IST
+- Bootstrapped a default admin account during server startup using environment-provided identifiers, ensuring the admin role is always provisioned.
+
 ## 2025-11-01 09:45 IST
 - Added a shared `@icons` Vite alias and refreshed feature pages to consume the centralized Lucide exports without brittle relative paths.
 ## 2025-10-31 12:45 IST
@@ -184,6 +191,10 @@
 ## 2025-10-21 03:28 IST
 - Updated the registration date picker to use the shadcn dropdown calendar interaction and close the popover when a date is chosen.
 - Synced the date picker trigger styling with the shared calendar UI so the button spans the field width and matches shadcn defaults.
+
+## 2025-10-21 12:30 IST
+- Simplified the default admin bootstrap to rely on email-only upserts and removed the `DEFAULT_ADMIN_USER_ID` variable.
+- Hardcoded the seeded admin's profile details to "Super" and "Admin" so the account has consistent display information.
 
 ## 2025-10-19 17:24 IST
 - Added Casbin with a file-backed policy and enforcer singleton under `server/src/integrations/casbin/`.
