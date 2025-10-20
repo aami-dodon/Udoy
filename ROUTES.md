@@ -8,6 +8,7 @@
 | Path | Feature | Description |
 | --- | --- | --- |
 | `/` | Home | Minimal home route rendering the "hello world" placeholder content. |
+| `/theme` | Design System | Visual reference for the LMS theme including tokens, components, and iconography across light/dark modes. |
 | `/403` | Error Pages | Forbidden access screen that guides users back to the home experience. |
 | `/500` | Error Pages | Server error page surfaced when upstream systems fail unexpectedly. |
 | `/error` | Error Pages | Generic fallback error experience shared by the global error boundary. |
