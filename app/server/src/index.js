@@ -2,6 +2,14 @@ import env from './config/env.js';
 import createApp from './app.js';
 import logger from './utils/logger.js';
 import prisma from './utils/prismaClient.js';
+import { ensureCoreRbac } from './services/rbacService.js';
+
+try {
+  await ensureCoreRbac();
+  logger.info('RBAC capabilities synchronized');
+} catch (error) {
+  logger.error('Failed to initialize RBAC during startup', { error: error.message });
+}
 
 const app = createApp();
 

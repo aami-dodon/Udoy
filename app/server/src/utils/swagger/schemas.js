@@ -197,6 +197,152 @@ export const schemas = {
       },
     },
   },
+  AuthUserProfile: {
+    type: 'object',
+    properties: {
+      id: { type: 'string' },
+      email: { type: 'string', format: 'email' },
+      firstName: { type: 'string', nullable: true },
+      lastName: { type: 'string', nullable: true },
+      dateOfBirth: { type: 'string', format: 'date', nullable: true },
+      phoneNumber: { type: 'string', nullable: true },
+      status: { type: 'string' },
+      isEmailVerified: { type: 'boolean' },
+      guardianConsent: { type: 'boolean' },
+      roles: { type: 'array', items: { type: 'string' } },
+      permissions: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            name: { type: 'string' },
+            resource: { type: 'string' },
+            action: { type: 'string' },
+          },
+        },
+      },
+      createdAt: { type: 'string', format: 'date-time' },
+      updatedAt: { type: 'string', format: 'date-time' },
+    },
+  },
+  AuthTokens: {
+    type: 'object',
+    properties: {
+      accessToken: { type: 'string' },
+      refreshToken: { type: 'string' },
+      accessTokenExpiresIn: { type: 'integer' },
+      refreshTokenExpiresIn: { type: 'integer' },
+    },
+  },
+  AuthSessionMeta: {
+    type: 'object',
+    properties: {
+      id: { type: 'string', nullable: true },
+      expiresAt: { type: 'string', format: 'date-time', nullable: true },
+      roles: { type: 'array', items: { type: 'string' } },
+      permissions: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            name: { type: 'string' },
+            resource: { type: 'string' },
+            action: { type: 'string' },
+          },
+        },
+      },
+    },
+  },
+  AuthRegistrationRequest: {
+    type: 'object',
+    required: ['email', 'password'],
+    properties: {
+      email: { type: 'string', format: 'email' },
+      password: { type: 'string', minLength: 8 },
+      firstName: { type: 'string' },
+      lastName: { type: 'string' },
+      dateOfBirth: { type: 'string', format: 'date', nullable: true },
+      phoneNumber: { type: 'string', nullable: true },
+      guardianEmail: { type: 'string', format: 'email', nullable: true },
+      guardianName: { type: 'string', nullable: true },
+    },
+  },
+  AuthRegistrationResponse: {
+    allOf: [
+      { $ref: '#/components/schemas/StandardSuccessResponse' },
+      {
+        type: 'object',
+        properties: {
+          user: { $ref: '#/components/schemas/AuthUserProfile' },
+        },
+      },
+    ],
+  },
+  AuthLoginRequest: {
+    type: 'object',
+    required: ['email', 'password'],
+    properties: {
+      email: { type: 'string', format: 'email' },
+      password: { type: 'string' },
+    },
+  },
+  AuthLoginResponse: {
+    allOf: [
+      { $ref: '#/components/schemas/StandardSuccessResponse' },
+      {
+        type: 'object',
+        properties: {
+          tokens: { $ref: '#/components/schemas/AuthTokens' },
+          session: { $ref: '#/components/schemas/AuthSessionMeta' },
+          user: { $ref: '#/components/schemas/AuthUserProfile' },
+        },
+      },
+    ],
+  },
+  AuthRefreshResponse: {
+    allOf: [
+      { $ref: '#/components/schemas/StandardSuccessResponse' },
+      {
+        type: 'object',
+        properties: {
+          tokens: { $ref: '#/components/schemas/AuthTokens' },
+          session: { $ref: '#/components/schemas/AuthSessionMeta' },
+          user: { $ref: '#/components/schemas/AuthUserProfile' },
+        },
+      },
+    ],
+  },
+  AuthVerificationResponse: {
+    allOf: [
+      { $ref: '#/components/schemas/StandardSuccessResponse' },
+      {
+        type: 'object',
+        properties: {
+          user: { $ref: '#/components/schemas/AuthUserProfile' },
+        },
+      },
+    ],
+  },
+  AuthResetPasswordRequest: {
+    type: 'object',
+    required: ['token', 'password'],
+    properties: {
+      token: { type: 'string' },
+      password: { type: 'string', minLength: 8 },
+    },
+  },
+  AuthSessionResponse: {
+    allOf: [
+      { $ref: '#/components/schemas/StandardSuccessResponse' },
+      {
+        type: 'object',
+        properties: {
+          user: { $ref: '#/components/schemas/AuthUserProfile' },
+          session: { $ref: '#/components/schemas/AuthSessionMeta' },
+        },
+      },
+    ],
+  },
   UploadPresignResponse: {
     type: 'object',
     required: ['status', 'data'],
