@@ -538,6 +538,25 @@ export async function requestPasswordReset(req, res, next) {
       });
     }
 
+    if (!user.isEmailVerified) {
+      await logAuditEvent({
+        actorId: user.id,
+        eventType: AuditEventType.PASSWORD_RESET_REQUESTED,
+        resource: 'user',
+        resourceId: user.id,
+        metadata: {
+          email: user.email,
+          blocked: true,
+          reason: 'EMAIL_NOT_VERIFIED',
+        },
+      });
+
+      return res.json({
+        status: 'success',
+        message: 'Please verify your email before requesting a password reset.',
+      });
+    }
+
     const { token } = await generateVerificationToken(user.id, VerificationTokenType.PASSWORD_RESET, {
       actorId: user.id,
       metadata: { email: user.email },

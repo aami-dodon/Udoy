@@ -1,3 +1,6 @@
+## 2025-11-02 13:00 IST
+- Stopped password reset emails from dispatching to unverified accounts, logging the blocked request and guiding users to verify first.
+- Added server tests to cover verified versus unverified password reset flows and documented the alternate API response.
 ## 2025-10-21 05:56 IST
 - Revoked all active sessions when a user is deactivated and enforced session validity checks during authentication so inactive accounts lose API access immediately.
 - Added a Node test harness covering the deactivation flow to ensure authenticated calls fail after status changes.
