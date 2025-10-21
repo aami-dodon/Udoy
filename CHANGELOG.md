@@ -1,3 +1,8 @@
+## 2025-11-08 16:20 IST
+- Added `MINIO_FORCE_SIGNED_DOWNLOADS` support on the server/client configuration layers so private buckets can force download presigned URLs.
+- Updated the shared editor upload helper to honour the new flag, request GET presigned URLs when required, and expose both signed and direct asset references for downstream consumers.
+- Documented the configuration toggle in `.env.example` and the config README to guide deployments that rely on restricted MinIO buckets.
+
 ## 2025-10-22 04:13 IST
 - Enabled resizable TipTap image and video nodes with in-editor controls so topic authors can reposition uploads with industry-standard handles.
 - Normalized MinIO asset URLs in the shared upload helper to always use the configured public base domain.
