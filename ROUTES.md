@@ -18,6 +18,9 @@
 | `/dashboard` | Dashboard | Authenticated | Protected account hub (via `RequireAuth`) showing RBAC roles, permissions, and session controls. |
 | `/profile` | Profile | Authenticated | Profile management hub enabling users to update avatars, preferences, notifications, and accessibility settings. |
 | `/admin/users` | Admin | Admin role | Guarded by `RequireRole('admin')`; lists users, updates statuses, and manages role bindings. |
+| `/topics` | Topics | Creator / Teacher / Admin | Topic library listing drafts, review queues, and published versions guarded by `RequireRole(['creator','teacher','admin'])`. |
+| `/topics/new` | Topics | Creator / Admin | Topic authoring surface for drafting new content guarded by `RequireRole(['creator','admin'])`. |
+| `/topics/:topicId` | Topics | Creator / Teacher / Admin | Topic editor with TipTap, workflow actions, and review collaboration guarded by `RequireRole(['creator','teacher','admin'])`. |
 | `/403` | Error Pages | Public | Forbidden access screen that guides users back to the home experience. |
 | `/500` | Error Pages | Public | Server error page surfaced when upstream systems fail unexpectedly. |
 | `/error` | Error Pages | Public | Generic fallback error experience shared by the global error boundary. |

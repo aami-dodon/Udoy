@@ -80,6 +80,34 @@ enum NotificationPriority {
   CRITICAL
 }
 
+enum TopicStatus {
+  DRAFT
+  IN_REVIEW
+  CHANGES_REQUESTED
+  APPROVED
+  PUBLISHED
+  ARCHIVED
+}
+
+enum TopicContentFormat {
+  JSON
+  HTML
+}
+
+enum TopicTagKind {
+  CLASSIFICATION
+  CURRICULUM
+  ACCESSIBILITY
+  SUBJECT
+  CUSTOM
+}
+
+enum TopicCommentType {
+  GENERAL
+  REVIEW
+  CHANGE_REQUEST
+}
+
 model User {
   id              String     @id @default(cuid())
   email           String     @unique
@@ -111,6 +139,14 @@ model User {
   createdNotificationTemplates NotificationTemplate[] @relation("NotificationTemplatesCreated")
   updatedNotificationTemplates NotificationTemplate[] @relation("NotificationTemplatesUpdated")
   notifications                Notification[]
+  authoredTopics               Topic[]                @relation("TopicAuthor")
+  validatedTopics              Topic[]                @relation("TopicValidator")
+  createdTags                  TopicTagDefinition[]   @relation("TagCreatedBy")
+  assignedTopicTags            TopicTag[]             @relation("TopicTagAssignedBy")
+  topicComments                TopicComment[]         @relation("TopicCommentsAuthored")
+  resolvedTopicComments        TopicComment[]         @relation("TopicCommentsResolved")
+  topicWorkflowEvents          TopicWorkflowEvent[]
+  topicRevisions               TopicRevision[]        @relation("TopicRevisionAuthor")
 }
 
 model Role {
@@ -328,4 +364,128 @@ model UserProfile {
   linkedCoach User? @relation("CoachAssignments", fields: [linkedCoachId], references: [id])
 
   @@index([linkedCoachId])
+}
+
+model TopicTagDefinition {
+  id          String        @id @default(cuid())
+  slug        String        @unique
+  label       String
+  description String?
+  kind        TopicTagKind  @default(CUSTOM)
+  metadata    Json?
+  createdById String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  createdBy User?     @relation("TagCreatedBy", fields: [createdById], references: [id])
+  topics    TopicTag[]
+
+  @@index([kind])
+}
+
+model TopicTag {
+  topicId      String
+  tagId        String
+  assignedById String?
+  assignedAt   DateTime   @default(now())
+  metadata     Json?
+
+  topic      Topic              @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  tag        TopicTagDefinition @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  assignedBy User?              @relation("TopicTagAssignedBy", fields: [assignedById], references: [id])
+
+  @@id([topicId, tagId])
+  @@index([tagId])
+}
+
+model Topic {
+  id             String               @id @default(cuid())
+  title          String
+  summary        String?
+  language       String               @default("en")
+  status         TopicStatus          @default(DRAFT)
+  content        Json?
+  contentFormat  TopicContentFormat   @default(JSON)
+  accessibility  Json?
+  metadata       Json?
+  version        Int                  @default(1)
+  authorId       String
+  validatorId    String?
+  baseTopicId    String?
+  submittedAt    DateTime?
+  approvedAt     DateTime?
+  publishedAt    DateTime?
+  archivedAt     DateTime?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+
+  author       User      @relation("TopicAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  validator    User?     @relation("TopicValidator", fields: [validatorId], references: [id])
+  baseTopic    Topic?    @relation("TopicTranslations", fields: [baseTopicId], references: [id])
+  translations Topic[]   @relation("TopicTranslations")
+  tags           TopicTag[]
+  revisions      TopicRevision[]
+  workflowEvents TopicWorkflowEvent[]
+  comments     TopicComment[]
+
+  @@index([status])
+  @@index([language])
+  @@index([baseTopicId])
+  @@index([authorId])
+}
+
+model TopicRevision {
+  id            String             @id @default(cuid())
+  topicId       String
+  version       Int
+  status        TopicStatus
+  title         String
+  summary       String?
+  content       Json?
+  contentFormat TopicContentFormat
+  accessibility Json?
+  metadata      Json?
+  changeNotes   String?
+  createdById   String
+  createdAt     DateTime           @default(now())
+
+  topic     Topic @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  createdBy User  @relation("TopicRevisionAuthor", fields: [createdById], references: [id])
+
+  @@unique([topicId, version])
+  @@index([createdById])
+}
+
+model TopicWorkflowEvent {
+  id        String       @id @default(cuid())
+  topicId   String
+  actorId   String
+  fromStatus TopicStatus?
+  toStatus  TopicStatus
+  note      String?
+  createdAt DateTime     @default(now())
+
+  topic Topic @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  actor User  @relation(fields: [actorId], references: [id])
+
+  @@index([topicId])
+  @@index([actorId])
+}
+
+model TopicComment {
+  id            String           @id @default(cuid())
+  topicId       String
+  authorId      String
+  type          TopicCommentType @default(GENERAL)
+  body          String
+  createdAt     DateTime         @default(now())
+  resolvedAt    DateTime?
+  resolvedById  String?
+
+  topic      Topic @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  author     User  @relation("TopicCommentsAuthored", fields: [authorId], references: [id])
+  resolvedBy User? @relation("TopicCommentsResolved", fields: [resolvedById], references: [id])
+
+  @@index([topicId])
+  @@index([authorId])
 }

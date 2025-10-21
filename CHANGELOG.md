@@ -1,3 +1,8 @@
+## 2025-11-07 11:30 IST
+- Launched the Topic Management System with Prisma models for topics, tags, revisions, workflow events, and review comments plus a dedicated migration and regenerated client.
+- Added `/api/topics` endpoints with Swagger docs, RBAC, and Casbin policies covering draft, review, publish, and comment workflows.
+- Delivered a shadcn-powered Topic Manager in the client featuring the TipTap editor with MinIO uploads, status-aware actions, workflow history, and comment collaboration.
+
 ## 2025-11-06 14:00 IST
 - Unified all transactional emails behind the responsive Udoy template so verification, password reset, and guardian approval messages now mirror the home page hero header and SiteFooter experience.
 - Matched the template tagline and footer copy to the home page language and documented the shared email shell in the server services guide.
