@@ -1,3 +1,6 @@
+## 2025-10-22 05:06 IST
+- Added a gated `/uploads/test` client harness that walks admins, creators, and teachers through requesting MinIO presigned URLs, uploading images, and reviewing the response payload.
+
 ## 2025-11-08 18:30 IST
 - Hid the topic editor guidance header for read-only viewers so students only see the published lesson content.
 
