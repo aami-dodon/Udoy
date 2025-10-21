@@ -1,4 +1,5 @@
 export * from './accordion.jsx';
+export * from './alert-dialog.jsx';
 export * from './badge.jsx';
 export * from './button.jsx';
 export * from './command.jsx';
