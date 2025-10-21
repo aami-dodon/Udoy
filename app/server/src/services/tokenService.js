@@ -9,27 +9,6 @@ import { parseDuration, addSeconds, secondsUntil } from '../utils/duration.js';
 import { logAuditEvent } from './auditService.js';
 import { getUserAuthPayload } from './userService.js';
 
-const testOverrides = {
-  generateVerificationToken: null,
-};
-
-const testSpies = {
-  generateVerificationToken: [],
-};
-
-export function __setGenerateVerificationToken(impl) {
-  testOverrides.generateVerificationToken = typeof impl === 'function' ? impl : null;
-}
-
-export function __resetTokenServiceMocks() {
-  testOverrides.generateVerificationToken = null;
-  testSpies.generateVerificationToken = [];
-}
-
-export function __getGenerateVerificationTokenCalls() {
-  return [...testSpies.generateVerificationToken];
-}
-
 const accessTtlSeconds = parseDuration(env.jwt?.access?.expiresIn, 15 * 60);
 const refreshTtlSeconds = parseDuration(env.jwt?.refresh?.expiresIn, 7 * 24 * 60 * 60);
 
@@ -342,13 +321,6 @@ export async function generateVerificationToken(userId, type, {
   actorId = null,
   metadata = null,
 } = {}) {
-  testSpies.generateVerificationToken.push([userId, type, { expiresInSeconds, actorId, metadata }]);
-
-  const override = testOverrides.generateVerificationToken;
-  if (override) {
-    return override(userId, type, { expiresInSeconds, actorId, metadata });
-  }
-
   if (!userId || !type) {
     throw AppError.badRequest('Unable to create verification token', {
       code: 'VERIFICATION_TOKEN_PARAMS_MISSING',
