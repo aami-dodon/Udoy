@@ -164,6 +164,9 @@ function buildAssetDescriptor(file, upload) {
   if (mime.startsWith('video/')) {
     return { type: 'video', src: upload.url };
   }
+  if (mime.startsWith('audio/')) {
+    return { type: 'audio', src: upload.url, attrs: { title: file.name } };
+  }
   return { type: 'file', href: upload.url, text: file.name };
 }
 
@@ -406,351 +409,361 @@ export default function TopicEditorPage() {
   const comments = useMemo(() => topic?.comments || [], [topic]);
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-6 p-6">
-      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-        <div className="space-y-2">
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" onClick={() => navigate('/topics')}>
-              <LucideIcon name="ArrowLeft" className="h-4 w-4" />
-            </Button>
-            <div>
-              <h1 className="font-display text-3xl font-semibold text-slate-900">
-                {isNew ? 'Create topic' : form.title || 'Topic editor'}
-              </h1>
-              <p className="text-sm text-neutral-600">
-                Use the block editor to assemble multimedia-rich topics and manage workflow actions.
-              </p>
-            </div>
-          </div>
-          {!isNew && (
-            <div className="flex items-center gap-3">
-              <StatusBadge status={topic?.status} />
-              <span className="text-xs uppercase tracking-wide text-neutral-500">
-                Updated {topic?.updatedAt ? new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(topic.updatedAt)) : 'recently'}
-              </span>
-            </div>
-          )}
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          {canReview && (
-            <>
-              <Button
-                variant="outline"
-                disabled={reviewLoading}
-                onClick={() => handleReviewAction('changes_requested')}
-              >
-                Request changes
-              </Button>
-              <Button disabled={reviewLoading} onClick={() => handleReviewAction('approve')}>
-                Approve
-              </Button>
-            </>
-          )}
-          {canPublish && (
-            <Button disabled={publishLoading} onClick={handlePublish}>
-              {topic?.status === 'PUBLISHED' ? 'Republish update' : 'Publish topic'}
-            </Button>
-          )}
-          {canSubmit && (
-            <Button variant="secondary" disabled={submitLoading} onClick={handleSubmitForReview}>
-              Submit for review
-            </Button>
-          )}
-          {canEdit && (
-            <Button disabled={saving} onClick={handleSave}>
-              {isNew ? 'Save draft' : 'Update draft'}
-            </Button>
-          )}
-        </div>
-      </div>
-
-      {message && (
-        <Card className={message.type === 'error' ? 'border-rose-300 bg-rose-50' : 'border-emerald-300 bg-emerald-50'}>
-          <CardContent className="flex items-center gap-3 py-4 text-sm">
-            <LucideIcon
-              name={message.type === 'error' ? 'AlertTriangle' : 'CheckCircle2'}
-              className={message.type === 'error' ? 'h-5 w-5 text-rose-600' : 'h-5 w-5 text-emerald-600'}
-            />
-            <span>{message.text}</span>
-          </CardContent>
-        </Card>
-      )}
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Topic metadata</CardTitle>
-          <CardDescription>Title, summary, language, and tagging used for catalog discovery.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="topic-title">Title</Label>
-              <Input
-                id="topic-title"
-                value={form.title}
-                onChange={handleChange('title')}
-                placeholder="E.g. Understanding Fractions"
-                disabled={!canEdit}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="topic-language">Language</Label>
-              <Input
-                id="topic-language"
-                value={form.language}
-                onChange={handleChange('language')}
-                placeholder="en"
-                disabled={!canEdit}
-              />
-            </div>
-          </div>
+    <div className="mx-auto w-full max-w-6xl px-6 py-6 lg:px-8">
+      <div className="flex flex-col gap-6">
+        <header className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="space-y-2">
-            <Label htmlFor="topic-summary">Summary</Label>
-            <Textarea
-              id="topic-summary"
-              value={form.summary}
-              onChange={handleChange('summary')}
-              placeholder="Add a concise summary to help reviewers understand the lesson flow."
-              className="min-h-[120px]"
-              disabled={!canEdit}
-            />
-          </div>
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="topic-tags">Tags (one per line)</Label>
-              <Textarea
-                id="topic-tags"
-                value={form.tagsText}
-                onChange={handleChange('tagsText')}
-                placeholder="numeracy\nfractions\nclassroom"
-                className="min-h-[96px]"
-                disabled={!canEdit}
-              />
-              <p className="text-xs text-neutral-500">
-                Tags support classification, curriculum alignment, and accessibility filters.
-              </p>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="topic-base">Base topic ID (for translations)</Label>
-              <Input
-                id="topic-base"
-                value={form.baseTopicId}
-                onChange={handleChange('baseTopicId')}
-                placeholder="Leave blank unless this is a translated variant"
-                disabled={!canEdit}
-              />
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <Label htmlFor="topic-grade">Target grade band</Label>
-                  <Input
-                    id="topic-grade"
-                    value={form.metadataGradeBand}
-                    onChange={handleChange('metadataGradeBand')}
-                    placeholder="Grades 4-5"
-                    disabled={!canEdit}
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label htmlFor="topic-duration">Duration (minutes)</Label>
-                  <Input
-                    id="topic-duration"
-                    value={form.metadataDuration}
-                    onChange={handleChange('metadataDuration')}
-                    placeholder="45"
-                    disabled={!canEdit}
-                  />
-                </div>
+            <div className="flex items-center gap-3">
+              <Button variant="ghost" size="icon" onClick={() => navigate('/topics')}>
+                <LucideIcon name="ArrowLeft" className="h-4 w-4" />
+              </Button>
+              <div>
+                <h1 className="font-display text-3xl font-semibold text-slate-900">
+                  {isNew ? 'Create topic' : form.title || 'Topic editor'}
+                </h1>
+                <p className="text-sm text-neutral-600">
+                  Use the block editor to assemble multimedia-rich topics and manage workflow actions.
+                </p>
               </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Content</CardTitle>
-          <CardDescription>
-            Build the lesson with rich text, embedded media, and attachments. Drag and drop images or videos to upload them to
-            secure storage.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <RichTextEditor
-            value={form.content}
-            valueFormat="json"
-            onChange={handleEditorChange}
-            readOnly={!canEdit}
-            onAssetsRequest={handleAssetRequest}
-            onAssetsError={handleAssetError}
-            placeholder="Introduce learning goals, add instructions, and embed supporting media."
-          />
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Accessibility and workflow notes</CardTitle>
-          <CardDescription>Capture accessibility accommodations and submit change notes for reviewers.</CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-4 md:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="topic-accessibility">Accessibility notes</Label>
-            <Textarea
-              id="topic-accessibility"
-              value={form.accessibilityNotes}
-              onChange={handleChange('accessibilityNotes')}
-              placeholder="Describe captions, alt text coverage, and learner accommodations."
-              className="min-h-[120px]"
-              disabled={!canEdit}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="topic-change-notes">Change / submission notes</Label>
-            <Textarea
-              id="topic-change-notes"
-              value={form.changeNotes}
-              onChange={handleChange('changeNotes')}
-              placeholder="Summarize major updates for validators and publishers."
-              className="min-h-[120px]"
-            />
-            {canReview && (
-              <div className="space-y-2 rounded-xl border border-neutral-200 bg-neutral-50 p-3">
-                <Label htmlFor="topic-review-notes">Review notes</Label>
-                <Textarea
-                  id="topic-review-notes"
-                  value={reviewNotes}
-                  onChange={(event) => setReviewNotes(event.target.value)}
-                  placeholder="Record approval notes or requested changes."
-                  className="min-h-[96px]"
-                />
-                <Select value={reviewDecision} onValueChange={setReviewDecision}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Choose decision" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="approve">Approve</SelectItem>
-                    <SelectItem value="changes_requested">Request changes</SelectItem>
-                  </SelectContent>
-                </Select>
+            {!isNew && (
+              <div className="flex flex-wrap items-center gap-3">
+                <StatusBadge status={topic?.status} />
+                <span className="text-xs uppercase tracking-wide text-neutral-500">
+                  Updated {topic?.updatedAt ? new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(topic.updatedAt)) : 'recently'}
+                </span>
               </div>
             )}
           </div>
-        </CardContent>
-      </Card>
-
-      {!loading && (
-        <div className="grid gap-6 md:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Workflow history</CardTitle>
-              <CardDescription>Every status transition is tracked for auditing and version history.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {workflowEvents.length === 0 ? (
-                <p className="text-sm text-neutral-600">Workflow activity will appear once the draft is submitted.</p>
-              ) : (
-                <div className="space-y-4">
-                  {workflowEvents.map((event) => (
-                    <div key={event.id} className="rounded-xl border border-neutral-200 p-3">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <StatusBadge status={event.toStatus} />
-                          <span className="text-xs text-neutral-500">
-                            {new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(
-                              new Date(event.createdAt),
-                            )}
-                          </span>
-                        </div>
-                        <span className="text-xs text-neutral-500">
-                          {event.actor?.firstName || event.actor?.email || 'System'}
-                        </span>
-                      </div>
-                      {event.note && <p className="pt-2 text-sm text-neutral-700">{event.note}</p>}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Review comments</CardTitle>
-              <CardDescription>Collaborate asynchronously with validators and creators.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {comments.length === 0 ? (
-                <p className="text-sm text-neutral-600">No comments yet. Start the conversation with clear, actionable feedback.</p>
-              ) : (
-                <div className="space-y-3">
-                  {comments.map((comment) => (
-                    <div key={comment.id} className="rounded-xl border border-neutral-200 bg-white p-3 shadow-sm">
-                      <div className="flex flex-wrap items-center justify-between gap-2">
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline">{comment.type.replace(/_/g, ' ')}</Badge>
-                          <span className="text-xs text-neutral-500">
-                            {comment.author?.firstName || comment.author?.email || 'Contributor'}
-                          </span>
-                        </div>
-                        <span className="text-xs text-neutral-500">
-                          {new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(
-                            new Date(comment.createdAt),
-                          )}
-                        </span>
-                      </div>
-                      <p className="pt-2 text-sm text-neutral-700">{comment.body}</p>
-                      {comment.resolvedAt && (
-                        <p className="pt-1 text-xs text-emerald-600">
-                          Resolved {new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(
-                            new Date(comment.resolvedAt),
-                          )}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-            <Separator className="mx-6" />
-            <CardFooter className="flex flex-col gap-3">
-              <Label htmlFor="comment-body">Add comment</Label>
-              <Textarea
-                id="comment-body"
-                value={commentForm.body}
-                onChange={(event) => setCommentForm((current) => ({ ...current, body: event.target.value }))}
-                placeholder="Share context, requests, or feedback for collaborators."
-                className="min-h-[100px]"
-              />
-              <div className="flex flex-wrap items-center gap-3">
-                <Select
-                  value={commentForm.type}
-                  onValueChange={(value) => setCommentForm((current) => ({ ...current, type: value }))}
+          <div className="flex flex-wrap items-center gap-2">
+            {canReview && (
+              <>
+                <Button
+                  variant="outline"
+                  disabled={reviewLoading}
+                  onClick={() => handleReviewAction('changes_requested')}
                 >
-                  <SelectTrigger className="w-48">
-                    <SelectValue placeholder="Comment type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {COMMENT_TYPES.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Button type="button" onClick={handleAddComment} disabled={!commentForm.body.trim()}>
-                  Add comment
+                  Request changes
                 </Button>
-              </div>
-            </CardFooter>
-          </Card>
-        </div>
-      )}
+                <Button disabled={reviewLoading} onClick={() => handleReviewAction('approve')}>
+                  Approve
+                </Button>
+              </>
+            )}
+            {canPublish && (
+              <Button disabled={publishLoading} onClick={handlePublish}>
+                {topic?.status === 'PUBLISHED' ? 'Republish update' : 'Publish topic'}
+              </Button>
+            )}
+            {canSubmit && (
+              <Button variant="secondary" disabled={submitLoading} onClick={handleSubmitForReview}>
+                Submit for review
+              </Button>
+            )}
+            {canEdit && (
+              <Button disabled={saving} onClick={handleSave}>
+                {isNew ? 'Save draft' : 'Update draft'}
+              </Button>
+            )}
+          </div>
+        </header>
 
-      {loading && (
-        <div className="flex h-40 items-center justify-center text-sm text-neutral-500">
-          Loading topic details…
+        {message && (
+          <Card className={message.type === 'error' ? 'border-rose-300 bg-rose-50' : 'border-emerald-300 bg-emerald-50'}>
+            <CardContent className="flex items-center gap-3 py-4 text-sm">
+              <LucideIcon
+                name={message.type === 'error' ? 'AlertTriangle' : 'CheckCircle2'}
+                className={message.type === 'error' ? 'h-5 w-5 text-rose-600' : 'h-5 w-5 text-emerald-600'}
+              />
+              <span>{message.text}</span>
+            </CardContent>
+          </Card>
+        )}
+
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,2.2fr)_minmax(320px,1fr)] lg:items-start">
+          <section className="flex flex-col">
+            <Card className="flex-1">
+              <CardHeader>
+                <CardTitle>Content</CardTitle>
+                <CardDescription>
+                  Build the lesson with rich text, embedded media, and attachments. Drag and drop images or videos to upload
+                  them to secure storage.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex flex-col">
+                <RichTextEditor
+                  value={form.content}
+                  valueFormat="json"
+                  onChange={handleEditorChange}
+                  readOnly={!canEdit}
+                  onAssetsRequest={handleAssetRequest}
+                  onAssetsError={handleAssetError}
+                  placeholder="Introduce learning goals, add instructions, and embed supporting media."
+                  className="flex flex-1 flex-col"
+                  editorClassName="min-h-[600px]"
+                />
+              </CardContent>
+            </Card>
+          </section>
+
+          <aside className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Topic metadata</CardTitle>
+                <CardDescription>Title, summary, language, and tagging used for catalog discovery.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="topic-title">Title</Label>
+                    <Input
+                      id="topic-title"
+                      value={form.title}
+                      onChange={handleChange('title')}
+                      placeholder="E.g. Understanding Fractions"
+                      disabled={!canEdit}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="topic-language">Language</Label>
+                    <Input
+                      id="topic-language"
+                      value={form.language}
+                      onChange={handleChange('language')}
+                      placeholder="en"
+                      disabled={!canEdit}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="topic-summary">Summary</Label>
+                  <Textarea
+                    id="topic-summary"
+                    value={form.summary}
+                    onChange={handleChange('summary')}
+                    placeholder="Add a concise summary to help reviewers understand the lesson flow."
+                    className="min-h-[120px]"
+                    disabled={!canEdit}
+                  />
+                </div>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="topic-tags">Tags (one per line)</Label>
+                    <Textarea
+                      id="topic-tags"
+                      value={form.tagsText}
+                      onChange={handleChange('tagsText')}
+                      placeholder="numeracy\nfractions\nclassroom"
+                      className="min-h-[96px]"
+                      disabled={!canEdit}
+                    />
+                    <p className="text-xs text-neutral-500">
+                      Tags support classification, curriculum alignment, and accessibility filters.
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="topic-base">Base topic ID (for translations)</Label>
+                    <Input
+                      id="topic-base"
+                      value={form.baseTopicId}
+                      onChange={handleChange('baseTopicId')}
+                      placeholder="Leave blank unless this is a translated variant"
+                      disabled={!canEdit}
+                    />
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <Label htmlFor="topic-grade">Target grade band</Label>
+                        <Input
+                          id="topic-grade"
+                          value={form.metadataGradeBand}
+                          onChange={handleChange('metadataGradeBand')}
+                          placeholder="Grades 4-5"
+                          disabled={!canEdit}
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <Label htmlFor="topic-duration">Duration (minutes)</Label>
+                        <Input
+                          id="topic-duration"
+                          value={form.metadataDuration}
+                          onChange={handleChange('metadataDuration')}
+                          placeholder="45"
+                          disabled={!canEdit}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Accessibility and workflow notes</CardTitle>
+                <CardDescription>Capture accessibility accommodations and submit change notes for reviewers.</CardDescription>
+              </CardHeader>
+              <CardContent className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="topic-accessibility">Accessibility notes</Label>
+                  <Textarea
+                    id="topic-accessibility"
+                    value={form.accessibilityNotes}
+                    onChange={handleChange('accessibilityNotes')}
+                    placeholder="Describe captions, alt text coverage, and learner accommodations."
+                    className="min-h-[120px]"
+                    disabled={!canEdit}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="topic-change-notes">Change / submission notes</Label>
+                  <Textarea
+                    id="topic-change-notes"
+                    value={form.changeNotes}
+                    onChange={handleChange('changeNotes')}
+                    placeholder="Summarize major updates for validators and publishers."
+                    className="min-h-[120px]"
+                  />
+                  {canReview && (
+                    <div className="space-y-2 rounded-xl border border-neutral-200 bg-neutral-50 p-3">
+                      <Label htmlFor="topic-review-notes">Review notes</Label>
+                      <Textarea
+                        id="topic-review-notes"
+                        value={reviewNotes}
+                        onChange={(event) => setReviewNotes(event.target.value)}
+                        placeholder="Record approval notes or requested changes."
+                        className="min-h-[96px]"
+                      />
+                      <Select value={reviewDecision} onValueChange={setReviewDecision}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Choose decision" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="approve">Approve</SelectItem>
+                          <SelectItem value="changes_requested">Request changes</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {!loading ? (
+              <>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Workflow history</CardTitle>
+                    <CardDescription>Every status transition is tracked for auditing and version history.</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {workflowEvents.length === 0 ? (
+                      <p className="text-sm text-neutral-600">Workflow activity will appear once the draft is submitted.</p>
+                    ) : (
+                      <div className="space-y-4">
+                        {workflowEvents.map((event) => (
+                          <div key={event.id} className="rounded-xl border border-neutral-200 p-3">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <StatusBadge status={event.toStatus} />
+                                <span className="text-xs text-neutral-500">
+                                  {new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(
+                                    new Date(event.createdAt),
+                                  )}
+                                </span>
+                              </div>
+                              <span className="text-xs text-neutral-500">
+                                {event.actor?.firstName || event.actor?.email || 'System'}
+                              </span>
+                            </div>
+                            {event.note && <p className="pt-2 text-sm text-neutral-700">{event.note}</p>}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Review comments</CardTitle>
+                    <CardDescription>Collaborate asynchronously with validators and creators.</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {comments.length === 0 ? (
+                      <p className="text-sm text-neutral-600">
+                        No comments yet. Start the conversation with clear, actionable feedback.
+                      </p>
+                    ) : (
+                      <div className="space-y-3">
+                        {comments.map((comment) => (
+                          <div key={comment.id} className="rounded-xl border border-neutral-200 bg-white p-3 shadow-sm">
+                            <div className="flex flex-wrap items-center justify-between gap-2">
+                              <div className="flex items-center gap-2">
+                                <Badge variant="outline">{comment.type.replace(/_/g, ' ')}</Badge>
+                                <span className="text-xs text-neutral-500">
+                                  {comment.author?.firstName || comment.author?.email || 'Contributor'}
+                                </span>
+                              </div>
+                              <span className="text-xs text-neutral-500">
+                                {new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(
+                                  new Date(comment.createdAt),
+                                )}
+                              </span>
+                            </div>
+                            <p className="pt-2 text-sm text-neutral-700">{comment.body}</p>
+                            {comment.resolvedAt && (
+                              <p className="pt-1 text-xs text-emerald-600">
+                                Resolved {new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(
+                                  new Date(comment.resolvedAt),
+                                )}
+                              </p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </CardContent>
+                  <Separator className="mx-6" />
+                  <CardFooter className="flex flex-col gap-3">
+                    <Label htmlFor="comment-body">Add comment</Label>
+                    <Textarea
+                      id="comment-body"
+                      value={commentForm.body}
+                      onChange={(event) => setCommentForm((current) => ({ ...current, body: event.target.value }))}
+                      placeholder="Share context, requests, or feedback for collaborators."
+                      className="min-h-[100px]"
+                    />
+                    <div className="flex flex-wrap items-center gap-3">
+                      <Select
+                        value={commentForm.type}
+                        onValueChange={(value) => setCommentForm((current) => ({ ...current, type: value }))}
+                      >
+                        <SelectTrigger className="w-48">
+                          <SelectValue placeholder="Comment type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {COMMENT_TYPES.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Button type="button" onClick={handleAddComment} disabled={!commentForm.body.trim()}>
+                        Add comment
+                      </Button>
+                    </div>
+                  </CardFooter>
+                </Card>
+              </>
+            ) : (
+              <div className="flex h-48 items-center justify-center rounded-xl border border-dashed border-neutral-300 bg-white text-sm text-neutral-500">
+                Loading topic details…
+              </div>
+            )}
+          </aside>
         </div>
-      )}
+      </div>
     </div>
   );
 }

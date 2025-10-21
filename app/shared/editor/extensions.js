@@ -4,6 +4,9 @@ import Placeholder from '@tiptap/extension-placeholder';
 import Image from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
 import FileHandler from '@tiptap/extension-file-handler';
+// Ensure underline support is explicitly imported so the toolbar toggle functions in development builds.
+import Underline from '@tiptap/extension-underline';
+import TextAlign from '@tiptap/extension-text-align';
 
 import {
   DEFAULT_PLACEHOLDER,
@@ -82,9 +85,32 @@ const insertVideo = (editor, asset) => {
     .run();
 };
 
+const insertAudio = (editor, asset) => {
+  const { src, attrs = {} } = asset;
+  if (!src) {
+    return;
+  }
+
+  const { class: className, controls, autoplay, loop, ...rest } = attrs;
+
+  editor
+    .chain()
+    .focus()
+    .setAudio({
+      src,
+      controls: controls ?? true,
+      autoplay: autoplay ?? false,
+      loop: loop ?? false,
+      class: className || 'rich-text-audio w-full rounded-md',
+      ...rest,
+    })
+    .run();
+};
+
 const assetInserters = {
   image: insertImage,
   video: insertVideo,
+  audio: insertAudio,
   file: insertFileLink,
 };
 
@@ -147,6 +173,78 @@ export const Video = Node.create({
   },
 });
 
+export const Audio = Node.create({
+  name: 'audio',
+  group: 'block',
+  draggable: true,
+  selectable: true,
+  atom: true,
+
+  addAttributes() {
+    return {
+      src: {
+        default: null,
+      },
+      controls: {
+        default: true,
+      },
+      autoplay: {
+        default: false,
+      },
+      loop: {
+        default: false,
+      },
+      class: {
+        default: 'rich-text-audio w-full rounded-md',
+      },
+    };
+  },
+
+  parseHTML() {
+    return [
+      {
+        tag: 'audio',
+      },
+    ];
+  },
+
+  renderHTML({ HTMLAttributes }) {
+    return ['audio', mergeAttributes({ controls: true }, HTMLAttributes)];
+  },
+
+  addCommands() {
+    return {
+      setAudio:
+        (options = {}) =>
+        ({ chain }) =>
+          chain()
+            .insertContent({
+              type: this.name,
+              attrs: {
+                ...options,
+              },
+            })
+            .run(),
+    };
+  },
+});
+
+export const insertAssetsIntoEditor = (editor, assets = []) => {
+  if (!editor || !Array.isArray(assets)) {
+    return;
+  }
+
+  assets.forEach((asset) => {
+    if (!asset) {
+      return;
+    }
+
+    const typeKey = typeof asset.type === 'string' ? asset.type.toLowerCase() : 'file';
+    const handler = assetInserters[typeKey] || insertFileLink;
+    handler(editor, asset);
+  });
+};
+
 export const createEditorExtensions = ({
   placeholder = DEFAULT_PLACEHOLDER,
   onAssetsRequest,
@@ -162,6 +260,7 @@ export const createEditorExtensions = ({
         levels: [1, 2, 3, 4],
       },
     }),
+    Underline,
     Link.configure({
       openOnClick: false,
       autolink: true,
@@ -177,6 +276,10 @@ export const createEditorExtensions = ({
       },
     }),
     Video,
+    Audio,
+    TextAlign.configure({
+      types: ['heading', 'paragraph'],
+    }),
   ];
 
   if (placeholder) {
@@ -199,19 +302,7 @@ export const createEditorExtensions = ({
 
       try {
         const uploads = await onAssetsRequest(fileList, editor);
-        if (!Array.isArray(uploads) || uploads.length === 0) {
-          return;
-        }
-
-        uploads.forEach((asset) => {
-          if (!asset) {
-            return;
-          }
-
-          const typeKey = typeof asset.type === 'string' ? asset.type.toLowerCase() : 'file';
-          const handler = assetInserters[typeKey] || insertFileLink;
-          handler(editor, asset);
-        });
+        insertAssetsIntoEditor(editor, uploads);
       } catch (error) {
         if (typeof onAssetsError === 'function') {
           onAssetsError(error, fileList, editor);

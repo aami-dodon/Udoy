@@ -8,6 +8,7 @@ const __dirname = path.dirname(__filename);
 const sharedComponentsPath = path.resolve(__dirname, '../shared/components');
 const sharedUiEntryPath = path.resolve(sharedComponentsPath, 'ui/index.js');
 const sharedIconsPath = path.resolve(__dirname, '../shared/icons');
+const sharedEditorPath = path.resolve(__dirname, '../shared/editor');
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
@@ -55,12 +56,20 @@ export default defineConfig(({ mode }) => {
         'react-day-picker': path.resolve(clientNodeModules, 'react-day-picker'),
         'react-phone-number-input': path.resolve(clientNodeModules, 'react-phone-number-input'),
         'date-fns': path.resolve(clientNodeModules, 'date-fns'),
+        '@tiptap/core': path.resolve(clientNodeModules, '@tiptap/core'),
+        '@tiptap/starter-kit': path.resolve(clientNodeModules, '@tiptap/starter-kit'),
+        '@tiptap/extension-placeholder': path.resolve(clientNodeModules, '@tiptap/extension-placeholder'),
+        '@tiptap/extension-image': path.resolve(clientNodeModules, '@tiptap/extension-image'),
+        '@tiptap/extension-link': path.resolve(clientNodeModules, '@tiptap/extension-link'),
+        '@tiptap/extension-file-handler': path.resolve(clientNodeModules, '@tiptap/extension-file-handler'),
+        '@tiptap/extension-underline': path.resolve(clientNodeModules, '@tiptap/extension-underline'),
+        '@tiptap/extension-text-align': path.resolve(clientNodeModules, '@tiptap/extension-text-align'),
       },
     },
     server: {
       ...baseServerConfig,
       fs: {
-        allow: [projectRoot, sharedComponentsPath, sharedIconsPath],
+        allow: [projectRoot, sharedComponentsPath, sharedIconsPath, sharedEditorPath],
       },
     },
     preview: { ...baseServerConfig },
