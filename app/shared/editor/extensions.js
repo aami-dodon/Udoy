@@ -49,12 +49,16 @@ const insertFileLink = (editor, asset) => {
 };
 
 const insertImage = (editor, asset) => {
-  const { src, alt, attrs = {} } = asset;
+  const { src, url, alt, attrs = {} } = asset;
+  const resolvedSrc = src || url;
+  if (!resolvedSrc) {
+    return;
+  }
   editor
     .chain()
     .focus()
     .setImage({
-      src,
+      src: resolvedSrc,
       alt,
       class: attrs.class || 'rich-text-image rounded-md',
       width: attrs.width || null,
@@ -64,13 +68,14 @@ const insertImage = (editor, asset) => {
 };
 
 const insertVideo = (editor, asset) => {
-  const { src, attrs = {} } = asset;
-  if (!src) {
+  const { src, url, attrs = {} } = asset;
+  const resolvedSrc = src || url;
+  if (!resolvedSrc) {
     return;
   }
 
   const videoAttrs = {
-    src,
+    src: resolvedSrc,
     poster: attrs.poster,
     controls: attrs.controls ?? true,
     autoplay: attrs.autoplay ?? false,
@@ -92,8 +97,9 @@ const insertVideo = (editor, asset) => {
 };
 
 const insertAudio = (editor, asset) => {
-  const { src, attrs = {} } = asset;
-  if (!src) {
+  const { src, url, attrs = {} } = asset;
+  const resolvedSrc = src || url;
+  if (!resolvedSrc) {
     return;
   }
 
@@ -103,7 +109,7 @@ const insertAudio = (editor, asset) => {
     .chain()
     .focus()
     .setAudio({
-      src,
+      src: resolvedSrc,
       controls: controls ?? true,
       autoplay: autoplay ?? false,
       loop: loop ?? false,
