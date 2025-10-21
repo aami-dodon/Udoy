@@ -35,6 +35,7 @@ const {
   EMAIL_SMTP_SECURE = 'true',
   EMAIL_SMTP_USER,
   EMAIL_SMTP_PASS,
+  PASSWORD_RESET_TOKEN_EXPIRES_IN = '15m',
 } = process.env;
 
 const corsAllowedOrigins = CORS_ALLOWED_ORIGINS.split(',')
@@ -93,6 +94,12 @@ const emailConfig = {
   smtp: smtpConfig,
 };
 
+const authConfig = {
+  passwordReset: {
+    tokenExpiresIn: PASSWORD_RESET_TOKEN_EXPIRES_IN,
+  },
+};
+
 const jwtConfig = {
   access: {
     secret: JWT_ACCESS_SECRET || null,
@@ -118,4 +125,5 @@ export default {
   minio: minioConfig,
   email: emailConfig,
   jwt: jwtConfig,
+  auth: authConfig,
 };

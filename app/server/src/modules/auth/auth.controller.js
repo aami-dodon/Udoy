@@ -16,6 +16,7 @@ import {
   generateVerificationToken,
   consumeVerificationToken,
 } from '../../services/tokenService.js';
+import { parseDuration } from '../../utils/duration.js';
 import {
   getUserByEmail,
   getUserAuthPayload,
@@ -40,6 +41,16 @@ const SELF_REGISTER_ROLE_SET = new Set(
 );
 
 const DEFAULT_SELF_REGISTER_ROLE = 'student';
+
+const PASSWORD_RESET_TOKEN_DEFAULT_TTL_SECONDS = 15 * 60;
+const PASSWORD_RESET_TOKEN_TTL_SECONDS = parseDuration(
+  env.auth?.passwordReset?.tokenExpiresIn,
+  PASSWORD_RESET_TOKEN_DEFAULT_TTL_SECONDS
+);
+const PASSWORD_RESET_TOKEN_EXPIRY_MINUTES = Math.max(
+  1,
+  Math.round(PASSWORD_RESET_TOKEN_TTL_SECONDS / 60)
+);
 
 function toMilliseconds(seconds) {
   return Math.max(0, Math.floor(Number(seconds || 0))) * 1000;
@@ -530,7 +541,7 @@ export async function requestPasswordReset(req, res, next) {
     const { token } = await generateVerificationToken(user.id, VerificationTokenType.PASSWORD_RESET, {
       actorId: user.id,
       metadata: { email: user.email },
-      expiresInSeconds: 60 * 60,
+      expiresInSeconds: PASSWORD_RESET_TOKEN_TTL_SECONDS,
     });
 
     try {
@@ -539,6 +550,7 @@ export async function requestPasswordReset(req, res, next) {
         token,
         variables: {
           name: user.firstName || 'there',
+          expiryMinutes: PASSWORD_RESET_TOKEN_EXPIRY_MINUTES,
         },
       });
     } catch (error) {
