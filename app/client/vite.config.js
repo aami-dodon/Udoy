@@ -49,6 +49,7 @@ export default defineConfig(({ mode }) => {
         '@radix-ui/react-label': path.resolve(clientNodeModules, '@radix-ui/react-label'),
         '@radix-ui/react-separator': path.resolve(clientNodeModules, '@radix-ui/react-separator'),
         '@radix-ui/react-alert-dialog': path.resolve(clientNodeModules, '@radix-ui/react-alert-dialog'),
+        '@tanstack/react-table': path.resolve(clientNodeModules, '@tanstack/react-table'),
         'class-variance-authority': path.resolve(clientNodeModules, 'class-variance-authority'),
         cmdk: path.resolve(clientNodeModules, 'cmdk'),
         '@hookform/resolvers': path.resolve(clientNodeModules, '@hookform/resolvers'),

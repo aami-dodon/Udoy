@@ -43,6 +43,7 @@ export async function listTopics(req, res, next) {
       },
       pagination: { page, pageSize },
       includeContent: parseBoolean(includeContent, false),
+      actor: req.user || null,
     });
 
     return res.json({
@@ -58,7 +59,7 @@ export async function getTopic(req, res, next) {
   try {
     const { id } = req.params;
     const includeFull = parseBoolean(req.query?.full, true);
-    const topic = await getTopicByIdService(id, { full: includeFull });
+    const topic = await getTopicByIdService(id, { full: includeFull, actor: req.user || null });
 
     return res.json({
       status: 'success',

@@ -1,7 +1,11 @@
-## 2025-10-22 04:13 IST
-- Enabled resizable TipTap image and video nodes with in-editor controls so topic authors can reposition uploads with industry-standard handles.
-- Normalized MinIO asset URLs in the shared upload helper to always use the configured public base domain.
-- Surfaced `VITE_MINIO_PUBLIC_BASE_URL` in environment templates to keep client and server media links aligned.
+## 2025-11-08 16:45 IST
+- Hardened the topic experience so non-manager roles are redirected when attempting to open unpublished drafts and receive clear guidance to browse published lessons instead.
+- Locked the topic library requests to published-only filters for learner roles and hid review collaboration controls when the viewer lacks comment permissions.
+
+## 2025-10-22 04:30 IST
+- Opened the `/topics` experience to all authenticated roles while restricting non-authors to published topics via Casbin policies and service guards.
+- Rebuilt the topics list with the shared shadcn data table, role-aware copy, and server-driven pagination footer so published content is discoverable alongside creator workflows.
+- Granted `topic.view` permissions to students, coaches, and sponsors with updated documentation to reflect the broader viewing access.
 
 ## 2025-11-07 11:30 IST
 - Launched the Topic Management System with Prisma models for topics, tags, revisions, workflow events, and review comments plus a dedicated migration and regenerated client.

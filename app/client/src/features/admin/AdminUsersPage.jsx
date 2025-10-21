@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../auth/AuthProvider.jsx';
 import adminApi from './api.js';
-import DataTable from './components/data-table.jsx';
+import DataTable from '@components/data-table.jsx';
 import { createUserColumns } from './components/user-columns.jsx';
 
 export default function AdminUsersPage() {
@@ -117,7 +117,13 @@ export default function AdminUsersPage() {
         <p className="rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p>
       ) : null}
       <section className="grid gap-6">
-        <DataTable columns={columns} data={tableData} loading={showLoaderRow} emptyMessage={emptyMessage} />
+        <DataTable
+          columns={columns}
+          data={tableData}
+          loading={showLoaderRow}
+          emptyMessage={emptyMessage}
+          loadingMessage="Loading users..."
+        />
       </section>
     </div>
   );

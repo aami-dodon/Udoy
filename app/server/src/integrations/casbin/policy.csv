@@ -22,6 +22,7 @@ p, role:student, user-profile, self-manage
 p, role:student, learning-content, consume
 p, role:student, assignment, submit
 p, role:student, progress, view
+p, role:student, topic, view
 p, role:creator, user-profile, self-manage
 p, role:creator, learning-content, draft
 p, role:creator, learning-content, publish
@@ -47,7 +48,9 @@ p, role:coach, user-profile, self-manage
 p, role:coach, student, onboard
 p, role:coach, student-progress, monitor
 p, role:coach, credential, support
+p, role:coach, topic, view
 p, role:sponsor, user-profile, self-manage
 p, role:sponsor, cohort, manage
 p, role:sponsor, analytics, view
 p, role:sponsor, billing, manage
+p, role:sponsor, topic, view

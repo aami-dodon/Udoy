@@ -14,6 +14,8 @@ const TITLE_MAX_LENGTH = 240;
 const LANGUAGE_PATTERN = /^[a-z]{2}(?:-[A-Z]{2})?$/u;
 const DEFAULT_LANGUAGE = 'en';
 
+const TOPIC_MANAGEMENT_ROLES = new Set(['admin', 'creator', 'teacher']);
+
 const TOPIC_SUMMARY_INCLUDE = {
   author: {
     select: {
@@ -615,10 +617,20 @@ async function createRevisionFromTopic(client, topic, { actorId, changeNotes }) 
   });
 }
 
+function actorCanAccessAllStatuses(actor) {
+  if (!actor) {
+    return false;
+  }
+
+  const roles = Array.isArray(actor.roles) ? actor.roles : [];
+  return roles.some((role) => TOPIC_MANAGEMENT_ROLES.has(String(role).toLowerCase()));
+}
+
 export async function listTopics({
   filters = {},
   pagination = {},
   includeContent = false,
+  actor = null,
 } = {}) {
   const page = Math.max(1, Number.parseInt(pagination.page, 10) || 1);
   const pageSize = Math.max(1, Math.min(100, Number.parseInt(pagination.pageSize, 10) || 20));
@@ -627,14 +639,20 @@ export async function listTopics({
   const where = {};
   const orConditions = [];
 
-  if (filters.status) {
-    const statuses = Array.isArray(filters.status) ? filters.status : String(filters.status).split(',');
-    const normalizedStatuses = statuses
-      .map((status) => status.trim().toUpperCase())
-      .filter((status) => Object.values(TopicStatus).includes(status));
-    if (normalizedStatuses.length > 0) {
-      where.status = { in: normalizedStatuses };
+  const canViewAllStatuses = actorCanAccessAllStatuses(actor);
+
+  if (canViewAllStatuses) {
+    if (filters.status) {
+      const statuses = Array.isArray(filters.status) ? filters.status : String(filters.status).split(',');
+      const normalizedStatuses = statuses
+        .map((status) => status.trim().toUpperCase())
+        .filter((status) => Object.values(TopicStatus).includes(status));
+      if (normalizedStatuses.length > 0) {
+        where.status = { in: normalizedStatuses };
+      }
     }
+  } else {
+    where.status = TopicStatus.PUBLISHED;
   }
 
   if (filters.language) {
@@ -701,10 +719,17 @@ export async function listTopics({
   };
 }
 
-export async function getTopicById(topicId, { full = true } = {}) {
+export async function getTopicById(topicId, { full = true, actor = null } = {}) {
   const topic = await fetchTopicOrThrow(topicId, {
     include: full ? TOPIC_FULL_INCLUDE : TOPIC_SUMMARY_INCLUDE,
   });
+
+  if (!actorCanAccessAllStatuses(actor) && topic.status !== TopicStatus.PUBLISHED) {
+    throw AppError.forbidden('Topic is not available for public viewing.', {
+      code: 'TOPIC_NOT_PUBLISHED',
+      details: { status: topic.status },
+    });
+  }
 
   return toTopicResource(topic, {
     includeContent: true,

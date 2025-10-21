@@ -27,9 +27,9 @@ const routes = [
   {
     path: '/topics',
     element: (
-      <RequireRole roles={['creator', 'teacher', 'admin']}>
+      <RequireAuth>
         <TopicsListPage />
-      </RequireRole>
+      </RequireAuth>
     ),
   },
   {
@@ -43,9 +43,9 @@ const routes = [
   {
     path: '/topics/:topicId',
     element: (
-      <RequireRole roles={['creator', 'teacher', 'admin']}>
+      <RequireAuth>
         <TopicEditorPage />
-      </RequireRole>
+      </RequireAuth>
     ),
   },
   {
