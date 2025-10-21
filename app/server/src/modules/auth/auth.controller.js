@@ -173,17 +173,30 @@ async function dispatchGuardianApprovalEmail({ guardianEmail, guardianName, toke
   }
 
   try {
+    const approvalLink = env.email?.verificationUrl
+      ? `${env.email.verificationUrl}?token=${encodeURIComponent(token)}&type=guardian`
+      : '#';
+
+    const plainApprovalLink = approvalLink === '#' ? '' : ` ${approvalLink}`;
+
     await emailService.sendEmail({
       to: guardianEmail,
       subject: 'Udoy coach approval required',
       html: `
         <p>Hi ${guardianName || 'there'},</p>
-        <p>A new student (${studentName || 'your ward'}) has been registered on Udoy and listed you as their coach.</p>
-        <p>Please confirm their participation by visiting the link below:</p>
-        <p><a href="${env.email?.verificationUrl ? `${env.email.verificationUrl}?token=${encodeURIComponent(token)}&type=guardian` : '#'}">Approve student</a></p>
+        <p>
+          A new student (${studentName || 'your ward'}) has been registered on Udoy and listed you as their coach.
+          Please confirm their participation to activate their learning journey.
+        </p>
+        <p style="text-align:center; margin: 28px 0;">
+          <a href="${approvalLink}" class="button">Approve student</a>
+        </p>
         <p>If you were not expecting this request, you can ignore this email.</p>
       `,
-      text: `Hi ${guardianName || 'there'},\n\nA student (${studentName || 'your ward'}) has been registered on Udoy and listed you as their coach.\nApprove their participation using the link below:${env.email?.verificationUrl ? ` ${env.email.verificationUrl}?token=${token}&type=guardian` : ''}\nIf you were not expecting this message, you can safely ignore it.`,
+      text: `Hi ${guardianName || 'there'},\n\nA student (${studentName || 'your ward'}) has been registered on Udoy and listed you as their coach.\nApprove their participation using the link below:${plainApprovalLink}\nIf you were not expecting this message, you can safely ignore it.`,
+      branding: {
+        previewText: 'Confirm the Udoy registration request for your student.',
+      },
     });
   } catch (error) {
     logger.error('Failed to dispatch coach approval email', {

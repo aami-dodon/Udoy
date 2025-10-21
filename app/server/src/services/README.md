@@ -15,6 +15,7 @@ Implements all outbound messaging related to account verification and password r
 - Validates required email fields (`to`, sender address, and at least one of `html` or `text`) before dispatching a message.
 - Builds HTML and plain-text bodies from the default templates, performing `{{variable}}` substitution with `renderTemplate`.
 - Generates verification and password reset links with `buildLink`, returning the configured base URL when no token is provided and `null` when no base URL exists.
+- Wraps outbound HTML fragments in the responsive Udoy-branded email shell so every transactional message mirrors the home page header and SiteFooter experience.
 - Logs successful deliveries and failures with the shared `logger` utility.
 
 ### Key Helpers
@@ -22,11 +23,12 @@ Implements all outbound messaging related to account verification and password r
 - `ensureTransporter()` – Returns the shared Nodemailer transporter created in `integrations/email/nodemailerClient.js`, throwing when unavailable.
 - `renderTemplate(template, variables)` – Replaces `{{key}}` placeholders using the supplied variables object.
 - `buildLink(baseUrl, token, tokenKey)` – Appends `tokenKey` (defaults to `token`) to `baseUrl`, falling back to manual query-string construction if the URL constructor rejects the input.
+- `wrapWithBranding(body, options)` – Injects Udoy header/footer markup, responsive styles, and preview text into supplied HTML fragments.
 
 ### Public API
 
-- `sendEmail({ to, subject, html, text, from })`
-  - Resolves the sender to `env.email.from`, defaults the subject to `"Udoy notification"`, and dispatches through the transporter.
+- `sendEmail({ to, subject, html, text, from, branding })`
+  - Resolves the sender to `env.email.from`, defaults the subject to `"Udoy notification"`, optionally injects preview text/title metadata, wraps HTML fragments in the Udoy email template, and dispatches through the transporter.
 - `sendVerificationEmail({ to, token, subject, template, textTemplate, variables })`
   - Builds verification content with `env.email.verificationUrl`, merges the provided `variables` with `{ name: 'there', verificationLink }`, and defers to `sendEmail`.
 - `sendPasswordResetEmail({ to, token, subject, template, textTemplate, variables })`
