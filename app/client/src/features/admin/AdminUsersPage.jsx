@@ -42,7 +42,10 @@ export default function AdminUsersPage() {
   );
 
   const handleStatusChange = useCallback(
-    async (userId, status) => {
+    async (userId, status, { confirmed = true } = {}) => {
+      if (!confirmed) {
+        return;
+      }
       try {
         setFeedback('Updating status…');
         const response = await adminApi.updateUser(userId, { status });
@@ -57,7 +60,10 @@ export default function AdminUsersPage() {
   );
 
   const handleRoleToggle = useCallback(
-    async (userId, roleName, enable) => {
+    async (userId, roleName, enable, { confirmed = true } = {}) => {
+      if (!confirmed) {
+        return;
+      }
       const targetUser = users.find((entry) => entry.id === userId);
       if (!targetUser) return;
 
