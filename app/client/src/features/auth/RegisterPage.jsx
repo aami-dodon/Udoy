@@ -60,7 +60,7 @@ const registerSchema = z
     }),
     role: z.enum(ROLE_OPTIONS.map((role) => role.value)),
     phoneNumber: z.string().optional(),
-    guardianEmail: z.string().trim().email('Enter a valid coach email.').optional(),
+    guardianEmail: z.string().trim().optional(),
   })
   .superRefine((data, ctx) => {
     if (isAfter(data.dateOfBirth, new Date())) {
@@ -68,8 +68,21 @@ const registerSchema = z
     }
 
     const age = differenceInYears(new Date(), data.dateOfBirth);
+    const guardianEmail = data.guardianEmail?.trim();
+
+    if (guardianEmail) {
+      const emailCheck = z.string().email('Enter a valid coach email.').safeParse(guardianEmail);
+      if (!emailCheck.success) {
+        ctx.addIssue({
+          path: ['guardianEmail'],
+          code: z.ZodIssueCode.custom,
+          message: 'Enter a valid coach email.',
+        });
+      }
+    }
+
     if (data.role === 'student' && age < MINIMUM_GUARDIAN_AGE) {
-      if (!data.guardianEmail) {
+      if (!guardianEmail) {
         ctx.addIssue({
           path: ['guardianEmail'],
           code: z.ZodIssueCode.custom,

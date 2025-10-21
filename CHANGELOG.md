@@ -59,6 +59,10 @@
 ## 2025-10-21 20:15 IST
 - Normalized audit log writes to coerce resource identifiers to strings so Prisma accepts role and permission bootstrap events.
 
+## 2025-10-21 20:12 IST
+- Removed duplicate `NotificationTemplate`, `Notification`, and `NotificationLog` Prisma model declarations to resolve schema validation errors during `prisma generate`.
+- Validated the cleaned schema with `npx prisma validate` so Docker builds and local tooling no longer fail on P1012 conflicts.
+
 ## 2025-10-21 01:05 IST
 - Backfilled the Prisma migration to create RBAC, session, guardian, and audit tables so deployments provision the Role catalog on startup.
 

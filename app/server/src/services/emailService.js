@@ -76,7 +76,7 @@ function buildLink(baseUrl, token, tokenKey = 'token') {
   }
 }
 
-async function sendEmail({ to, subject, html, text, from }) {
+export async function sendEmail({ to, subject, html, text, from }) {
   if (!to) {
     throw AppError.badRequest('Recipient email address is required.', {
       code: 'EMAIL_RECIPIENT_REQUIRED',
