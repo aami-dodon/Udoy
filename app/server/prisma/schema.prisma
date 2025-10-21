@@ -81,41 +81,44 @@ enum NotificationPriority {
 }
 
 model User {
-  id               String              @id @default(cuid())
-  email            String              @unique
-  passwordHash     String?
-  firstName        String?
-  lastName         String?
-  dateOfBirth      DateTime?
-  phoneNumber      String?
-  isEmailVerified  Boolean             @default(false)
-  status           UserStatus          @default(ACTIVE)
-  lastLoginAt      DateTime?
-  createdAt        DateTime            @default(now())
-  updatedAt        DateTime            @updatedAt
-  deactivatedAt    DateTime?
-  guardianName     String?
-  guardianEmail    String?
-  guardianConsent  Boolean             @default(false)
+  id              String     @id @default(cuid())
+  email           String     @unique
+  passwordHash    String?
+  firstName       String?
+  lastName        String?
+  dateOfBirth     DateTime?
+  phoneNumber     String?
+  isEmailVerified Boolean    @default(false)
+  status          UserStatus @default(ACTIVE)
+  lastLoginAt     DateTime?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  deactivatedAt   DateTime?
+  guardianName    String?
+  guardianEmail   String?
+  guardianConsent Boolean    @default(false)
 
-  roles             UserRole[]
-  sessions          Session[]
-  auditLogs         AuditLog[]         @relation("UserAuditLogs")
-  guardianLinks     GuardianLink[]     @relation("GuardianLinksGuardian")
-  wardLinks         GuardianLink[]     @relation("GuardianLinksStudent")
-  tokens            VerificationToken[]
-  assignedRoles     UserRole[]         @relation("UserRoleAssignedBy")
-  assignedPermissions RolePermission[] @relation("RolePermissionAssignedBy")
-  profile           UserProfile?
-  coachingAssignments UserProfile[]    @relation("CoachAssignments")
+  roles                        UserRole[]
+  sessions                     Session[]
+  auditLogs                    AuditLog[]             @relation("UserAuditLogs")
+  guardianLinks                GuardianLink[]         @relation("GuardianLinksGuardian")
+  wardLinks                    GuardianLink[]         @relation("GuardianLinksStudent")
+  tokens                       VerificationToken[]
+  assignedRoles                UserRole[]             @relation("UserRoleAssignedBy")
+  assignedPermissions          RolePermission[]       @relation("RolePermissionAssignedBy")
+  profile                      UserProfile?
+  coachingAssignments          UserProfile[]          @relation("CoachAssignments")
+  createdNotificationTemplates NotificationTemplate[] @relation("NotificationTemplatesCreated")
+  updatedNotificationTemplates NotificationTemplate[] @relation("NotificationTemplatesUpdated")
+  notifications                Notification[]
 }
 
 model Role {
-  id              Int              @id @default(autoincrement())
-  name            String           @unique
-  description     String?
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   rolePermissions RolePermission[]
   userRoles       UserRole[]
@@ -134,79 +137,79 @@ model Permission {
 }
 
 model RolePermission {
-  roleId        Int
-  permissionId  Int
-  assignedAt    DateTime @default(now())
-  assignedById  String?
+  roleId       Int
+  permissionId Int
+  assignedAt   DateTime @default(now())
+  assignedById String?
 
-  role          Role    @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  permission    Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
-  assignedBy    User?   @relation("RolePermissionAssignedBy", fields: [assignedById], references: [id])
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  assignedBy User?      @relation("RolePermissionAssignedBy", fields: [assignedById], references: [id])
 
   @@id([roleId, permissionId])
 }
 
 model UserRole {
-  userId        String
-  roleId        Int
-  assignedAt    DateTime @default(now())
-  assignedById  String?
+  userId       String
+  roleId       Int
+  assignedAt   DateTime @default(now())
+  assignedById String?
 
-  user          User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role          Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  assignedBy    User?  @relation("UserRoleAssignedBy", fields: [assignedById], references: [id])
+  user       User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role       Role  @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  assignedBy User? @relation("UserRoleAssignedBy", fields: [assignedById], references: [id])
 
   @@id([userId, roleId])
 }
 
 model Session {
-  id             String   @id @default(cuid())
-  userId         String
+  id               String    @id @default(cuid())
+  userId           String
   refreshTokenHash String
-  userAgent      String?
-  ipAddress      String?
-  createdAt      DateTime @default(now())
-  expiresAt      DateTime
-  revokedAt      DateTime?
-  replacedById   String?
+  userAgent        String?
+  ipAddress        String?
+  createdAt        DateTime  @default(now())
+  expiresAt        DateTime
+  revokedAt        DateTime?
+  replacedById     String?
 
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  replacedBy     Session? @relation("SessionReplacement", fields: [replacedById], references: [id])
-  replaces       Session[] @relation("SessionReplacement")
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  replacedBy Session?  @relation("SessionReplacement", fields: [replacedById], references: [id])
+  replaces   Session[] @relation("SessionReplacement")
 
   @@unique([refreshTokenHash])
 }
 
 model GuardianLink {
-  id            String               @id @default(cuid())
-  guardianId    String
-  studentId     String
-  relationship  GuardianRelationship?
-  status        GuardianLinkStatus   @default(PENDING)
-  consentedAt   DateTime?
-  revokedAt     DateTime?
-  createdAt     DateTime             @default(now())
+  id           String                @id @default(cuid())
+  guardianId   String
+  studentId    String
+  relationship GuardianRelationship?
+  status       GuardianLinkStatus    @default(PENDING)
+  consentedAt  DateTime?
+  revokedAt    DateTime?
+  createdAt    DateTime              @default(now())
 
-  guardian      User @relation("GuardianLinksGuardian", fields: [guardianId], references: [id])
-  student       User @relation("GuardianLinksStudent", fields: [studentId], references: [id])
+  guardian User @relation("GuardianLinksGuardian", fields: [guardianId], references: [id])
+  student  User @relation("GuardianLinksStudent", fields: [studentId], references: [id])
 
   @@unique([guardianId, studentId])
 }
 
 model VerificationToken {
-  id         String               @id @default(cuid())
+  id         String                @id @default(cuid())
   userId     String
   type       VerificationTokenType
   tokenHash  String
   expiresAt  DateTime
   consumedAt DateTime?
   metadata   Json?
-  createdAt  DateTime             @default(now())
+  createdAt  DateTime              @default(now())
 
-  user       User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([userId, type, expiresAt])
   @@unique([type, tokenHash])
+  @@index([userId, type, expiresAt])
 }
 
 model AuditLog {
@@ -218,7 +221,80 @@ model AuditLog {
   metadata   Json?
   createdAt  DateTime       @default(now())
 
-  actor      User?          @relation("UserAuditLogs", fields: [actorId], references: [id])
+  actor User? @relation("UserAuditLogs", fields: [actorId], references: [id])
+}
+
+model NotificationTemplate {
+  id            String              @id @default(cuid())
+  name          String
+  eventKey      String
+  channel       NotificationChannel
+  locale        String              @default("en")
+  subject       String?
+  body          String
+  previewText   String?
+  dataSchema    Json?
+  defaultData   Json?
+  audienceRoles String[]            @default([])
+  active        Boolean             @default(true)
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  createdById   String?
+  updatedById   String?
+
+  createdBy     User?          @relation("NotificationTemplatesCreated", fields: [createdById], references: [id])
+  updatedBy     User?          @relation("NotificationTemplatesUpdated", fields: [updatedById], references: [id])
+  notifications Notification[]
+
+  @@unique([eventKey, channel, locale])
+  @@index([eventKey, channel])
+}
+
+model Notification {
+  id             String               @id @default(cuid())
+  userId         String?
+  recipient      String?
+  channel        NotificationChannel
+  status         NotificationStatus   @default(PENDING)
+  priority       NotificationPriority @default(NORMAL)
+  eventKey       String
+  templateId     String?
+  locale         String               @default("en")
+  subject        String?
+  body           String?
+  data           Json?
+  metadata       Json?
+  errorMessage   String?
+  idempotencyKey String?              @unique
+  attemptCount   Int                  @default(0)
+  scheduledAt    DateTime?
+  sentAt         DateTime?
+  deliveredAt    DateTime?
+  cancelledAt    DateTime?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+
+  template NotificationTemplate? @relation(fields: [templateId], references: [id])
+  user     User?                 @relation(fields: [userId], references: [id])
+  logs     NotificationLog[]
+
+  @@index([userId])
+  @@index([eventKey])
+  @@index([channel, status])
+}
+
+model NotificationLog {
+  id             String             @id @default(cuid())
+  notificationId String
+  status         NotificationStatus
+  attempt        Int                @default(1)
+  metadata       Json?
+  errorMessage   String?
+  createdAt      DateTime           @default(now())
+
+  notification Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+
+  @@index([notificationId])
 }
 
 model NotificationTemplate {
@@ -295,34 +371,34 @@ model NotificationLog {
 }
 
 model UserProfile {
-  userId               String   @id
-  avatarUrl            String?
-  bio                  String?
-  location             String?
-  timezone             String?
-  className            String?
-  learningLanguages    String[] @default([])
-  learningTopics       String[] @default([])
-  learningPace         String?
-  linkedCoachId        String?
-  subjectExpertise     String[] @default([])
-  profession           String?
-  education            String?
-  teacherSpecialties   String[] @default([])
-  coachingSchedule     String?
-  coachingStrengths    String[] @default([])
-  assignedStudents     String[] @default([])
-  organizationName     String?
-  sector               String?
-  primaryContact       String?
-  pledgedCredits       Int?
-  notificationSettings Json?
+  userId                String   @id
+  avatarUrl             String?
+  bio                   String?
+  location              String?
+  timezone              String?
+  className             String?
+  learningLanguages     String[] @default([])
+  learningTopics        String[] @default([])
+  learningPace          String?
+  linkedCoachId         String?
+  subjectExpertise      String[] @default([])
+  profession            String?
+  education             String?
+  teacherSpecialties    String[] @default([])
+  coachingSchedule      String?
+  coachingStrengths     String[] @default([])
+  assignedStudents      String[] @default([])
+  organizationName      String?
+  sector                String?
+  primaryContact        String?
+  pledgedCredits        Int?
+  notificationSettings  Json?
   accessibilitySettings Json?
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 
-  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  linkedCoach User?  @relation("CoachAssignments", fields: [linkedCoachId], references: [id])
+  user        User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  linkedCoach User? @relation("CoachAssignments", fields: [linkedCoachId], references: [id])
 
   @@index([linkedCoachId])
 }
