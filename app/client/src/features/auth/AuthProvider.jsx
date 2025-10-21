@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import authApi from './api.js';
 import { setAuthHeader } from '@/lib/http.js';
 
@@ -26,6 +26,7 @@ function buildState({ status = 'unauthenticated', user = null, session = null, l
 
 export function AuthProvider({ children }) {
   const [state, setState] = useState(() => buildState({ status: 'loading', loading: true }));
+  const hydrationPromiseRef = useRef(null);
 
   const applyTokens = useCallback((tokens) => {
     if (tokens?.accessToken) {
@@ -36,38 +37,49 @@ export function AuthProvider({ children }) {
   }, []);
 
   const hydrateSession = useCallback(async () => {
-    setState(buildState({ status: 'loading', loading: true }));
-    try {
-      const sessionResponse = await authApi.fetchSession();
-      let nextUser = sessionResponse.user;
-      let nextSession = sessionResponse.session;
-
-      try {
-        const refreshed = await authApi.refresh();
-        applyTokens(refreshed.tokens);
-        nextUser = refreshed.user || nextUser;
-        nextSession = refreshed.session || nextSession;
-      } catch (refreshError) {
-        const statusCode = refreshError?.response?.status;
-        if (statusCode === 401 || statusCode === 403) {
-          setAuthHeader(null);
-          setState(buildState({ status: 'unauthenticated', loading: false }));
-          return;
-        }
-      }
-
-      setState(
-        buildState({
-          status: 'authenticated',
-          user: nextUser,
-          session: nextSession,
-          loading: false,
-        })
-      );
-    } catch (error) {
-      setAuthHeader(null);
-      setState(buildState({ status: 'unauthenticated', loading: false }));
+    if (hydrationPromiseRef.current) {
+      return hydrationPromiseRef.current;
     }
+
+    const run = (async () => {
+      setState(buildState({ status: 'loading', loading: true }));
+      try {
+        const sessionResponse = await authApi.fetchSession();
+        let nextUser = sessionResponse.user;
+        let nextSession = sessionResponse.session;
+
+        try {
+          const refreshed = await authApi.refresh();
+          applyTokens(refreshed.tokens);
+          nextUser = refreshed.user || nextUser;
+          nextSession = refreshed.session || nextSession;
+        } catch (refreshError) {
+          const statusCode = refreshError?.response?.status;
+          if (statusCode === 401 || statusCode === 403) {
+            setAuthHeader(null);
+            setState(buildState({ status: 'unauthenticated', loading: false }));
+            return;
+          }
+        }
+
+        setState(
+          buildState({
+            status: 'authenticated',
+            user: nextUser,
+            session: nextSession,
+            loading: false,
+          })
+        );
+      } catch (error) {
+        setAuthHeader(null);
+        setState(buildState({ status: 'unauthenticated', loading: false }));
+      } finally {
+        hydrationPromiseRef.current = null;
+      }
+    })();
+
+    hydrationPromiseRef.current = run;
+    return run;
   }, [applyTokens]);
 
   useEffect(() => {
