@@ -157,6 +157,12 @@ export const ROLE_DEFINITIONS = [
         action: 'view',
         description: 'View learning analytics and growth metrics.',
       },
+      {
+        name: 'topic.view',
+        resource: 'topic',
+        action: 'view',
+        description: 'Browse published topics within the learning library.',
+      },
     ],
   },
   {
@@ -304,6 +310,12 @@ export const ROLE_DEFINITIONS = [
         action: 'support',
         description: 'Support students with credential recovery and approvals.',
       },
+      {
+        name: 'topic.view',
+        resource: 'topic',
+        action: 'view',
+        description: 'Review published topics to guide and coach learners.',
+      },
     ],
   },
   {
@@ -334,6 +346,12 @@ export const ROLE_DEFINITIONS = [
         resource: 'billing',
         action: 'manage',
         description: 'Update billing contacts and sponsorship terms.',
+      },
+      {
+        name: 'topic.view',
+        resource: 'topic',
+        action: 'view',
+        description: 'Audit published topics funded through sponsorship programs.',
       },
     ],
   },

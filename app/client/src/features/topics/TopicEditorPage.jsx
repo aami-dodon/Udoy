@@ -179,6 +179,8 @@ export default function TopicEditorPage() {
   const isAdmin = roles.includes('admin');
   const isCreator = roles.includes('creator') || isAdmin;
   const isValidator = roles.includes('teacher') || isAdmin;
+  const isManager = isAdmin || isCreator || isValidator;
+  const canComment = isCreator || isValidator || isAdmin;
 
   const [topic, setTopic] = useState(null);
   const [form, setForm] = useState(buildFormFromTopic(null));
@@ -191,6 +193,7 @@ export default function TopicEditorPage() {
   const [commentForm, setCommentForm] = useState({ body: '', type: 'REVIEW' });
   const [reviewNotes, setReviewNotes] = useState('');
   const [reviewDecision, setReviewDecision] = useState('approve');
+  const [accessDenied, setAccessDenied] = useState(false);
 
   const apiBaseUrl = useMemo(() => buildApiUrl(), []);
 
@@ -236,12 +239,17 @@ export default function TopicEditorPage() {
       }
       setLoading(true);
       try {
+        setAccessDenied(false);
         const data = await topicsApi.getTopic(id, { full: true });
         setTopic(data);
         setForm(buildFormFromTopic(data));
       } catch (error) {
         console.error('Failed to load topic', error);
-        showMessage('error', 'Unable to load the topic. Please try again.');
+        if (error?.response?.status === 403) {
+          setAccessDenied(true);
+        } else {
+          showMessage('error', 'Unable to load the topic. Please try again.');
+        }
       } finally {
         setLoading(false);
       }
@@ -254,10 +262,17 @@ export default function TopicEditorPage() {
       setTopic(null);
       setForm(buildFormFromTopic(null));
       setLoading(false);
+      setAccessDenied(false);
       return;
     }
     refreshTopic(topicId);
   }, [isNew, topicId, refreshTopic]);
+
+  useEffect(() => {
+    if (!isNew && topic && !isManager && topic.status !== 'PUBLISHED' && !accessDenied) {
+      setAccessDenied(true);
+    }
+  }, [accessDenied, isManager, isNew, topic]);
 
   const handleChange = useCallback((field) => (event) => {
     const value = event?.target ? event.target.value : event;
@@ -383,7 +398,7 @@ export default function TopicEditorPage() {
 
   const handleAddComment = useCallback(
     async () => {
-      if (!topic || !commentForm.body.trim()) {
+      if (!topic || !canComment || !commentForm.body.trim()) {
         return;
       }
       try {
@@ -402,11 +417,44 @@ export default function TopicEditorPage() {
         showMessage('error', 'Unable to add the comment.');
       }
     },
-    [topic, commentForm.body, commentForm.type, showMessage],
+    [topic, commentForm.body, commentForm.type, canComment, showMessage],
   );
 
   const workflowEvents = useMemo(() => topic?.workflow || [], [topic]);
   const comments = useMemo(() => topic?.comments || [], [topic]);
+
+  if (accessDenied) {
+    return (
+      <div className="mx-auto w-full max-w-3xl px-6 py-6 lg:px-8">
+        <div className="flex flex-col gap-6">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="icon" onClick={() => navigate('/topics')}>
+              <LucideIcon name="ArrowLeft" className="h-4 w-4" />
+            </Button>
+            <div>
+              <h1 className="font-display text-2xl font-semibold text-slate-900">Topic unavailable</h1>
+              <p className="text-sm text-neutral-600">
+                This topic is not published yet. Only published topics are visible for your role.
+              </p>
+            </div>
+          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Published content only</CardTitle>
+              <CardDescription>
+                Please return to the topic library to explore published lessons available to learners.
+              </CardDescription>
+            </CardHeader>
+            <CardFooter>
+              <Button onClick={() => navigate('/topics')}>
+                <LucideIcon name="BookOpen" className="mr-2 h-4 w-4" /> Back to topics
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto w-full max-w-6xl px-6 py-6 lg:px-8">
@@ -622,6 +670,7 @@ export default function TopicEditorPage() {
                     onChange={handleChange('changeNotes')}
                     placeholder="Summarize major updates for validators and publishers."
                     className="min-h-[120px]"
+                    disabled={!(canEdit || canSubmit || canPublish)}
                   />
                   {canReview && (
                     <div className="space-y-2 rounded-xl border border-neutral-200 bg-neutral-50 p-3">
@@ -723,37 +772,41 @@ export default function TopicEditorPage() {
                       </div>
                     )}
                   </CardContent>
-                  <Separator className="mx-6" />
-                  <CardFooter className="flex flex-col gap-3">
-                    <Label htmlFor="comment-body">Add comment</Label>
-                    <Textarea
-                      id="comment-body"
-                      value={commentForm.body}
-                      onChange={(event) => setCommentForm((current) => ({ ...current, body: event.target.value }))}
-                      placeholder="Share context, requests, or feedback for collaborators."
-                      className="min-h-[100px]"
-                    />
-                    <div className="flex flex-wrap items-center gap-3">
-                      <Select
-                        value={commentForm.type}
-                        onValueChange={(value) => setCommentForm((current) => ({ ...current, type: value }))}
-                      >
-                        <SelectTrigger className="w-48">
-                          <SelectValue placeholder="Comment type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {COMMENT_TYPES.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <Button type="button" onClick={handleAddComment} disabled={!commentForm.body.trim()}>
-                        Add comment
-                      </Button>
-                    </div>
-                  </CardFooter>
+                  {canComment ? (
+                    <>
+                      <Separator className="mx-6" />
+                      <CardFooter className="flex flex-col gap-3">
+                        <Label htmlFor="comment-body">Add comment</Label>
+                        <Textarea
+                          id="comment-body"
+                          value={commentForm.body}
+                          onChange={(event) => setCommentForm((current) => ({ ...current, body: event.target.value }))}
+                          placeholder="Share context, requests, or feedback for collaborators."
+                          className="min-h-[100px]"
+                        />
+                        <div className="flex flex-wrap items-center gap-3">
+                          <Select
+                            value={commentForm.type}
+                            onValueChange={(value) => setCommentForm((current) => ({ ...current, type: value }))}
+                          >
+                            <SelectTrigger className="w-48">
+                              <SelectValue placeholder="Comment type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {COMMENT_TYPES.map((option) => (
+                                <SelectItem key={option.value} value={option.value}>
+                                  {option.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <Button type="button" onClick={handleAddComment} disabled={!commentForm.body.trim()}>
+                            Add comment
+                          </Button>
+                        </div>
+                      </CardFooter>
+                    </>
+                  ) : null}
                 </Card>
               </>
             ) : (
