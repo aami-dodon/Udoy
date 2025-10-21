@@ -217,9 +217,9 @@
 - Hardcoded the seeded admin's profile details to "Super" and "Admin" so the account has consistent display information.
 
 ## 2025-10-21 12:13 IST
-- Prevented duplicate auth hydration runs in React Strict Mode by guarding `AuthProvider` refresh calls.
-- Eliminated intermittent "Session has been revoked" failures on profile loads by serialising session rotation.
-- Verified the client build to ensure the stricter hydration flow compiles cleanly.
+- Added a guarded profile fetch retry that refreshes the session when the API reports `SESSION_REVOKED`.
+- Reconfirmed the AuthProvider hydration guard to keep refresh rotations single-flight during Strict Mode reloads.
+- Verified the client build so the revised auth flow compiles without regressions.
 
 ## 2025-10-21 04:25 IST
 - Shortened the register date of birth helper text copy for clarity and tighter layout.

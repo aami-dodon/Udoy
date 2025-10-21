@@ -236,7 +236,7 @@ function buildPayload(values, roles) {
 }
 
 function ProfilePage() {
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, refreshSession } = useAuth();
   const roles = Array.isArray(user?.roles) ? user.roles : [];
 
   const [isLoading, setIsLoading] = useState(true);
@@ -270,32 +270,70 @@ function ProfilePage() {
     return [];
   }, []);
 
-  const fetchProfile = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      setLoadError('');
-      const data = await profileApi.fetchMyProfile();
-      if (!isMounted.current) {
-        return;
-      }
+  const applyProfilePayload = useCallback(
+    (data) => {
       const formValues = buildFormValuesFromProfile(data?.profile);
       form.reset(formValues);
       setLastUpdatedAt(data?.profile?.updatedAt || null);
       if (data?.user) {
         updateUser(data.user);
       }
+    },
+    [form, updateUser]
+  );
+
+  const fetchProfile = useCallback(async () => {
+    setIsLoading(true);
+    setLoadError('');
+
+    const handleError = (error) => {
+      const message = error?.response?.data?.message || 'Unable to load your profile right now.';
+      setLoadError(message);
+    };
+
+    try {
+      const data = await profileApi.fetchMyProfile();
+      if (!isMounted.current) {
+        return;
+      }
+      applyProfilePayload(data);
+      return;
     } catch (error) {
       if (!isMounted.current) {
         return;
       }
-      const message = error?.response?.data?.message || 'Unable to load your profile right now.';
-      setLoadError(message);
+
+      const status = error?.response?.status;
+      const code = error?.response?.data?.code;
+      if (status === 401 && code === 'SESSION_REVOKED') {
+        try {
+          await refreshSession();
+          if (!isMounted.current) {
+            return;
+          }
+          const retryData = await profileApi.fetchMyProfile();
+          if (!isMounted.current) {
+            return;
+          }
+          applyProfilePayload(retryData);
+          setLoadError('');
+          return;
+        } catch (retryError) {
+          if (!isMounted.current) {
+            return;
+          }
+          handleError(retryError);
+          return;
+        }
+      }
+
+      handleError(error);
     } finally {
       if (isMounted.current) {
         setIsLoading(false);
       }
     }
-  }, [form, updateUser]);
+  }, [applyProfilePayload, refreshSession]);
 
   useEffect(() => {
     fetchProfile();
