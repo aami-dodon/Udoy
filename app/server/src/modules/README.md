@@ -26,6 +26,7 @@ or integrations (for example Prisma or the MinIO helpers).
 | [`email`](./email/README.md) | [`email.routes.js`](./email/email.routes.js) | [`email.controller.js`](./email/email.controller.js) | Test harness for transactional email templates powered by Nodemailer. |
 | [`health`](./health/README.md) | [`health.routes.js`](./health/health.routes.js) | [`health.controller.js`](./health/health.controller.js) | Readiness probe that checks Prisma, MinIO, and the configured CORS policy. |
 | [`uploads`](./uploads/README.md) | [`uploads.routes.js`](./uploads/uploads.routes.js) | [`uploads.controller.js`](./uploads/uploads.controller.js) | MinIO presigned URL generator for secure upload and download flows. |
+| [`notifications`](./notifications/README.md) | [`notifications.routes.js`](./notifications/notifications.routes.js) | [`notifications.controller.js`](./notifications/notifications.controller.js) | Centralized notification templates, dispatch, and delivery logs. |
 
 ### Adding a new module
 
