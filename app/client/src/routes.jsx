@@ -10,6 +10,7 @@ const ForgotPasswordPage = lazy(() => import('./features/auth/ForgotPasswordPage
 const ResetPasswordPage = lazy(() => import('./features/auth/ResetPasswordPage.jsx'));
 const VerifyTokenPage = lazy(() => import('./features/auth/VerifyTokenPage.jsx'));
 const DashboardPage = lazy(() => import('./features/dashboard/DashboardPage.jsx'));
+const ProfilePage = lazy(() => import('./features/profile/ProfilePage.jsx'));
 const AdminUsersPage = lazy(() => import('./features/admin/AdminUsersPage.jsx'));
 const ForbiddenPage = lazy(() => import('./features/errors/ForbiddenPage.jsx'));
 const ServerErrorPage = lazy(() => import('./features/errors/ServerErrorPage.jsx'));
@@ -54,6 +55,14 @@ const routes = [
     element: (
       <RequireAuth>
         <DashboardPage />
+      </RequireAuth>
+    ),
+  },
+  {
+    path: '/profile',
+    element: (
+      <RequireAuth>
+        <ProfilePage />
       </RequireAuth>
     ),
   },

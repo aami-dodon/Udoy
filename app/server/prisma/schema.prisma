@@ -84,6 +84,8 @@ model User {
   tokens            VerificationToken[]
   assignedRoles     UserRole[]         @relation("UserRoleAssignedBy")
   assignedPermissions RolePermission[] @relation("RolePermissionAssignedBy")
+  profile           UserProfile?
+  coachingAssignments UserProfile[]    @relation("CoachAssignments")
 }
 
 model Role {
@@ -195,4 +197,37 @@ model AuditLog {
   createdAt  DateTime       @default(now())
 
   actor      User?          @relation("UserAuditLogs", fields: [actorId], references: [id])
+}
+
+model UserProfile {
+  userId               String   @id
+  avatarUrl            String?
+  bio                  String?
+  location             String?
+  timezone             String?
+  className            String?
+  learningLanguages    String[] @default([])
+  learningTopics       String[] @default([])
+  learningPace         String?
+  linkedCoachId        String?
+  subjectExpertise     String[] @default([])
+  profession           String?
+  education            String?
+  teacherSpecialties   String[] @default([])
+  coachingSchedule     String?
+  coachingStrengths    String[] @default([])
+  assignedStudents     String[] @default([])
+  organizationName     String?
+  sector               String?
+  primaryContact       String?
+  pledgedCredits       Int?
+  notificationSettings Json?
+  accessibilitySettings Json?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  linkedCoach User?  @relation("CoachAssignments", fields: [linkedCoachId], references: [id])
+
+  @@index([linkedCoachId])
 }

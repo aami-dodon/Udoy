@@ -5,6 +5,7 @@ import adminRoutes from './admin/admin.routes.js';
 import emailRoutes from './email/email.routes.js';
 import uploadRoutes from './uploads/uploads.routes.js';
 import userRoutes from './users/users.routes.js';
+import profileRoutes from './profile/profile.routes.js';
 
 function registerModules(app, apiPrefix) {
   const router = Router();
@@ -15,6 +16,7 @@ function registerModules(app, apiPrefix) {
   router.use('/', emailRoutes);
   router.use('/', uploadRoutes);
   router.use('/', userRoutes);
+  router.use('/', profileRoutes);
 
   app.use(apiPrefix, router);
 }

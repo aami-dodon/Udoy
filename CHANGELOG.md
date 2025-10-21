@@ -1,3 +1,8 @@
+## 2025-11-04 12:30 IST
+- Introduced the Profile Management System with a dedicated Prisma `UserProfile` model covering role-specific attributes, notification preferences, and accessibility settings.
+- Added authenticated `/api/profile` endpoints with Swagger documentation, RBAC enforcement, and audit logging to let users self-manage profiles while enabling admin moderation.
+- Delivered a shadcn-powered profile settings experience in the client with timezone validation, preference editing, and contextual success feedback wired to the new API.
+
 ## 2025-11-02 13:00 IST
 - Stopped password reset emails from dispatching to unverified accounts, logging the blocked request and guiding users to verify first.
 - Added server tests to cover verified versus unverified password reset flows and documented the alternate API response.
@@ -210,6 +215,12 @@
 ## 2025-10-21 12:30 IST
 - Simplified the default admin bootstrap to rely on email-only upserts and removed the `DEFAULT_ADMIN_USER_ID` variable.
 - Hardcoded the seeded admin's profile details to "Super" and "Admin" so the account has consistent display information.
+
+## 2025-10-21 12:13 IST
+- Added a guarded profile fetch retry that refreshes the session when the API reports `SESSION_REVOKED`.
+- Reconfirmed the AuthProvider hydration guard to keep refresh rotations single-flight during Strict Mode reloads.
+- Verified the client build so the revised auth flow compiles without regressions.
+
 ## 2025-10-21 04:25 IST
 - Shortened the register date of birth helper text copy for clarity and tighter layout.
 - Removed the extra flex wrapper from the register date picker so its label/input aligns with neighboring fields.
