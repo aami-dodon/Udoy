@@ -1,3 +1,8 @@
+## 2025-10-22 04:13 IST
+- Enabled resizable TipTap image and video nodes with in-editor controls so topic authors can reposition uploads with industry-standard handles.
+- Normalized MinIO asset URLs in the shared upload helper to always use the configured public base domain.
+- Surfaced `VITE_MINIO_PUBLIC_BASE_URL` in environment templates to keep client and server media links aligned.
+
 ## 2025-11-07 11:30 IST
 - Launched the Topic Management System with Prisma models for topics, tags, revisions, workflow events, and review comments plus a dedicated migration and regenerated client.
 - Added `/api/topics` endpoints with Swagger docs, RBAC, and Casbin policies covering draft, review, publish, and comment workflows.
@@ -284,3 +289,7 @@
 
 ## 2025-10-19 07:13 IST
 - Updated the Vite client configuration to read the allowed host list and port from environment variables, enabling `CLIENT_ALLOWED_HOSTS` overrides.
+## 2025-10-22 11:45 IST
+- Ensured editor uploads fetch a presigned GET URL when MinIO public hosting is unavailable so newly inserted media render immediately.
+- Hardened the shared TipTap inserters to accept either `src` or `url` descriptors for images, videos, and audio embeds.
+
