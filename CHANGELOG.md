@@ -1,3 +1,8 @@
+## 2025-11-05 09:45 IST
+- Introduced the centralized Notification System with Prisma models for templates, delivery records, and attempt logs, enabling locale-aware, role-scoped messaging across channels.
+- Added `/api/notifications` endpoints with Swagger documentation, RBAC policies, and Casbin rules for template management, dispatching, and delivery log search.
+- Wrapped notification emails in the shared Udoy branding shell and documented the new services plus API behaviour in `API-SPECS.md` and `services/README.md`.
+
 ## 2025-11-04 12:30 IST
 - Introduced the Profile Management System with a dedicated Prisma `UserProfile` model covering role-specific attributes, notification preferences, and accessibility settings.
 - Added authenticated `/api/profile` endpoints with Swagger documentation, RBAC enforcement, and audit logging to let users self-manage profiles while enabling admin moderation.

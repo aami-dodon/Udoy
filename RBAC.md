@@ -12,7 +12,7 @@ This document captures Udoy's RBAC model, which is enforced through the Casbin p
 
 | Role | Description | Core Permissions |
 | --- | --- | --- |
-| **Admin** | Platform administrator with full control over tenant operations, security, and RBAC management. | `tenant.provision`, `user.manage`, `role.manage`, `permission.manage`, `audit-log.view`, `security.escalate`, `session.invalidate`, `admin.dashboard`, `profile.manage`. |
+| **Admin** | Platform administrator with full control over tenant operations, security, and RBAC management. | `tenant.provision`, `user.manage`, `role.manage`, `permission.manage`, `audit-log.view`, `security.escalate`, `session.invalidate`, `admin.dashboard`, `profile.manage`, `notification.manage`, `notification.dispatch`. |
 | **Student** | Learner focused on coursework consumption and submissions. | `profile.self`, `content.consume`, `assignment.submit`, `progress.view`. |
 | **Creator** | Author responsible for drafting and publishing curriculum content. | `profile.self`, `content.draft`, `content.publish`, `teacher.collaborate`. |
 | **Teacher** | Educator reviewing and aligning content with standards. | `profile.self`, `content.review`, `curriculum.align`, `quality.assure`. |
