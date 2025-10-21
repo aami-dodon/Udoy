@@ -17,6 +17,10 @@
 | `/verify-email` | Auth | Public | Alias of `/verify-token` so emailed verification links resolve without 404s. |
 | `/dashboard` | Dashboard | Authenticated | Protected account hub (via `RequireAuth`) showing RBAC roles, permissions, and session controls. |
 | `/profile` | Profile | Authenticated | Profile management hub enabling users to update avatars, preferences, notifications, and accessibility settings. |
+| `/topics` | Topics | Creator / Validator / Admin | Workflow dashboard listing topic drafts, translations, and publication status. |
+| `/topics/new` | Topics | Creator & Admin | Draft authoring studio with TipTap, tagging, and curriculum alignment controls. |
+| `/topics/:id` | Topics | Creator / Validator / Admin | Detailed topic view with review actions, metadata, and version history. |
+| `/topics/:id/edit` | Topics | Creator & Admin | Edit an existing topic draft with media uploads and metadata management. |
 | `/admin/users` | Admin | Admin role | Guarded by `RequireRole('admin')`; lists users, updates statuses, and manages role bindings. |
 | `/403` | Error Pages | Public | Forbidden access screen that guides users back to the home experience. |
 | `/500` | Error Pages | Public | Server error page surfaced when upstream systems fail unexpectedly. |

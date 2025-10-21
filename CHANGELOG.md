@@ -1,3 +1,8 @@
+## 2025-11-07 11:30 IST
+- Introduced the Topic Management System schema with Prisma models for groups, tags, alignments, workflow events, and review logs plus supporting enums for topic statuses and decisions.
+- Added `/api/topics` workflow endpoints with OpenAPI docs, Casbin policy updates, and RBAC role definitions so creators, validators, and admins can collaborate on drafts, reviews, and publication.
+- Shipped TipTap-powered topic authoring, review, and catalog pages in the SPA with MinIO media uploads, tagging, curriculum alignment controls, and workflow-aware actions.
+
 ## 2025-11-06 14:00 IST
 - Unified all transactional emails behind the responsive Udoy template so verification, password reset, and guardian approval messages now mirror the home page hero header and SiteFooter experience.
 - Matched the template tagline and footer copy to the home page language and documented the shared email shell in the server services guide.
