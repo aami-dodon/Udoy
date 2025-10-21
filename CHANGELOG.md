@@ -1,3 +1,7 @@
+## 2025-11-06 14:00 IST
+- Unified all transactional emails behind the responsive Udoy template so verification, password reset, and guardian approval messages now mirror the home page hero header and SiteFooter experience.
+- Matched the template tagline and footer copy to the home page language and documented the shared email shell in the server services guide.
+
 ## 2025-11-05 09:45 IST
 - Introduced the centralized Notification System with Prisma models for templates, delivery records, and attempt logs, enabling locale-aware, role-scoped messaging across channels.
 - Added `/api/notifications` endpoints with Swagger documentation, RBAC policies, and Casbin rules for template management, dispatching, and delivery log search.
