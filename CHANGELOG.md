@@ -1,3 +1,6 @@
+## 2025-10-21 05:18 IST
+- Aligned the admin user roster table container radius with the shared surface token so its corners match the rest of the UI.
+
 ## 2025-11-02 12:30 IST
 - Blocked administrators from updating their own account records through the management APIs to prevent self-edit escalations.
 
