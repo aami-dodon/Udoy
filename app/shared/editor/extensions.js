@@ -7,11 +7,13 @@ import FileHandler from '@tiptap/extension-file-handler';
 // Ensure underline support is explicitly imported so the toolbar toggle functions in development builds.
 import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
+import { ReactNodeViewRenderer } from '@tiptap/react';
 
 import {
   DEFAULT_PLACEHOLDER,
   DEFAULT_ALLOWED_MIME_TYPES,
 } from './constants.js';
+import { ResizableImageNodeView, ResizableVideoNodeView } from './ResizableMediaNodeView.jsx';
 
 const insertFileLink = (editor, asset) => {
   const { href, src, text, attrs = {} } = asset;
@@ -54,7 +56,8 @@ const insertImage = (editor, asset) => {
     .setImage({
       src,
       alt,
-      class: 'rich-text-image rounded-md',
+      class: attrs.class || 'rich-text-image rounded-md',
+      width: attrs.width || null,
       ...attrs,
     })
     .run();
@@ -72,10 +75,13 @@ const insertVideo = (editor, asset) => {
     controls: attrs.controls ?? true,
     autoplay: attrs.autoplay ?? false,
     loop: attrs.loop ?? false,
+    width: attrs.width || null,
   };
 
   if (attrs.class) {
     videoAttrs.class = attrs.class;
+  } else {
+    videoAttrs.class = 'rich-text-video w-full rounded-lg bg-black';
   }
 
   editor
@@ -114,7 +120,45 @@ const assetInserters = {
   file: insertFileLink,
 };
 
-export const Video = Node.create({
+const ResizableImage = Image.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      width: {
+        default: null,
+        renderHTML: (attributes) => {
+          if (!attributes.width) {
+            return {};
+          }
+
+          const widthValue =
+            typeof attributes.width === 'number' || /^\d+$/.test(String(attributes.width))
+              ? `${attributes.width}px`
+              : String(attributes.width);
+
+          return {
+            'data-width': attributes.width,
+            style: `width: ${widthValue}; max-width: 100%; height: auto;`,
+          };
+        },
+        parseHTML: (element) => {
+          const widthAttr = element.getAttribute('data-width') || element.getAttribute('width');
+          if (!widthAttr) {
+            return null;
+          }
+
+          const parsed = Number.parseInt(widthAttr, 10);
+          return Number.isFinite(parsed) ? parsed : widthAttr;
+        },
+      },
+    };
+  },
+  addNodeView() {
+    return ReactNodeViewRenderer(ResizableImageNodeView);
+  },
+});
+
+const BaseVideo = Node.create({
   name: 'video',
   group: 'block',
   draggable: true,
@@ -139,7 +183,7 @@ export const Video = Node.create({
         default: false,
       },
       class: {
-        default: 'rich-text-video w-full rounded-lg',
+        default: 'rich-text-video w-full rounded-lg bg-black',
       },
     };
   },
@@ -170,6 +214,44 @@ export const Video = Node.create({
             })
             .run(),
     };
+  },
+});
+
+export const Video = BaseVideo.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      width: {
+        default: null,
+        renderHTML: (attributes) => {
+          if (!attributes.width) {
+            return {};
+          }
+
+          const widthValue =
+            typeof attributes.width === 'number' || /^\d+$/.test(String(attributes.width))
+              ? `${attributes.width}px`
+              : String(attributes.width);
+
+          return {
+            'data-width': attributes.width,
+            style: `width: ${widthValue}; max-width: 100%; height: auto;`,
+          };
+        },
+        parseHTML: (element) => {
+          const widthAttr = element.getAttribute('data-width') || element.getAttribute('width');
+          if (!widthAttr) {
+            return null;
+          }
+
+          const parsed = Number.parseInt(widthAttr, 10);
+          return Number.isFinite(parsed) ? parsed : widthAttr;
+        },
+      },
+    };
+  },
+  addNodeView() {
+    return ReactNodeViewRenderer(ResizableVideoNodeView);
   },
 });
 
@@ -269,7 +351,7 @@ export const createEditorExtensions = ({
         class: 'rich-text-link text-brand-600 underline underline-offset-2 hover:text-brand-700',
       },
     }),
-    Image.configure({
+    ResizableImage.configure({
       inline: false,
       HTMLAttributes: {
         class: 'rich-text-image rounded-md',
