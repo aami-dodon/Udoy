@@ -214,34 +214,28 @@ export async function uploadEditorAsset(file, {
   await uploadFileToPresignedUrl({ presign, file, fetchImpl });
 
   const envPublicUrl = buildPublicUrlFromEnv(objectKey);
+  const presignPublicUrl = presign.publicUrl || null;
 
-  let publicUrl = envPublicUrl || presign.publicUrl || null;
+  let getPresignUrl = null;
 
-  if (!publicUrl) {
-    try {
-      const getPresign = await requestEditorPresignedUrl({
-        objectKey,
-        apiBaseUrl,
-        operation: 'get',
-        fetchImpl,
-        token,
-        headers: requestHeaders,
-        additionalPayload,
-      });
+  if (!envPublicUrl && !presignPublicUrl) {
+    const getPresign = await requestEditorPresignedUrl({
+      objectKey,
+      apiBaseUrl,
+      operation: 'get',
+      fetchImpl,
+      token,
+      headers: requestHeaders,
+      additionalPayload,
+    });
 
-      if (getPresign?.url) {
-        publicUrl = getPresign.url;
-      }
-    } catch (error) {
-      if (typeof console !== 'undefined' && console?.warn) {
-        console.warn('Falling back to unsigned MinIO object URL for editor asset.', error);
-      }
+    if (getPresign?.url) {
+      getPresignUrl = getPresign.url;
     }
   }
 
-  if (!publicUrl) {
-    publicUrl = presign.url?.split('?')[0] || null;
-  }
+  const publicUrl =
+    getPresignUrl || envPublicUrl || presignPublicUrl || presign.url?.split('?')[0] || null;
 
   return {
     objectKey,
