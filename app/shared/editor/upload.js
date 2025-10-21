@@ -54,6 +54,52 @@ function normalizeBaseUrl(baseUrl) {
   return baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
 }
 
+function getRuntimeEnvValue(key) {
+  try {
+    if (typeof import.meta !== 'undefined' && import.meta?.env && key in import.meta.env) {
+      return import.meta.env[key];
+    }
+  } catch (error) {
+    // no-op: accessing import.meta in non-module environments can throw.
+  }
+
+  if (typeof process !== 'undefined' && process?.env && key in process.env) {
+    return process.env[key];
+  }
+
+  return undefined;
+}
+
+function getMinioPublicBaseUrl() {
+  const rawValue =
+    getRuntimeEnvValue('VITE_MINIO_PUBLIC_BASE_URL') || getRuntimeEnvValue('MINIO_PUBLIC_BASE_URL');
+
+  if (typeof rawValue !== 'string') {
+    return '';
+  }
+
+  const trimmed = rawValue.trim();
+  if (!trimmed) {
+    return '';
+  }
+
+  return trimmed.replace(/\/+$/u, '');
+}
+
+function buildPublicUrlFromEnv(objectKey) {
+  const baseUrl = getMinioPublicBaseUrl();
+  if (!baseUrl) {
+    return null;
+  }
+
+  const normalizedKey = typeof objectKey === 'string' ? objectKey.replace(/^\/+/, '') : '';
+  if (!normalizedKey) {
+    return null;
+  }
+
+  return `${baseUrl}/${normalizedKey}`;
+}
+
 function buildAuthHeaders(token, extraHeaders = {}) {
   const headers = { ...extraHeaders };
 
@@ -167,7 +213,8 @@ export async function uploadEditorAsset(file, {
 
   await uploadFileToPresignedUrl({ presign, file, fetchImpl });
 
-  const publicUrl = presign.publicUrl || presign.url?.split('?')[0];
+  const envPublicUrl = buildPublicUrlFromEnv(objectKey);
+  const publicUrl = envPublicUrl || presign.publicUrl || presign.url?.split('?')[0];
 
   return {
     objectKey,
