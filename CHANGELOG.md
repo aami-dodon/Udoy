@@ -1,3 +1,9 @@
+## 2025-11-09 11:20 IST
+- Extended the `/uploads/test` harness to verify public URLs after upload, logging access denials and preview failures while rendering the remote image inline for confirmation.
+
+## 2025-10-22 05:06 IST
+- Added a gated `/uploads/test` client harness that walks admins, creators, and teachers through requesting MinIO presigned URLs, uploading images, and reviewing the response payload.
+
 ## 2025-11-08 16:45 IST
 - Hardened the topic experience so non-manager roles are redirected when attempting to open unpublished drafts and receive clear guidance to browse published lessons instead.
 - Locked the topic library requests to published-only filters for learner roles and hid review collaboration controls when the viewer lacks comment permissions.
