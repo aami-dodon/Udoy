@@ -269,13 +269,46 @@ export default function TopicEditorPage() {
   }, []);
 
   const handleAssetRequest = useCallback(
-    async (files) => {
-      const uploads = await Promise.all(
-        files.map(async (file) => {
-          const upload = await uploadEditorAsset(file, { apiBaseUrl });
-          return buildAssetDescriptor(file, upload);
-        }),
-      );
+    async (files, _editor, options = {}) => {
+      const sourceFiles = Array.isArray(files) ? files : Array.from(files || []);
+      if (!sourceFiles.length) {
+        return [];
+      }
+
+      const total = sourceFiles.length;
+      let completed = 0;
+      const { onProgress } = options;
+
+      const notifyProgress = (update = {}) => {
+        if (typeof onProgress !== 'function') {
+          return;
+        }
+
+        const nextTotal = update.total ?? total;
+        const nextCompleted = update.completed ?? completed;
+        const percent = update.percent ?? (nextTotal > 0 ? Math.round((nextCompleted / nextTotal) * 100) : 0);
+
+        onProgress({
+          total: nextTotal,
+          completed: nextCompleted,
+          percent,
+          currentFileName: update.currentFileName,
+        });
+      };
+
+      notifyProgress({ total, completed, percent: total > 0 ? 0 : 100 });
+
+      const uploads = [];
+      for (const file of sourceFiles) {
+        notifyProgress({ total, completed, currentFileName: file?.name });
+        const upload = await uploadEditorAsset(file, { apiBaseUrl });
+        completed += 1;
+        notifyProgress({ total, completed, currentFileName: file?.name });
+        uploads.push(buildAssetDescriptor(file, upload));
+      }
+
+      notifyProgress({ total, completed, percent: 100, currentFileName: '' });
+
       return uploads;
     },
     [apiBaseUrl],
