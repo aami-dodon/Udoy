@@ -1,3 +1,7 @@
+## 2025-11-02 13:00 IST
+- Stopped password reset emails from dispatching to unverified accounts, logging the blocked request and guiding users to verify first.
+- Added server tests to cover verified versus unverified password reset flows and documented the alternate API response.
+
 ## 2025-10-21 05:18 IST
 - Aligned the admin user roster table container radius with the shared surface token so its corners match the rest of the UI.
 

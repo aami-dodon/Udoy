@@ -224,6 +224,10 @@ Response 200:
 ```json
 { "status": "success", "message": "If the account exists, password reset instructions will be sent." }
 ```
+Alternative Response 200 (unverified account):
+```json
+{ "status": "success", "message": "Please verify your email before requesting a password reset." }
+```
 Response 400: Missing or invalid email address payload.
 
 ### POST /api/auth/reset-password
