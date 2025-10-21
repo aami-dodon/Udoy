@@ -1,6 +1,8 @@
 ## 2025-10-21 05:56 IST
 - Revoked all active sessions when a user is deactivated and enforced session validity checks during authentication so inactive accounts lose API access immediately.
 - Added a Node test harness covering the deactivation flow to ensure authenticated calls fail after status changes.
+## 2025-11-03 09:10 IST
+- Reduced the password reset token lifetime to 15 minutes, updated environment configuration, and refreshed UI/email messaging to highlight the shorter expiry window.
 
 ## 2025-10-21 05:18 IST
 - Aligned the admin user roster table container radius with the shared surface token so its corners match the rest of the UI.
