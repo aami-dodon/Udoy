@@ -392,6 +392,19 @@ export async function updateUserStatus(userId, status, { actorId } = {}) {
     });
   }
 
+  const existing = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { status: true },
+  });
+
+  if (!existing) {
+    throw AppError.notFound('User not found', {
+      code: 'USER_NOT_FOUND',
+    });
+  }
+
+  const transitioningToInactive = existing.status !== UserStatus.INACTIVE && status === UserStatus.INACTIVE;
+
   const user = await prisma.user.update({
     where: { id: userId },
     data: {
@@ -399,6 +412,14 @@ export async function updateUserStatus(userId, status, { actorId } = {}) {
       deactivatedAt: status === UserStatus.ACTIVE ? null : new Date(),
     },
   });
+
+  if (transitioningToInactive) {
+    const { revokeAllSessionsForUser } = await import('./tokenService.js');
+    await revokeAllSessionsForUser(user.id, {
+      actorId,
+      reason: 'user_status_inactive',
+    });
+  }
 
   await logAuditEvent({
     actorId,

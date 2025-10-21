@@ -1,5 +1,5 @@
 import crypto from 'node:crypto';
-import { AuditEventType, VerificationTokenType } from '@prisma/client';
+import { AuditEventType, UserStatus, VerificationTokenType } from '@prisma/client';
 import env from '../config/env.js';
 import prisma from '../utils/prismaClient.js';
 import logger from '../utils/logger.js';
@@ -215,6 +215,107 @@ export async function revokeSession(sessionId, actorId, reason = 'user_logout') 
   }
 }
 
+export async function revokeAllSessionsForUser(userId, { actorId, reason = 'user_status_change' } = {}) {
+  if (!userId) {
+    return { count: 0, sessionIds: [] };
+  }
+
+  const activeSessions = await prisma.session.findMany({
+    where: { userId, revokedAt: null },
+    select: { id: true },
+  });
+
+  if (!activeSessions.length) {
+    return { count: 0, sessionIds: [] };
+  }
+
+  const sessionIds = activeSessions.map((session) => session.id);
+  const now = new Date();
+
+  await prisma.session.updateMany({
+    where: { id: { in: sessionIds } },
+    data: { revokedAt: now },
+  });
+
+  await Promise.all(
+    sessionIds.map((sessionId) =>
+      logAuditEvent({
+        actorId,
+        eventType: AuditEventType.SESSION_REVOKED,
+        resource: 'session',
+        resourceId: sessionId,
+        metadata: { reason },
+      })
+    )
+  );
+
+  return { count: sessionIds.length, sessionIds };
+}
+
+export async function ensureSessionActive(sessionId, { userId, requireActiveUser = true } = {}) {
+  if (!sessionId) {
+    if (!userId) {
+      throw AppError.unauthorized('Session identifier is required', {
+        code: 'SESSION_IDENTIFIER_REQUIRED',
+      });
+    }
+
+    if (!requireActiveUser) {
+      return null;
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { status: true },
+    });
+
+    if (!user || user.status !== UserStatus.ACTIVE) {
+      throw AppError.unauthorized('User account is inactive', {
+        code: 'USER_INACTIVE',
+      });
+    }
+
+    return null;
+  }
+
+  const session = await prisma.session.findUnique({
+    where: { id: sessionId },
+    include: { user: { select: { id: true, status: true } } },
+  });
+
+  if (!session) {
+    throw AppError.unauthorized('Session could not be found', {
+      code: 'SESSION_NOT_FOUND',
+    });
+  }
+
+  if (session.revokedAt) {
+    throw AppError.unauthorized('Session has been revoked', {
+      code: 'SESSION_REVOKED',
+    });
+  }
+
+  if (session.expiresAt <= new Date()) {
+    await revokeSession(session.id, session.userId, 'session_expired');
+    throw AppError.unauthorized('Session has expired', {
+      code: 'SESSION_EXPIRED',
+    });
+  }
+
+  if (requireActiveUser) {
+    const status = session.user?.status;
+
+    if (status !== UserStatus.ACTIVE) {
+      await revokeSession(session.id, session.userId, 'user_inactive');
+      throw AppError.unauthorized('User account is inactive', {
+        code: 'USER_INACTIVE',
+      });
+    }
+  }
+
+  return session;
+}
+
 export async function generateVerificationToken(userId, type, {
   expiresInSeconds = 60 * 60 * 24,
   actorId = null,
@@ -288,6 +389,8 @@ export default {
   issueSessionTokens,
   rotateSessionTokens,
   revokeSession,
+  revokeAllSessionsForUser,
+  ensureSessionActive,
   generateVerificationToken,
   consumeVerificationToken,
 };
