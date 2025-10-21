@@ -66,6 +66,12 @@ export const ROLE_DEFINITIONS = [
         action: 'read',
         description: 'Access administrative overview dashboards.',
       },
+      {
+        name: 'profile.manage',
+        resource: 'user-profile',
+        action: 'manage',
+        description: 'Moderate and edit user profile settings platform-wide.',
+      },
     ],
   },
   {
@@ -105,6 +111,12 @@ export const ROLE_DEFINITIONS = [
     description: 'Content creator responsible for drafting and publishing curriculum.',
     permissions: [
       {
+        name: 'profile.self',
+        resource: 'user-profile',
+        action: 'self-manage',
+        description: 'Manage personal profile and account preferences.',
+      },
+      {
         name: 'content.draft',
         resource: 'learning-content',
         action: 'draft',
@@ -129,6 +141,12 @@ export const ROLE_DEFINITIONS = [
     label: 'Teacher',
     description: 'Educator tasked with pedagogy, quality, and compliance checks prior to publication.',
     permissions: [
+      {
+        name: 'profile.self',
+        resource: 'user-profile',
+        action: 'self-manage',
+        description: 'Manage personal profile and account preferences.',
+      },
       {
         name: 'content.review',
         resource: 'learning-content',
@@ -155,6 +173,12 @@ export const ROLE_DEFINITIONS = [
     description: 'Coach supporting students with onboarding, accountability, and progress tracking.',
     permissions: [
       {
+        name: 'profile.self',
+        resource: 'user-profile',
+        action: 'self-manage',
+        description: 'Manage personal profile and account preferences.',
+      },
+      {
         name: 'student.onboard',
         resource: 'student',
         action: 'onboard',
@@ -179,6 +203,12 @@ export const ROLE_DEFINITIONS = [
     label: 'Sponsor',
     description: 'Sponsor who manages cohorts, analytics, and billing relationships.',
     permissions: [
+      {
+        name: 'profile.self',
+        resource: 'user-profile',
+        action: 'self-manage',
+        description: 'Manage personal profile and account preferences.',
+      },
       {
         name: 'cohort.manage',
         resource: 'cohort',

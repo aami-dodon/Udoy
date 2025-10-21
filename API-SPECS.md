@@ -30,6 +30,10 @@
 | PATCH  | /api/users/{id}                  | Updates profile fields or lifecycle status.                       | Yes  |
 | POST   | /api/users/{id}/roles            | Replaces the set of roles assigned to a user.                     | Yes  |
 | DELETE | /api/users/{id}/roles/{roleName} | Removes a single role from the user.                              | Yes  |
+| GET    | /api/profile/me                  | Returns the authenticated user's profile + preferences.           | Yes  |
+| PATCH  | /api/profile/me                  | Updates the authenticated user's profile + preferences.           | Yes  |
+| GET    | /api/profile/{userId}            | Admin-moderated access to a user's profile.                       | Yes  |
+| PATCH  | /api/profile/{userId}            | Admin updates to a user's profile.                                | Yes  |
 | GET    | /api/roles                       | Lists the role catalogue with bundled capabilities.               | Yes  |
 | GET    | /api/admin/overview              | RBAC-gated dashboard overview payload.                            | Yes  |
 | POST   | /api/email/test                  | Sends a verification or password-reset test email.                | Yes  |
@@ -358,6 +362,123 @@ Response 200:
 { "status": "success", "user": { /* AuthUserProfile */ } }
 ```
 Response 400: Missing user ID or role name.
+Response 404: User not found.
+
+### GET /api/profile/me
+Returns the authenticated user's profile, preferences, notification settings, and accessibility controls.
+
+Auth: Yes – requires the `user-profile:self-manage` capability.
+Params: None.
+Query: None.
+Body: None.
+Response 200:
+```json
+{
+  "status": "success",
+  "data": {
+    "user": { /* AuthUserProfile */ },
+    "profile": {
+      "avatarUrl": "https://cdn.udoy.dev/u/avatar.png",
+      "bio": "Learning to build robotics for the annual maker fair.",
+      "location": "Bengaluru, IN",
+      "timezone": "Asia/Kolkata",
+      "className": "Grade 8 - Robotics",
+      "learningPreferences": {
+        "languages": ["English", "Hindi"],
+        "topics": ["Robotics", "STEM"],
+        "pace": "guided"
+      },
+      "linkedCoachId": "user_coach_123",
+      "subjectExpertise": [],
+      "teacherSpecialties": [],
+      "coachingSchedule": "Weekdays 16:00-18:00 IST",
+      "coachingStrengths": ["confidence building"],
+      "organizationName": "",
+      "pledgedCredits": null,
+      "notificationSettings": {
+        "email": true,
+        "sms": false,
+        "push": true,
+        "digest": "daily"
+      },
+      "accessibilitySettings": {
+        "highContrast": false,
+        "textScale": "normal",
+        "captions": true,
+        "screenReaderHints": false
+      },
+      "createdAt": "2025-11-04T07:00:00.000Z",
+      "updatedAt": "2025-11-04T08:12:34.000Z"
+    }
+  }
+}
+```
+Response 401: Missing or invalid authentication context.
+
+### PATCH /api/profile/me
+Updates the authenticated user's profile, enforcing validation on timezone, numeric fields, and allowed role-specific sections.
+
+Auth: Yes – requires the `user-profile:self-manage` capability.
+Params: None.
+Query: None.
+Body:
+```json
+{
+  "bio": "Championing inclusive robotics clubs across my district.",
+  "timezone": "Asia/Kolkata",
+  "learningPreferences": {
+    "topics": ["Robotics", "STEM", "Public speaking"],
+    "languages": ["English"],
+    "pace": "self-paced"
+  },
+  "notificationSettings": {
+    "email": true,
+    "sms": false,
+    "push": true,
+    "digest": "weekly"
+  },
+  "accessibilitySettings": {
+    "highContrast": true,
+    "textScale": "large",
+    "captions": true,
+    "screenReaderHints": true
+  }
+}
+```
+Response 200:
+```json
+{
+  "status": "success",
+  "data": {
+    "user": { /* AuthUserProfile */ },
+    "profile": { /* Updated ProfileResource */ }
+  }
+}
+```
+Response 400: Validation failure (e.g., invalid timezone, negative pledged credits).
+Response 401: Missing authentication.
+
+### GET /api/profile/{userId}
+Fetches profile data for the specified user so administrators can review or moderate personalisation settings.
+
+Auth: Yes – requires the `user-profile:manage` capability.
+Params: `userId` (string, required).
+Query: None.
+Body: None.
+Response 200: Same envelope as `GET /api/profile/me`.
+Response 401/403: Missing authentication or lacking permission.
+Response 404: User not found.
+
+### PATCH /api/profile/{userId}
+Applies moderated updates to the specified user's profile.
+
+Auth: Yes – requires the `user-profile:manage` capability.
+Params: `userId` (string, required).
+Query: None.
+Body: Any subset of `ProfileResource` fields, following the same validation rules as the self-service endpoint.
+Response 200: Same envelope as `PATCH /api/profile/me`.
+Response 400: Validation failure.
+Response 401/403: Missing authentication or lacking permission.
 Response 404: User not found.
 
 ### GET /api/roles

@@ -16,6 +16,7 @@
 | `/verify-token` | Auth | Public | Handles verification and coach approval tokens with contextual messaging based on API responses. |
 | `/verify-email` | Auth | Public | Alias of `/verify-token` so emailed verification links resolve without 404s. |
 | `/dashboard` | Dashboard | Authenticated | Protected account hub (via `RequireAuth`) showing RBAC roles, permissions, and session controls. |
+| `/profile` | Profile | Authenticated | Profile management hub enabling users to update avatars, preferences, notifications, and accessibility settings. |
 | `/admin/users` | Admin | Admin role | Guarded by `RequireRole('admin')`; lists users, updates statuses, and manages role bindings. |
 | `/403` | Error Pages | Public | Forbidden access screen that guides users back to the home experience. |
 | `/500` | Error Pages | Public | Server error page surfaced when upstream systems fail unexpectedly. |

@@ -1,3 +1,8 @@
+## 2025-11-04 12:30 IST
+- Introduced the Profile Management System with a dedicated Prisma `UserProfile` model covering role-specific attributes, notification preferences, and accessibility settings.
+- Added authenticated `/api/profile` endpoints with Swagger documentation, RBAC enforcement, and audit logging to let users self-manage profiles while enabling admin moderation.
+- Delivered a shadcn-powered profile settings experience in the client with timezone validation, preference editing, and contextual success feedback wired to the new API.
+
 ## 2025-11-02 13:00 IST
 - Stopped password reset emails from dispatching to unverified accounts, logging the blocked request and guiding users to verify first.
 - Added server tests to cover verified versus unverified password reset flows and documented the alternate API response.

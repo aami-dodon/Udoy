@@ -12,12 +12,12 @@ This document captures Udoy's RBAC model, which is enforced through the Casbin p
 
 | Role | Description | Core Permissions |
 | --- | --- | --- |
-| **Admin** | Platform administrator with full control over tenant operations, security, and RBAC management. | `tenant.provision`, `user.manage`, `role.manage`, `permission.manage`, `audit-log.view`, `security.escalate`, `session.invalidate`, `admin.dashboard`. |
+| **Admin** | Platform administrator with full control over tenant operations, security, and RBAC management. | `tenant.provision`, `user.manage`, `role.manage`, `permission.manage`, `audit-log.view`, `security.escalate`, `session.invalidate`, `admin.dashboard`, `profile.manage`. |
 | **Student** | Learner focused on coursework consumption and submissions. | `profile.self`, `content.consume`, `assignment.submit`, `progress.view`. |
-| **Creator** | Author responsible for drafting and publishing curriculum content. | `content.draft`, `content.publish`, `teacher.collaborate`. |
-| **Teacher** | Educator reviewing and aligning content with standards. | `content.review`, `curriculum.align`, `quality.assure`. |
-| **Coach** | Mentor guiding learners through onboarding and progress tracking. | `student.onboard`, `student.monitor`, `credential.support`. |
-| **Sponsor** | Sponsor partner managing cohorts, analytics, and billing relationships. | `cohort.manage`, `analytics.view`, `billing.manage`. |
+| **Creator** | Author responsible for drafting and publishing curriculum content. | `profile.self`, `content.draft`, `content.publish`, `teacher.collaborate`. |
+| **Teacher** | Educator reviewing and aligning content with standards. | `profile.self`, `content.review`, `curriculum.align`, `quality.assure`. |
+| **Coach** | Mentor guiding learners through onboarding and progress tracking. | `profile.self`, `student.onboard`, `student.monitor`, `credential.support`. |
+| **Sponsor** | Sponsor partner managing cohorts, analytics, and billing relationships. | `profile.self`, `cohort.manage`, `analytics.view`, `billing.manage`. |
 
 Each permission maps to a Casbin policy rule using the `resource` and `action` properties maintained in the service layer, ensuring that role changes propagate consistently across Prisma, HTTP middleware, and authorization checks.
 
