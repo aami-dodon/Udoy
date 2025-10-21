@@ -34,8 +34,4 @@ GenericErrorPage.propTypes = {
   onRetry: PropTypes.func,
 };
 
-GenericErrorPage.defaultProps = {
-  onRetry: undefined,
-};
-
 export default GenericErrorPage;

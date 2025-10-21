@@ -20,7 +20,7 @@ const buttonClassName = (isActive) => {
   return base;
 };
 
-const ToolbarButton = ({ editor, action, isActive, children, ariaLabel, disabled }) => (
+const ToolbarButton = ({ editor, action, isActive = false, children, ariaLabel, disabled = false }) => (
   <button
     type="button"
     onClick={() => action(editor)}
@@ -41,12 +41,7 @@ ToolbarButton.propTypes = {
   disabled: PropTypes.bool,
 };
 
-ToolbarButton.defaultProps = {
-  isActive: false,
-  disabled: false,
-};
-
-const DefaultToolbar = ({ editor }) => {
+const DefaultToolbar = ({ editor = null }) => {
   if (!editor) {
     return null;
   }
@@ -132,10 +127,6 @@ DefaultToolbar.propTypes = {
   editor: PropTypes.object,
 };
 
-DefaultToolbar.defaultProps = {
-  editor: null,
-};
-
 const ensureContentShape = (value, format) => {
   if (value == null) {
     return format === 'json' ? DEFAULT_EDITOR_CONTENT : DEFAULT_EDITOR_HTML;
@@ -165,15 +156,15 @@ const RichTextEditor = ({
   value,
   onChange,
   onReady,
-  valueFormat,
-  placeholder,
-  readOnly,
-  className,
-  editorClassName,
-  toolbarClassName,
+  valueFormat = 'html',
+  placeholder = DEFAULT_PLACEHOLDER,
+  readOnly = false,
+  className = '',
+  editorClassName = '',
+  toolbarClassName = '',
   onAssetsRequest,
   onAssetsError,
-  allowedMimeTypes,
+  allowedMimeTypes = DEFAULT_ALLOWED_MIME_TYPES,
   additionalExtensions,
   renderToolbar,
   editorProps,
@@ -283,24 +274,6 @@ RichTextEditor.propTypes = {
   additionalExtensions: PropTypes.array,
   renderToolbar: PropTypes.func,
   editorProps: PropTypes.object,
-};
-
-RichTextEditor.defaultProps = {
-  value: undefined,
-  onChange: undefined,
-  onReady: undefined,
-  valueFormat: 'html',
-  placeholder: DEFAULT_PLACEHOLDER,
-  readOnly: false,
-  className: '',
-  editorClassName: '',
-  toolbarClassName: '',
-  onAssetsRequest: undefined,
-  onAssetsError: undefined,
-  allowedMimeTypes: DEFAULT_ALLOWED_MIME_TYPES,
-  additionalExtensions: undefined,
-  renderToolbar: undefined,
-  editorProps: undefined,
 };
 
 export default RichTextEditor;

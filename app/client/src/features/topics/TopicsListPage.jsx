@@ -24,8 +24,10 @@ import {
 import { LucideIcon } from '@icons';
 import topicsApi from './api.js';
 
+const STATUS_ALL_VALUE = 'ALL';
+
 const STATUS_OPTIONS = [
-  { value: '', label: 'All statuses' },
+  { value: STATUS_ALL_VALUE, label: 'All statuses' },
   { value: 'DRAFT', label: 'Draft' },
   { value: 'IN_REVIEW', label: 'In review' },
   { value: 'CHANGES_REQUESTED', label: 'Changes requested' },
@@ -121,7 +123,7 @@ function TopicTable({ items, isLoading }) {
 }
 
 export default function TopicsListPage() {
-  const [filters, setFilters] = useState({ status: '', search: '' });
+  const [filters, setFilters] = useState({ status: STATUS_ALL_VALUE, search: '' });
   const [pagination, setPagination] = useState({ page: 1, pageSize: 20 });
   const [state, setState] = useState({ loading: true, items: [], total: 0 });
 
@@ -130,7 +132,7 @@ export default function TopicsListPage() {
       setState((current) => ({ ...current, loading: true }));
       try {
         const result = await topicsApi.listTopics({
-          status: nextFilters.status || undefined,
+          status: !nextFilters.status || nextFilters.status === STATUS_ALL_VALUE ? undefined : nextFilters.status,
           search: nextFilters.search || undefined,
           page: nextPagination.page,
           pageSize: nextPagination.pageSize,
@@ -220,7 +222,7 @@ export default function TopicsListPage() {
                 </SelectTrigger>
                 <SelectContent>
                   {STATUS_OPTIONS.map((option) => (
-                    <SelectItem key={option.value || 'all'} value={option.value}>
+                    <SelectItem key={option.value} value={option.value}>
                       {option.label}
                     </SelectItem>
                   ))}
