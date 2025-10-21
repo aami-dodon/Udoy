@@ -72,6 +72,18 @@ export const ROLE_DEFINITIONS = [
         action: 'manage',
         description: 'Moderate and edit user profile settings platform-wide.',
       },
+      {
+        name: 'notification.manage',
+        resource: 'notification',
+        action: 'manage',
+        description: 'Administer notification templates and audit delivery logs.',
+      },
+      {
+        name: 'notification.dispatch',
+        resource: 'notification',
+        action: 'dispatch',
+        description: 'Dispatch platform notifications across supported channels.',
+      },
     ],
   },
   {
