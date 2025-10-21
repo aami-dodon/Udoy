@@ -1,6 +1,18 @@
 ## 2025-10-22 05:06 IST
 - Added a gated `/uploads/test` client harness that walks admins, creators, and teachers through requesting MinIO presigned URLs, uploading images, and reviewing the response payload.
 
+## 2025-11-08 18:30 IST
+- Hid the topic editor guidance header for read-only viewers so students only see the published lesson content.
+
+## 2025-11-08 16:20 IST
+- Added `MINIO_FORCE_SIGNED_DOWNLOADS` support on the server/client configuration layers so private buckets can force download presigned URLs.
+- Updated the shared editor upload helper to honour the new flag, request GET presigned URLs when required, and expose both signed and direct asset references for downstream consumers.
+- Documented the configuration toggle in `.env.example` and the config README to guide deployments that rely on restricted MinIO buckets.
+
+## 2025-10-22 04:13 IST
+- Enabled resizable TipTap image and video nodes with in-editor controls so topic authors can reposition uploads with industry-standard handles.
+- Normalized MinIO asset URLs in the shared upload helper to always use the configured public base domain.
+- Surfaced `VITE_MINIO_PUBLIC_BASE_URL` in environment templates to keep client and server media links aligned.
 ## 2025-11-08 16:45 IST
 - Hardened the topic experience so non-manager roles are redirected when attempting to open unpublished drafts and receive clear guidance to browse published lessons instead.
 - Locked the topic library requests to published-only filters for learner roles and hid review collaboration controls when the viewer lacks comment permissions.
@@ -304,4 +316,3 @@
 ## 2025-10-22 11:45 IST
 - Ensured editor uploads fetch a presigned GET URL when MinIO public hosting is unavailable so newly inserted media render immediately.
 - Hardened the shared TipTap inserters to accept either `src` or `url` descriptors for images, videos, and audio embeds.
-

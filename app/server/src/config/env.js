@@ -27,6 +27,7 @@ const {
   MINIO_REGION,
   MINIO_BUCKET,
   MINIO_PUBLIC_BASE_URL,
+  MINIO_FORCE_SIGNED_DOWNLOADS = 'false',
   EMAIL_FROM,
   EMAIL_VERIFICATION_URL,
   PASSWORD_RESET_URL,
@@ -62,6 +63,7 @@ const minioConfig = hasMinioConfig
       region: MINIO_REGION || undefined,
       bucket: MINIO_BUCKET || undefined,
       publicBaseUrl: MINIO_PUBLIC_BASE_URL || undefined,
+      forceSignedDownloads: String(MINIO_FORCE_SIGNED_DOWNLOADS).toLowerCase() === 'true',
     }
   : null;
 

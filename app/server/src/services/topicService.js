@@ -860,6 +860,7 @@ export async function submitTopicForReview(topicId, payload = {}, { actorId } = 
   }
 
   const note = sanitizeString(payload.note, { field: 'Submission note', maxLength: 500 });
+  const nextVersion = existing.version + 1;
 
   const topic = await prisma.$transaction(async (tx) => {
     const updated = await tx.topic.update({
@@ -867,6 +868,7 @@ export async function submitTopicForReview(topicId, payload = {}, { actorId } = 
       data: {
         status: TopicStatus.IN_REVIEW,
         submittedAt: new Date(),
+        version: nextVersion,
       },
     });
 
@@ -903,6 +905,7 @@ export async function reviewTopic(topicId, payload = {}, { actorId } = {}) {
   const notes = sanitizeString(payload.notes, { field: 'Review notes', maxLength: 800 });
   const tags = Object.prototype.hasOwnProperty.call(payload, 'tags') ? payload.tags : undefined;
   const updates = Object.prototype.hasOwnProperty.call(payload, 'updates') ? payload.updates : {};
+  const nextVersion = existing.version + 1;
 
   let nextStatus = TopicStatus.IN_REVIEW;
   if (normalizedDecision === 'approve' || normalizedDecision === 'approved') {
@@ -928,6 +931,7 @@ export async function reviewTopic(topicId, payload = {}, { actorId } = {}) {
         status: nextStatus,
         validatorId: actorId,
         approvedAt: nextStatus === TopicStatus.APPROVED ? new Date() : null,
+        version: nextVersion,
       },
     });
 
@@ -973,6 +977,7 @@ export async function publishTopic(topicId, payload = {}, { actorId } = {}) {
 
   const metadata = Object.prototype.hasOwnProperty.call(payload, 'metadata') ? sanitizeJsonObject(payload.metadata) : undefined;
   const note = sanitizeString(payload.note, { field: 'Publish note', maxLength: 500 });
+  const nextVersion = existing.version + 1;
 
   const topic = await prisma.$transaction(async (tx) => {
     const updated = await tx.topic.update({
@@ -981,6 +986,7 @@ export async function publishTopic(topicId, payload = {}, { actorId } = {}) {
         status: TopicStatus.PUBLISHED,
         publishedAt: new Date(),
         metadata: metadata === undefined ? existing.metadata : metadata,
+        version: nextVersion,
       },
     });
 

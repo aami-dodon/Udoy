@@ -70,6 +70,24 @@ function getRuntimeEnvValue(key) {
   return undefined;
 }
 
+function getBooleanRuntimeEnvValue(key) {
+  const value = getRuntimeEnvValue(key);
+
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase();
+    if (!normalized) {
+      return false;
+    }
+    return ['1', 'true', 'yes', 'on'].includes(normalized);
+  }
+
+  if (typeof value === 'boolean') {
+    return value;
+  }
+
+  return false;
+}
+
 function getMinioPublicBaseUrl() {
   const rawValue =
     getRuntimeEnvValue('VITE_MINIO_PUBLIC_BASE_URL') || getRuntimeEnvValue('MINIO_PUBLIC_BASE_URL');
@@ -218,30 +236,47 @@ export async function uploadEditorAsset(file, {
 
   let getPresignUrl = null;
 
-  if (!envPublicUrl && !presignPublicUrl) {
-    const getPresign = await requestEditorPresignedUrl({
-      objectKey,
-      apiBaseUrl,
-      operation: 'get',
-      fetchImpl,
-      token,
-      headers: requestHeaders,
-      additionalPayload,
-    });
+  const forceSignedDownloads =
+    getBooleanRuntimeEnvValue('VITE_MINIO_FORCE_SIGNED_DOWNLOADS') ||
+    getBooleanRuntimeEnvValue('MINIO_FORCE_SIGNED_DOWNLOADS');
 
-    if (getPresign?.url) {
-      getPresignUrl = getPresign.url;
+  const shouldRequestGetPresign =
+    forceSignedDownloads || (!envPublicUrl && !presignPublicUrl);
+
+  if (shouldRequestGetPresign && (presign.method || 'PUT').toUpperCase() === 'PUT') {
+    try {
+      const getPresign = await requestEditorPresignedUrl({
+        objectKey,
+        apiBaseUrl,
+        operation: 'get',
+        fetchImpl,
+        token,
+        headers: requestHeaders,
+        additionalPayload,
+      });
+
+      if (getPresign?.url) {
+        getPresignUrl = getPresign.url;
+      }
+    } catch (error) {
+      console.warn('Failed to request MinIO download presigned URL, falling back to direct URL.', {
+        objectKey,
+        error,
+      });
     }
   }
 
-  const publicUrl =
-    getPresignUrl || envPublicUrl || presignPublicUrl || presign.url?.split('?')[0] || null;
+  const directUrl = presignPublicUrl || envPublicUrl || presign.url?.split('?')[0] || null;
+
+  const publicUrl = shouldRequestGetPresign && getPresignUrl ? getPresignUrl : directUrl;
 
   return {
     objectKey,
     bucket: presign.bucket,
     url: publicUrl,
     uploadUrl: presign.url,
+    signedUrl: getPresignUrl,
+    directUrl,
     expiresAt: presign.expiresAt,
     method: presign.method || 'PUT',
   };
