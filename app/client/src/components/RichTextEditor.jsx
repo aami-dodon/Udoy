@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { EditorContent, useEditor } from '@tiptap/react';
 import { LucideIcon } from '@icons';
+import { Card, CardContent } from '@components/ui';
 
 import {
   createEditorExtensions,
@@ -113,7 +114,7 @@ ToolbarUploadButton.propTypes = {
   disabled: PropTypes.bool,
 };
 
-const DefaultToolbar = ({ editor = null, onRequestAssets, allowedMimeTypes = [] }) => {
+const DefaultToolbar = ({ editor = null, onRequestAssets, allowedMimeTypes = [], isUploading = false }) => {
   if (!editor) {
     return null;
   }
@@ -414,7 +415,7 @@ const DefaultToolbar = ({ editor = null, onRequestAssets, allowedMimeTypes = [] 
               ariaLabel={item.aria}
               accept={item.accept}
               onSelectFiles={onRequestAssets}
-              disabled={!editor.isEditable}
+              disabled={!editor.isEditable || isUploading}
             />
           );
         }
@@ -440,6 +441,7 @@ DefaultToolbar.propTypes = {
   editor: PropTypes.object,
   onRequestAssets: PropTypes.func,
   allowedMimeTypes: PropTypes.arrayOf(PropTypes.string),
+  isUploading: PropTypes.bool,
 };
 
 const ensureContentShape = (value, format) => {
@@ -484,6 +486,8 @@ const RichTextEditor = ({
   renderToolbar,
   editorProps,
 }) => {
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(null);
   const extensionPreset = useMemo(
     () =>
       createEditorExtensions({
@@ -574,17 +578,58 @@ const RichTextEditor = ({
         return;
       }
 
+      const totalFiles = filteredFiles.length;
+
+      const buildProgressState = (update = {}) => {
+        const total = update.total ?? totalFiles;
+        const completed = update.completed ?? 0;
+        const percent = update.percent ?? (total > 0 ? Math.round((completed / total) * 100) : 0);
+        const currentFileName = update.currentFileName ?? '';
+
+        return {
+          total,
+          completed,
+          percent,
+          currentFileName,
+        };
+      };
+
       try {
-        const uploads = await onAssetsRequest(filteredFiles, editor);
+        setIsUploading(true);
+        setUploadProgress(buildProgressState({ total: totalFiles, completed: 0, percent: 0 }));
+
+        const handleProgress = (update = {}) => {
+          setUploadProgress((previous) => {
+            const baseline = previous || buildProgressState();
+            const total = update.total ?? baseline.total ?? totalFiles;
+            const completed = update.completed ?? baseline.completed ?? 0;
+            const percent = update.percent ?? (total > 0 ? Math.round((completed / total) * 100) : 0);
+            const currentFileName =
+              update.currentFileName !== undefined ? update.currentFileName : baseline.currentFileName;
+
+            return {
+              total,
+              completed,
+              percent: Math.max(0, Math.min(100, percent)),
+              currentFileName,
+            };
+          });
+        };
+
+        const uploads = await onAssetsRequest(filteredFiles, editor, { onProgress: handleProgress });
         if (Array.isArray(uploads) && uploads.length > 0) {
           insertAssetsIntoEditor(editor, uploads);
         }
+        setUploadProgress(buildProgressState({ total: totalFiles, completed: totalFiles, percent: 100, currentFileName: '' }));
       } catch (error) {
         if (typeof onAssetsError === 'function') {
           onAssetsError(error, filteredFiles, editor);
         } else if (typeof console !== 'undefined') {
           console.error('RichTextEditor asset upload failed', error);
         }
+      } finally {
+        setIsUploading(false);
+        setUploadProgress(null);
       }
     },
     [editor, onAssetsRequest, allowedMimeTypes, onAssetsError],
@@ -613,16 +658,22 @@ const RichTextEditor = ({
     editor.setEditable(!readOnly);
   }, [editor, readOnly]);
 
-  const wrapperClasses = `${RICH_TEXT_EDITOR_TOKENS.wrapper}${className ? ` ${className}` : ''}`;
+  const wrapperClasses = `${RICH_TEXT_EDITOR_TOKENS.wrapper} relative${className ? ` ${className}` : ''}`;
   const toolbarClasses = `${toolbarClassName || ''}`.trim();
   const toolbar =
     typeof renderToolbar === 'function'
-      ? renderToolbar(editor, { onAssetsRequest: handleToolbarAssetUpload, allowedMimeTypes })
+      ? renderToolbar(editor, {
+          onAssetsRequest: handleToolbarAssetUpload,
+          allowedMimeTypes,
+          isUploading,
+          uploadProgress,
+        })
       : (
           <DefaultToolbar
             editor={editor}
             onRequestAssets={handleToolbarAssetUpload}
             allowedMimeTypes={allowedMimeTypes}
+            isUploading={isUploading}
           />
         );
 
@@ -632,6 +683,23 @@ const RichTextEditor = ({
         <div className={toolbarClasses}>{toolbar}</div>
       )}
       <EditorContent editor={editor} />
+      {!readOnly && isUploading && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-white/80 backdrop-blur-sm">
+          <Card className="w-64 shadow-lg">
+            <CardContent className="flex flex-col items-center gap-2 p-4 text-center">
+              <LucideIcon name="Loader2" className="h-5 w-5 animate-spin text-slate-600" aria-hidden="true" />
+              <p className="text-sm font-medium text-slate-700">Uploading media…</p>
+              {uploadProgress && uploadProgress.total ? (
+                <p className="text-xs text-slate-500">
+                  {uploadProgress.completed}/{uploadProgress.total} uploaded
+                  {uploadProgress.percent != null ? ` • ${uploadProgress.percent}%` : ''}
+                  {uploadProgress.currentFileName ? ` • ${uploadProgress.currentFileName}` : ''}
+                </p>
+              ) : null}
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };
