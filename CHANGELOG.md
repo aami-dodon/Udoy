@@ -186,6 +186,11 @@
 ## 2025-10-22 10:20 IST
 - Added class name annotations to the `/theme` showcase so developers can copy the exact utility tokens for colors, typography, buttons, and badges.
 
+## 2025-10-22 03:53 IST
+- Granted admin, creator, and teacher roles `storage:uploads` read/write permissions in the RBAC service so editor uploads can request MinIO presigned URLs.
+- Synced the Casbin seed policy with the new storage permissions to avoid 403 errors on presign requests.
+- Documented the additional storage capabilities in `RBAC.md` for future RBAC updates.
+
 ## 2025-10-20 01:59 IST
 - Introduced a `/theme` client route that renders the centralized token and component catalog, replacing the standalone HTML preview.
 - Documented the new showcase path in the theme README and updated the route registry for developer discovery.

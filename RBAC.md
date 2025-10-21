@@ -12,10 +12,10 @@ This document captures Udoy's RBAC model, which is enforced through the Casbin p
 
 | Role | Description | Core Permissions |
 | --- | --- | --- |
-| **Admin** | Platform administrator with full control over tenant operations, security, and RBAC management. | `tenant.provision`, `user.manage`, `role.manage`, `permission.manage`, `audit-log.view`, `security.escalate`, `session.invalidate`, `admin.dashboard`, `profile.manage`, `notification.manage`, `notification.dispatch`, `topic.view`, `topic.create`, `topic.edit`, `topic.submit`, `topic.review`, `topic.publish`, `topic.comment`. |
+| **Admin** | Platform administrator with full control over tenant operations, security, and RBAC management. | `tenant.provision`, `user.manage`, `role.manage`, `permission.manage`, `audit-log.view`, `security.escalate`, `session.invalidate`, `admin.dashboard`, `profile.manage`, `notification.manage`, `notification.dispatch`, `topic.view`, `topic.create`, `topic.edit`, `topic.submit`, `topic.review`, `topic.publish`, `topic.comment`, `storage.uploads.read`, `storage.uploads.write`. |
 | **Student** | Learner focused on coursework consumption and submissions. | `profile.self`, `content.consume`, `assignment.submit`, `progress.view`. |
-| **Creator** | Author responsible for drafting and publishing curriculum content. | `profile.self`, `content.draft`, `content.publish`, `teacher.collaborate`, `topic.view`, `topic.create`, `topic.edit`, `topic.submit`, `topic.comment`. |
-| **Teacher** | Educator reviewing and aligning content with standards. | `profile.self`, `content.review`, `curriculum.align`, `quality.assure`, `topic.view`, `topic.edit`, `topic.review`, `topic.comment`. |
+| **Creator** | Author responsible for drafting and publishing curriculum content. | `profile.self`, `content.draft`, `content.publish`, `teacher.collaborate`, `topic.view`, `topic.create`, `topic.edit`, `topic.submit`, `topic.comment`, `storage.uploads.read`, `storage.uploads.write`. |
+| **Teacher** | Educator reviewing and aligning content with standards. | `profile.self`, `content.review`, `curriculum.align`, `quality.assure`, `topic.view`, `topic.edit`, `topic.review`, `topic.comment`, `storage.uploads.read`, `storage.uploads.write`. |
 | **Coach** | Mentor guiding learners through onboarding and progress tracking. | `profile.self`, `student.onboard`, `student.monitor`, `credential.support`. |
 | **Sponsor** | Sponsor partner managing cohorts, analytics, and billing relationships. | `profile.self`, `cohort.manage`, `analytics.view`, `billing.manage`. |
 
