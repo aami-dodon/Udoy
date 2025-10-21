@@ -114,6 +114,128 @@ export const schemas = {
       },
     ],
   },
+  NotificationTemplate: {
+    type: 'object',
+    properties: {
+      id: { type: 'string' },
+      name: { type: 'string' },
+      eventKey: { type: 'string' },
+      channel: {
+        type: 'string',
+        enum: ['IN_APP', 'EMAIL', 'SMS'],
+      },
+      locale: { type: 'string', example: 'en-US' },
+      subject: { type: 'string', nullable: true },
+      body: { type: 'string' },
+      previewText: { type: 'string', nullable: true },
+      audienceRoles: {
+        type: 'array',
+        items: { type: 'string' },
+      },
+      active: { type: 'boolean' },
+      createdAt: { type: 'string', format: 'date-time' },
+      updatedAt: { type: 'string', format: 'date-time' },
+    },
+  },
+  NotificationDispatchRecipient: {
+    type: 'object',
+    properties: {
+      userId: { type: 'string', nullable: true, description: 'Recipient user identifier. Optional when `recipient` is provided.' },
+      recipient: { type: 'string', format: 'email', nullable: true },
+      channels: {
+        type: 'array',
+        items: { type: 'string', enum: ['IN_APP', 'EMAIL', 'SMS'] },
+        description: 'Overrides the default channel list when provided.',
+      },
+      locale: { type: 'string', nullable: true },
+      data: { type: 'object', nullable: true, additionalProperties: true },
+      metadata: { type: 'object', nullable: true, additionalProperties: true },
+      idempotencyKey: { type: 'string', nullable: true },
+    },
+  },
+  NotificationDispatchRequest: {
+    type: 'object',
+    required: ['eventKey', 'recipients'],
+    properties: {
+      eventKey: { type: 'string' },
+      priority: {
+        type: 'string',
+        enum: ['LOW', 'NORMAL', 'HIGH', 'CRITICAL'],
+        default: 'NORMAL',
+      },
+      forceDelivery: { type: 'boolean', default: false },
+      scheduleAt: { type: 'string', format: 'date-time', nullable: true },
+      metadata: { type: 'object', nullable: true, additionalProperties: true },
+      recipients: {
+        type: 'array',
+        minItems: 1,
+        items: { $ref: '#/components/schemas/NotificationDispatchRecipient' },
+      },
+    },
+  },
+  NotificationLogEntry: {
+    type: 'object',
+    properties: {
+      id: { type: 'string' },
+      status: {
+        type: 'string',
+        enum: ['PENDING', 'SCHEDULED', 'SENT', 'DELIVERED', 'FAILED', 'CANCELLED'],
+      },
+      attempt: { type: 'integer', format: 'int32' },
+      metadata: { type: 'object', nullable: true, additionalProperties: true },
+      errorMessage: { type: 'string', nullable: true },
+      createdAt: { type: 'string', format: 'date-time' },
+    },
+  },
+  NotificationResource: {
+    type: 'object',
+    properties: {
+      id: { type: 'string' },
+      userId: { type: 'string', nullable: true },
+      recipient: { type: 'string', nullable: true },
+      channel: { type: 'string', enum: ['IN_APP', 'EMAIL', 'SMS'] },
+      status: {
+        type: 'string',
+        enum: ['PENDING', 'SCHEDULED', 'SENT', 'DELIVERED', 'FAILED', 'CANCELLED'],
+      },
+      priority: {
+        type: 'string',
+        enum: ['LOW', 'NORMAL', 'HIGH', 'CRITICAL'],
+      },
+      eventKey: { type: 'string' },
+      locale: { type: 'string' },
+      subject: { type: 'string', nullable: true },
+      data: { type: 'object', nullable: true, additionalProperties: true },
+      metadata: { type: 'object', nullable: true, additionalProperties: true },
+      errorMessage: { type: 'string', nullable: true },
+      createdAt: { type: 'string', format: 'date-time' },
+      updatedAt: { type: 'string', format: 'date-time' },
+      logs: {
+        type: 'array',
+        items: { $ref: '#/components/schemas/NotificationLogEntry' },
+      },
+    },
+  },
+  NotificationDispatchResult: {
+    type: 'object',
+    properties: {
+      status: {
+        type: 'string',
+        enum: ['fulfilled', 'rejected'],
+      },
+      notification: {
+        $ref: '#/components/schemas/NotificationResource',
+      },
+      error: {
+        type: 'object',
+        nullable: true,
+        properties: {
+          message: { type: 'string' },
+          code: { type: 'string' },
+        },
+      },
+    },
+  },
   UploadPresignRequest: {
     type: 'object',
     required: ['objectKey'],

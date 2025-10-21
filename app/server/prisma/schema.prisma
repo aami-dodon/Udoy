@@ -58,6 +58,28 @@ enum VerificationTokenType {
   GUARDIAN_APPROVAL
 }
 
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+  SMS
+}
+
+enum NotificationStatus {
+  PENDING
+  SCHEDULED
+  SENT
+  DELIVERED
+  FAILED
+  CANCELLED
+}
+
+enum NotificationPriority {
+  LOW
+  NORMAL
+  HIGH
+  CRITICAL
+}
+
 model User {
   id               String              @id @default(cuid())
   email            String              @unique
@@ -197,6 +219,79 @@ model AuditLog {
   createdAt  DateTime       @default(now())
 
   actor      User?          @relation("UserAuditLogs", fields: [actorId], references: [id])
+}
+
+model NotificationTemplate {
+  id             String               @id @default(cuid())
+  name           String
+  eventKey       String
+  channel        NotificationChannel
+  locale         String               @default("en")
+  subject        String?
+  body           String
+  previewText    String?
+  dataSchema     Json?
+  defaultData    Json?
+  audienceRoles  String[]             @default([])
+  active         Boolean              @default(true)
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  createdById    String?
+  updatedById    String?
+
+  createdBy      User?                @relation("NotificationTemplatesCreated", fields: [createdById], references: [id])
+  updatedBy      User?                @relation("NotificationTemplatesUpdated", fields: [updatedById], references: [id])
+  notifications  Notification[]
+
+  @@index([eventKey, channel])
+  @@unique([eventKey, channel, locale])
+}
+
+model Notification {
+  id              String               @id @default(cuid())
+  userId          String?
+  recipient       String?
+  channel         NotificationChannel
+  status          NotificationStatus   @default(PENDING)
+  priority        NotificationPriority @default(NORMAL)
+  eventKey        String
+  templateId      String?
+  locale          String               @default("en")
+  subject         String?
+  body            String?
+  data            Json?
+  metadata        Json?
+  errorMessage    String?
+  idempotencyKey  String?              @unique
+  attemptCount    Int                  @default(0)
+  scheduledAt     DateTime?
+  sentAt          DateTime?
+  deliveredAt     DateTime?
+  cancelledAt     DateTime?
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  template        NotificationTemplate? @relation(fields: [templateId], references: [id])
+  user            User?                 @relation(fields: [userId], references: [id])
+  logs            NotificationLog[]
+
+  @@index([userId])
+  @@index([eventKey])
+  @@index([channel, status])
+}
+
+model NotificationLog {
+  id             String             @id @default(cuid())
+  notificationId String
+  status         NotificationStatus
+  attempt        Int                @default(1)
+  metadata       Json?
+  errorMessage   String?
+  createdAt      DateTime           @default(now())
+
+  notification   Notification       @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+
+  @@index([notificationId])
 }
 
 model UserProfile {

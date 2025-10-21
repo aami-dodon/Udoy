@@ -38,6 +38,14 @@
 | GET    | /api/admin/overview              | RBAC-gated dashboard overview payload.                            | Yes  |
 | POST   | /api/email/test                  | Sends a verification or password-reset test email.                | Yes  |
 | POST   | /api/uploads/presign             | Generates a MinIO presigned URL for uploads/downloads.            | Yes  |
+| GET    | /api/notifications/templates     | Lists notification templates filtered by event/channel/locale.    | Yes  |
+| POST   | /api/notifications/templates     | Creates a notification template variant.                          | Yes  |
+| GET    | /api/notifications/templates/{id} | Retrieves a notification template by identifier.                  | Yes  |
+| PUT    | /api/notifications/templates/{id} | Updates a notification template.                                  | Yes  |
+| DELETE | /api/notifications/templates/{id} | Archives a notification template.                                 | Yes  |
+| POST   | /api/notifications/dispatch      | Dispatches notifications across the configured channels.          | Yes  |
+| GET    | /api/notifications               | Searches notification history with filters.                       | Yes  |
+| GET    | /api/notifications/{id}          | Retrieves a notification with delivery logs.                      | Yes  |
 
 ## Endpoints
 
@@ -592,3 +600,193 @@ Response 400: Invalid or missing `objectKey`/operation details.
 Response 401/403: Missing authentication or lacking required permission.
 Response 503: MinIO unavailable or not configured.
 
+### GET /api/notifications/templates
+Returns notification templates filtered by event key, channel, locale, or activation state.
+
+Auth: Yes – requires `notification.manage`.
+Params: None.
+Query:
+- `eventKey` *(optional string)* – Filter templates matching the event key.
+- `channel` *(optional string)* – One of `IN_APP`, `EMAIL`, `SMS`.
+- `locale` *(optional string)* – Locale code such as `en` or `en-US`.
+- `includeInactive` *(optional boolean)* – When `true`, returns archived templates as well.
+
+Response 200:
+```json
+{
+  "status": "success",
+  "data": [
+    {
+      "id": "tmpl_welcome_en",
+      "name": "Welcome Email",
+      "eventKey": "user.welcome",
+      "channel": "EMAIL",
+      "locale": "en",
+      "subject": "Welcome to Udoy",
+      "body": "<p>Hello {{user.firstName}}</p>",
+      "audienceRoles": ["student"],
+      "active": true,
+      "createdAt": "2024-05-01T10:00:00.000Z",
+      "updatedAt": "2024-05-01T10:00:00.000Z"
+    }
+  ]
+}
+```
+
+### POST /api/notifications/templates
+Creates a new template variant for the specified channel and locale.
+
+Auth: Yes – requires `notification.manage`.
+Params: None.
+Body:
+```json
+{
+  "name": "Welcome Email",
+  "eventKey": "user.welcome",
+  "channel": "EMAIL",
+  "locale": "en",
+  "subject": "Welcome to Udoy",
+  "body": "<p>Hello {{user.firstName}}</p>",
+  "previewText": "A warm welcome to the platform",
+  "audienceRoles": ["student"]
+}
+```
+
+Response 201: Same envelope as `GET /api/notifications/templates` returning the persisted template.
+Response 409: Duplicate combination of event key, channel, and locale.
+
+### GET /api/notifications/templates/{id}
+Fetches a template by identifier.
+
+Auth: Yes – requires `notification.manage`.
+Params:
+- `id` *(path string)* – Template identifier.
+
+Response 200: Template payload as described above.
+Response 404: Template missing or archived.
+
+### PUT /api/notifications/templates/{id}
+Updates template metadata or content.
+
+Auth: Yes – requires `notification.manage`.
+Params:
+- `id` *(path string)* – Template identifier.
+Body: Same shape as create; omitted fields retain their current values.
+
+Response 200: Updated template payload.
+Response 404: Template not found.
+
+### DELETE /api/notifications/templates/{id}
+Archives a template so it is skipped during dispatch resolution.
+
+Auth: Yes – requires `notification.manage`.
+Params:
+- `id` *(path string)* – Template identifier.
+
+Response 200: Template payload with `active: false`.
+Response 404: Template not found.
+
+### POST /api/notifications/dispatch
+Dispatches notifications for a specific event across the allowed channels.
+
+Auth: Yes – requires `notification.dispatch`.
+Params: None.
+Body:
+```json
+{
+  "eventKey": "user.welcome",
+  "priority": "NORMAL",
+  "forceDelivery": false,
+  "recipients": [
+    {
+      "userId": "usr_123",
+      "channels": ["EMAIL", "IN_APP"],
+      "locale": "en-US",
+      "data": { "ctaUrl": "https://app.udoy.com/welcome" },
+      "metadata": { "source": "user-management" }
+    }
+  ]
+}
+```
+
+Response 202:
+```json
+{
+  "status": "success",
+  "data": [
+    {
+      "status": "fulfilled",
+      "notification": {
+        "id": "ntf_abc123",
+        "eventKey": "user.welcome",
+        "channel": "EMAIL",
+        "status": "SENT",
+        "priority": "NORMAL",
+        "userId": "usr_123",
+        "recipient": "student@example.com",
+        "createdAt": "2024-05-01T10:05:00.000Z"
+      }
+    }
+  ]
+}
+```
+Response 400: Missing event key, recipients, or no eligible channels.
+Response 404: Required template variant not found.
+
+### GET /api/notifications
+Searches notification history with optional filters.
+
+Auth: Yes – requires `notification.manage`.
+Params: None.
+Query:
+- `status` *(optional string)* – `PENDING`, `SENT`, `DELIVERED`, `FAILED`, etc.
+- `channel` *(optional string)* – `EMAIL`, `IN_APP`, `SMS`.
+- `eventKey` *(optional string)* – Filter by event key.
+- `userId` *(optional string)* – Filter by recipient user id.
+
+Response 200:
+```json
+{
+  "status": "success",
+  "data": [
+    {
+      "id": "ntf_abc123",
+      "eventKey": "user.welcome",
+      "channel": "EMAIL",
+      "status": "SENT",
+      "priority": "NORMAL",
+      "userId": "usr_123",
+      "recipient": "student@example.com",
+      "createdAt": "2024-05-01T10:05:00.000Z"
+    }
+  ]
+}
+```
+
+### GET /api/notifications/{id}
+Returns a specific notification together with its delivery attempt logs.
+
+Auth: Yes – requires `notification.manage`.
+Params:
+- `id` *(path string)* – Notification identifier.
+
+Response 200:
+```json
+{
+  "status": "success",
+  "data": {
+    "id": "ntf_abc123",
+    "eventKey": "user.welcome",
+    "channel": "EMAIL",
+    "status": "SENT",
+    "priority": "NORMAL",
+    "metadata": {
+      "channelResponse": { "messageId": "<smtp-id>" }
+    },
+    "logs": [
+      { "status": "SENT", "attempt": 1, "createdAt": "2024-05-01T10:05:01.000Z" }
+    ]
+  }
+}
+```
+Response 404: Notification not found.

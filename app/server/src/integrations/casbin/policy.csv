@@ -7,6 +7,8 @@ p, role:admin, security-incident, escalate
 p, role:admin, session, invalidate
 p, role:admin, admin:dashboard, read
 p, role:admin, user-profile, manage
+p, role:admin, notification, manage
+p, role:admin, notification, dispatch
 p, role:student, user-profile, self-manage
 p, role:student, learning-content, consume
 p, role:student, assignment, submit
