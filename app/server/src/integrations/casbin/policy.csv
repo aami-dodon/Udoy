@@ -16,6 +16,8 @@ p, role:admin, topic, submit
 p, role:admin, topic, review
 p, role:admin, topic, publish
 p, role:admin, topic-comment, manage
+p, role:admin, storage:uploads, read
+p, role:admin, storage:uploads, write
 p, role:student, user-profile, self-manage
 p, role:student, learning-content, consume
 p, role:student, assignment, submit
@@ -30,6 +32,8 @@ p, role:creator, topic, create
 p, role:creator, topic, edit
 p, role:creator, topic, submit
 p, role:creator, topic-comment, manage
+p, role:creator, storage:uploads, read
+p, role:creator, storage:uploads, write
 p, role:teacher, user-profile, self-manage
 p, role:teacher, learning-content, review
 p, role:teacher, curriculum, align
@@ -38,6 +42,8 @@ p, role:teacher, topic, view
 p, role:teacher, topic, edit
 p, role:teacher, topic, review
 p, role:teacher, topic-comment, manage
+p, role:teacher, storage:uploads, read
+p, role:teacher, storage:uploads, write
 p, role:coach, user-profile, self-manage
 p, role:coach, student, onboard
 p, role:coach, student-progress, monitor

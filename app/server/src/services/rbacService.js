@@ -126,6 +126,18 @@ export const ROLE_DEFINITIONS = [
         action: 'manage',
         description: 'Collaborate on review threads and workflow comments.',
       },
+      {
+        name: 'storage.uploads.read',
+        resource: 'storage:uploads',
+        action: 'read',
+        description: 'Request presigned URLs for retrieving stored assets.',
+      },
+      {
+        name: 'storage.uploads.write',
+        resource: 'storage:uploads',
+        action: 'write',
+        description: 'Request presigned URLs for uploading assets to storage.',
+      },
     ],
   },
   {
@@ -224,6 +236,18 @@ export const ROLE_DEFINITIONS = [
         action: 'manage',
         description: 'Participate in topic review discussions.',
       },
+      {
+        name: 'storage.uploads.read',
+        resource: 'storage:uploads',
+        action: 'read',
+        description: 'Retrieve presigned URLs for collaborating on stored assets.',
+      },
+      {
+        name: 'storage.uploads.write',
+        resource: 'storage:uploads',
+        action: 'write',
+        description: 'Upload new media assets for topics and learning content.',
+      },
     ],
   },
   {
@@ -278,6 +302,18 @@ export const ROLE_DEFINITIONS = [
         resource: 'topic-comment',
         action: 'manage',
         description: 'Leave structured review comments on topics.',
+      },
+      {
+        name: 'storage.uploads.read',
+        resource: 'storage:uploads',
+        action: 'read',
+        description: 'Open presigned URLs to review stored media assets.',
+      },
+      {
+        name: 'storage.uploads.write',
+        resource: 'storage:uploads',
+        action: 'write',
+        description: 'Upload supporting media while moderating topics.',
       },
     ],
   },
