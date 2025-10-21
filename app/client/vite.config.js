@@ -8,6 +8,7 @@ const __dirname = path.dirname(__filename);
 const sharedComponentsPath = path.resolve(__dirname, '../shared/components');
 const sharedUiEntryPath = path.resolve(sharedComponentsPath, 'ui/index.js');
 const sharedIconsPath = path.resolve(__dirname, '../shared/icons');
+const sharedEditorPath = path.resolve(__dirname, '../shared/editor');
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
@@ -68,7 +69,7 @@ export default defineConfig(({ mode }) => {
     server: {
       ...baseServerConfig,
       fs: {
-        allow: [projectRoot, sharedComponentsPath, sharedIconsPath],
+        allow: [projectRoot, sharedComponentsPath, sharedIconsPath, sharedEditorPath],
       },
     },
     preview: { ...baseServerConfig },

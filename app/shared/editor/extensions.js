@@ -4,6 +4,7 @@ import Placeholder from '@tiptap/extension-placeholder';
 import Image from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
 import FileHandler from '@tiptap/extension-file-handler';
+// Ensure underline support is explicitly imported so the toolbar toggle functions in development builds.
 import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
 
