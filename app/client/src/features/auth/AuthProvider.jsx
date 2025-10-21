@@ -36,34 +36,37 @@ export function AuthProvider({ children }) {
   }, []);
 
   const hydrateSession = useCallback(async () => {
+    setState(buildState({ status: 'loading', loading: true }));
     try {
       const sessionResponse = await authApi.fetchSession();
-      setState(
-        buildState({
-          status: 'authenticated',
-          user: sessionResponse.user,
-          session: sessionResponse.session,
-          loading: false,
-        })
-      );
+      let nextUser = sessionResponse.user;
+      let nextSession = sessionResponse.session;
 
       try {
         const refreshed = await authApi.refresh();
         applyTokens(refreshed.tokens);
-        setState((current) =>
-          buildState({
-            status: 'authenticated',
-            user: refreshed.user || current.user,
-            session: refreshed.session || current.session,
-            loading: false,
-          })
-        );
+        nextUser = refreshed.user || nextUser;
+        nextSession = refreshed.session || nextSession;
       } catch (refreshError) {
-        // Refresh failure should not break existing session state when cookies are still valid.
+        const statusCode = refreshError?.response?.status;
+        if (statusCode === 401 || statusCode === 403) {
+          setAuthHeader(null);
+          setState(buildState({ status: 'unauthenticated', loading: false }));
+          return;
+        }
       }
+
+      setState(
+        buildState({
+          status: 'authenticated',
+          user: nextUser,
+          session: nextSession,
+          loading: false,
+        })
+      );
     } catch (error) {
-      setState(buildState({ status: 'unauthenticated', loading: false }));
       setAuthHeader(null);
+      setState(buildState({ status: 'unauthenticated', loading: false }));
     }
   }, [applyTokens]);
 
