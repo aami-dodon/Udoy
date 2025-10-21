@@ -2,9 +2,20 @@ import env from '../config/env.js';
 import transporter from '../integrations/email/nodemailerClient.js';
 import logger from '../utils/logger.js';
 import AppError from '../utils/appError.js';
+import { parseDuration } from '../utils/duration.js';
 
 const DEFAULT_VERIFICATION_SUBJECT = 'Verify your email address';
 const DEFAULT_PASSWORD_RESET_SUBJECT = 'Reset your Udoy account password';
+
+const PASSWORD_RESET_TOKEN_DEFAULT_TTL_SECONDS = 15 * 60;
+const PASSWORD_RESET_TOKEN_EXPIRY_SECONDS = parseDuration(
+  env.auth?.passwordReset?.tokenExpiresIn,
+  PASSWORD_RESET_TOKEN_DEFAULT_TTL_SECONDS
+);
+const PASSWORD_RESET_TOKEN_EXPIRY_MINUTES = Math.max(
+  1,
+  Math.round(PASSWORD_RESET_TOKEN_EXPIRY_SECONDS / 60)
+);
 
 const DEFAULT_VERIFICATION_HTML_TEMPLATE = `
   <p>Hi {{name}},</p>
@@ -19,10 +30,10 @@ const DEFAULT_PASSWORD_RESET_HTML_TEMPLATE = `
   <p>Hi {{name}},</p>
   <p>We received a request to reset your Udoy account password. You can set a new password using the link below:</p>
   <p><a href="{{passwordResetLink}}">Reset your password</a></p>
-  <p>If you did not request this change, feel free to ignore this email.</p>
+  <p>This link will expire in {{expiryMinutes}} minutes. If you did not request this change, feel free to ignore this email.</p>
 `;
 
-const DEFAULT_PASSWORD_RESET_TEXT_TEMPLATE = `Hi {{name}},\n\nReset your Udoy password using the link below:\n{{passwordResetLink}}\nIf you didn't request this change, you can ignore this message.`;
+const DEFAULT_PASSWORD_RESET_TEXT_TEMPLATE = `Hi {{name}},\n\nReset your Udoy password using the link below:\n{{passwordResetLink}}\nThis link will expire in {{expiryMinutes}} minutes. If you didn't request this change, you can ignore this message.`;
 
 function ensureTransporter() {
   if (!transporter) {
@@ -150,6 +161,7 @@ export async function sendPasswordResetEmail({
   const passwordResetLink = buildLink(env.email?.passwordResetUrl, token, 'token');
   const mergedVariables = {
     name: 'there',
+    expiryMinutes: PASSWORD_RESET_TOKEN_EXPIRY_MINUTES,
     ...variables,
     passwordResetLink,
   };

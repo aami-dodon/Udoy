@@ -57,7 +57,7 @@ export default function ForgotPasswordPage() {
             Enter the email associated with your Udoy account. We&apos;ll email a secure link to set a new password and restore access.
           </p>
           <div className="rounded-xl border border-border bg-card/60 p-4 text-sm text-muted-foreground shadow-sm">
-            Tip: Reset links remain valid for 15 minutes. Start from your most trusted device to complete the flow without interruptions.
+            Tip: Reset links expire 15 minutes after they&apos;re sent. Start from your most trusted device to complete the flow without interruptions.
           </div>
         </div>
         <Card className="w-full max-w-md lg:flex-1">

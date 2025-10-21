@@ -96,7 +96,7 @@ export default function DataTable({
           </DropdownMenu>
         ) : null}
       </div>
-      <div className="overflow-hidden rounded-sg border border-border">
+      <div className="overflow-hidden rounded-sm border border-border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
