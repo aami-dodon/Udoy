@@ -43,6 +43,18 @@ module.exports = {
         'black-olive': base.blackOlive,
         neutral,
         support,
+        primary: {
+          DEFAULT: brand.evergreen,
+          foreground: '#FFFFFF',
+        },
+        secondary: {
+          DEFAULT: brand.mintSage,
+          foreground: base.blackOlive,
+        },
+        destructive: {
+          DEFAULT: '#DC2626',
+          foreground: '#FFFFFF',
+        },
         border: base.porcelainShade,
         input: base.porcelainShade,
         ring: brand.ecru,

@@ -1,17 +1,18 @@
-import { forwardRef } from 'react';
+import * as React from 'react';
 import { cn } from '@/lib/utils';
 
-const Textarea = forwardRef(({ className, rows = 4, ...props }, ref) => (
-  <textarea
-    ref={ref}
-    rows={rows}
-    className={cn(
-      'w-full rounded-lg border border-porcelain-shade bg-white/90 px-4 py-3 text-sm text-black-olive placeholder:text-neutral-400 shadow-inner focus:border-evergreen focus:outline-none focus:ring-2 focus:ring-evergreen/40 disabled:cursor-not-allowed disabled:opacity-60',
-      className
-    )}
-    {...props}
-  />
-));
+const Textarea = React.forwardRef(({ className, ...props }, ref) => {
+  return (
+    <textarea
+      className={cn(
+        'flex min-h-[120px] w-full rounded-lg border border-input bg-background px-4 py-3 text-sm text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60',
+        className
+      )}
+      ref={ref}
+      {...props}
+    />
+  );
+});
 
 Textarea.displayName = 'Textarea';
 

@@ -6,6 +6,7 @@ import {
   verifyAccessToken,
   verifyRefreshToken,
 } from '../utils/jwt.js';
+import { ensureSessionActive } from '../services/tokenService.js';
 
 function extractBearerToken(headerValue) {
   if (!headerValue || typeof headerValue !== 'string') {
@@ -29,7 +30,7 @@ function getCookie(req, name) {
   return cookies[name] || signedCookies[name] || null;
 }
 
-function authenticate(req, _res, next) {
+async function authenticate(req, _res, next) {
   const { jwt: jwtConfig = {} } = env;
   const accessCookie = jwtConfig.access?.cookieName;
   const refreshCookie = jwtConfig.refresh?.cookieName;
@@ -41,6 +42,7 @@ function authenticate(req, _res, next) {
   if (accessToken) {
     try {
       const payload = verifyAccessToken(accessToken);
+      await ensureSessionActive(payload?.sid, { userId: payload?.sub });
       req.user = payload;
       req.auth = {
         ...(req.auth || {}),
@@ -49,6 +51,10 @@ function authenticate(req, _res, next) {
       };
       return next();
     } catch (error) {
+      if (error instanceof AppError && !(error instanceof JwtError)) {
+        return next(error);
+      }
+
       if (error instanceof JwtError) {
         logger.debug('Access token validation failed, attempting refresh token', {
           code: error.code,
@@ -70,6 +76,7 @@ function authenticate(req, _res, next) {
   if (refreshToken) {
     try {
       const payload = verifyRefreshToken(refreshToken);
+      await ensureSessionActive(payload?.sid, { userId: payload?.sub });
       req.user = payload;
       req.auth = {
         ...(req.auth || {}),
@@ -78,6 +85,10 @@ function authenticate(req, _res, next) {
       };
       return next();
     } catch (error) {
+      if (error instanceof AppError && !(error instanceof JwtError)) {
+        return next(error);
+      }
+
       if (error instanceof JwtError) {
         logger.warn('Refresh token validation failed', { code: error.code });
       } else {

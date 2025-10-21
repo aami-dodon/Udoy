@@ -11,6 +11,8 @@ const {
   SERVER_PORT = 6005,
   API_PREFIX = '/api',
   CORS_ALLOWED_ORIGINS = 'http://localhost:6004',
+  DEFAULT_ADMIN_EMAIL,
+  DEFAULT_ADMIN_PASSWORD,
   JWT_ACCESS_SECRET,
   JWT_ACCESS_EXPIRES_IN = '15m',
   JWT_ACCESS_COOKIE_NAME = 'udoy_at',
@@ -33,6 +35,7 @@ const {
   EMAIL_SMTP_SECURE = 'true',
   EMAIL_SMTP_USER,
   EMAIL_SMTP_PASS,
+  PASSWORD_RESET_TOKEN_EXPIRES_IN = '15m',
 } = process.env;
 
 const corsAllowedOrigins = CORS_ALLOWED_ORIGINS.split(',')
@@ -91,6 +94,12 @@ const emailConfig = {
   smtp: smtpConfig,
 };
 
+const authConfig = {
+  passwordReset: {
+    tokenExpiresIn: PASSWORD_RESET_TOKEN_EXPIRES_IN,
+  },
+};
+
 const jwtConfig = {
   access: {
     secret: JWT_ACCESS_SECRET || null,
@@ -109,7 +118,12 @@ export default {
   port: Number(SERVER_PORT) || 6005,
   apiPrefix: API_PREFIX.startsWith('/') ? API_PREFIX : `/${API_PREFIX}`,
   corsAllowedOrigins,
+  defaultAdmin: {
+    email: DEFAULT_ADMIN_EMAIL || null,
+    password: DEFAULT_ADMIN_PASSWORD || null,
+  },
   minio: minioConfig,
   email: emailConfig,
   jwt: jwtConfig,
+  auth: authConfig,
 };

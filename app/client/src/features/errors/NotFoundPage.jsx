@@ -8,13 +8,13 @@ function NotFoundPage() {
       description="The link may be out of date, renamed, or reserved for a future release."
       badgeTone="warning"
       actions={[
-        { label: 'Back to home', to: '/', variant: 'secondary' },
+        { label: 'Back to home', to: '/', variant: 'primary' },
       ]}
     >
-      <p className="text-sm text-neutral-600">
+      <p className="text-sm text-muted-foreground">
         Double-check the address or head back to the home page to continue exploring Udoy.
       </p>
-      <p className="text-sm text-neutral-600">
+      <p className="text-sm text-muted-foreground">
         If you were following a saved link, it may have moved into a new space as we refresh the platform layout.
       </p>
     </ErrorState>

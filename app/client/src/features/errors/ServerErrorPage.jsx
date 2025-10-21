@@ -8,13 +8,13 @@ function ServerErrorPage() {
       description="We’re experiencing a hiccup behind the scenes and are already working on a fix."
       badgeTone="danger"
       actions={[
-        { label: 'Back to home', to: '/', variant: 'secondary' },
+        { label: 'Back to home', to: '/', variant: 'primary' },
       ]}
     >
-      <p className="text-sm text-neutral-600">
+      <p className="text-sm text-muted-foreground">
         Our engineers have been notified and will steady things shortly. You can return home or retry in a few moments.
       </p>
-      <p className="text-sm text-neutral-600">
+      <p className="text-sm text-muted-foreground">
         If the problem sticks around, drop us a note with the steps you took so we can diagnose it faster.
       </p>
     </ErrorState>

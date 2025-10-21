@@ -5,11 +5,19 @@
 - Add new rows when introducing routes and ensure descriptions stay in sync with the implementation.
 
 ## Routes
-| Path | Feature | Description |
-| --- | --- | --- |
-| `/` | Home | Minimal home route rendering the "hello world" placeholder content. |
-| `/health` | Health Dashboard | Surfaces live service health metrics fetched from `/api/health`, including dependency and CORS checks. |
-| `/403` | Error Pages | Forbidden access screen that guides users back to the home experience. |
-| `/500` | Error Pages | Server error page surfaced when upstream systems fail unexpectedly. |
-| `/error` | Error Pages | Generic fallback error experience shared by the global error boundary. |
-| `*` | Error Pages | Catch-all 404 route rendering the branded “page not found” state. |
+| Path | Feature | Access | Description |
+| --- | --- | --- | --- |
+| `/` | Home | Public | Minimal home route rendering the "hello world" placeholder content. |
+| `/health` | Health Dashboard | Public | Surfaces live service health metrics fetched from `/api/health` and provides a transactional email test harness wired to `/api/email/test`. |
+| `/login` | Auth | Public | Email + password login form that hydrates the AuthProvider context and redirects to `/dashboard` after successful authentication. |
+| `/register` | Auth | Public | Student registration form that triggers coach approval for minors and email verification workflows. |
+| `/forgot-password` | Auth | Public | Collects an email address and requests a password reset message from the backend. |
+| `/reset-password` | Auth | Public | Accepts the reset token (via query string) and new password to finalize credential recovery. |
+| `/verify-token` | Auth | Public | Handles verification and coach approval tokens with contextual messaging based on API responses. |
+| `/verify-email` | Auth | Public | Alias of `/verify-token` so emailed verification links resolve without 404s. |
+| `/dashboard` | Dashboard | Authenticated | Protected account hub (via `RequireAuth`) showing RBAC roles, permissions, and session controls. |
+| `/admin/users` | Admin | Admin role | Guarded by `RequireRole('admin')`; lists users, updates statuses, and manages role bindings. |
+| `/403` | Error Pages | Public | Forbidden access screen that guides users back to the home experience. |
+| `/500` | Error Pages | Public | Server error page surfaced when upstream systems fail unexpectedly. |
+| `/error` | Error Pages | Public | Generic fallback error experience shared by the global error boundary. |
+| `*` | Error Pages | Public | Catch-all 404 route rendering the branded “page not found” state. |

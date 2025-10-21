@@ -21,12 +21,12 @@ Follow them strictly to maintain **quality**, **consistency**, **security**, and
 | React Router DOM         | Client-side routing for single-page application (SPA) navigation.                          |
 | Axios                    | HTTP client for communication between frontend and backend.                                |
 | Node.js                  | Server runtime environment.                                                                |
-| TailwindCSS + shadcn/ui  | Utility-first CSS framework + prebuilt, accessible React component library with Tailwind-based design system. |
+| TailwindCSS + shadcn     | Utility-first CSS framework + prebuilt, accessible React component library with Tailwind-based design system. |
 | Lucide React Icons       | Modern icon library used with shadcn/ui components (replacing Heroicons).                  |
 | Tiptap Editor            | Headless WYSIWYG editor with React integration and theme control. Extended with custom video support for **direct uploads to MinIO** (used for all media: video, images, docs). |
 | Prisma ORM               | Schema and database management for Postgres.                                               |
 | JWT                      | Authentication strategy using JWT tokens to secure API routes and sessions.                |
-| Casbin (RBAC)            | Policy-based role and permission control integrated with Express.js.                       |
+| Casbin                   | Policy-based role and permission control integrated with Express.js.                       |
 | dotenv                   | Environment variable management for configuration across frontend and backend.             |
 | CORS Middleware          | Enables secure cross-origin communication between Vite frontend and Express backend.       |
 | Nodemailer               | Server-side email sending.                                                                 |
@@ -108,7 +108,7 @@ Follow them strictly to maintain **quality**, **consistency**, **security**, and
   - Videos and other assets (PDFs, images, documents) are uploaded directly to **MinIO** using **presigned URLs** and embedded in content.
 
 ### Screenshots
-- After making the changes **Always** provide a screenshot to preview of the full page when you are making a UI change
+- After making the changes **Always** provide screenshots to preview of the all the pages where you made a UI change
 
 ---
 
@@ -127,4 +127,5 @@ Follow them strictly to maintain **quality**, **consistency**, **security**, and
 - All project-wide changes must be recorded in `CHANGELOG.md`. Include a **Date–Time Stamp (IST)** with every entry.  
 - All server APIs must be recorded in `API-SPECS.md`.  
 - All client routes must be recorded in `ROUTES.md`.  
+- All RBAC polcies must be recorded in `RBAC.md`.  
 - Swagger Docs should be kept up-to-date with actual backend implementation.

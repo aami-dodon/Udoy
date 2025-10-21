@@ -1,8 +1,16 @@
 import { lazy } from 'react';
-
+import RequireAuth from './features/auth/components/RequireAuth.jsx';
+import RequireRole from './features/auth/components/RequireRole.jsx';
 import HomePage from './features/home/HomePage.jsx';
-const HealthPage = lazy(() => import('./features/health/HealthPage.jsx'));
 
+const HealthPage = lazy(() => import('./features/health/HealthPage.jsx'));
+const LoginPage = lazy(() => import('./features/auth/LoginPage.jsx'));
+const RegisterPage = lazy(() => import('./features/auth/RegisterPage.jsx'));
+const ForgotPasswordPage = lazy(() => import('./features/auth/ForgotPasswordPage.jsx'));
+const ResetPasswordPage = lazy(() => import('./features/auth/ResetPasswordPage.jsx'));
+const VerifyTokenPage = lazy(() => import('./features/auth/VerifyTokenPage.jsx'));
+const DashboardPage = lazy(() => import('./features/dashboard/DashboardPage.jsx'));
+const AdminUsersPage = lazy(() => import('./features/admin/AdminUsersPage.jsx'));
 const ForbiddenPage = lazy(() => import('./features/errors/ForbiddenPage.jsx'));
 const ServerErrorPage = lazy(() => import('./features/errors/ServerErrorPage.jsx'));
 const GenericErrorPage = lazy(() => import('./features/errors/GenericErrorPage.jsx'));
@@ -16,6 +24,46 @@ const routes = [
   {
     path: '/health',
     element: <HealthPage />,
+  },
+  {
+    path: '/login',
+    element: <LoginPage />,
+  },
+  {
+    path: '/register',
+    element: <RegisterPage />,
+  },
+  {
+    path: '/forgot-password',
+    element: <ForgotPasswordPage />,
+  },
+  {
+    path: '/reset-password',
+    element: <ResetPasswordPage />,
+  },
+  {
+    path: '/verify-token',
+    element: <VerifyTokenPage />,
+  },
+  {
+    path: '/verify-email',
+    element: <VerifyTokenPage />,
+  },
+  {
+    path: '/dashboard',
+    element: (
+      <RequireAuth>
+        <DashboardPage />
+      </RequireAuth>
+    ),
+  },
+  {
+    path: '/admin/users',
+    element: (
+      <RequireRole roles='admin'>
+        <AdminUsersPage />
+      </RequireRole>
+    ),
   },
   {
     path: '/403',
