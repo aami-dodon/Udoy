@@ -1,3 +1,10 @@
+## 2025-10-22 05:19 IST
+- Simplified the topic reader layout so published lessons render in a single container with the authored rich text content.
+- Ensured editing controls still expose the guided card layout while view-only roles see the streamlined presentation.
+
+## 2025-11-08 18:30 IST
+- Hid the topic editor guidance header for read-only viewers so students only see the published lesson content.
+
 ## 2025-11-08 16:20 IST
 - Added `MINIO_FORCE_SIGNED_DOWNLOADS` support on the server/client configuration layers so private buckets can force download presigned URLs.
 - Updated the shared editor upload helper to honour the new flag, request GET presigned URLs when required, and expose both signed and direct asset references for downstream consumers.
