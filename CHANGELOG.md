@@ -1,3 +1,7 @@
+## 2025-11-10 09:10 IST
+- Enabled signed-download mode by default in `.env` and `.env.example` so self-hosted MinIO instances without public policies rely on `MINIO_FORCE_SIGNED_DOWNLOADS`.
+- Upgraded the `/uploads/test` harness to request GET presigns when public links are missing, surface the extra response payload, and drive previews plus copy actions via the resolved access URL.
+
 ## 2025-11-08 21:30 IST
 - Enabled topic authors to reopen published lessons, returning them to draft, clearing approvals, and logging the workflow reset so new validations can occur.
 - Restricted publishing to the original author after teacher approval and documented the tightened workflow in the API and route references.

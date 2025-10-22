@@ -54,13 +54,15 @@ function formatStatus(status) {
 function formatPublicFetchStatus(status) {
   switch (status) {
     case 'checking':
-      return { label: 'Verifying public URL…', variant: 'secondary' };
+      return { label: 'Verifying access URL…', variant: 'secondary' };
+    case 'signing':
+      return { label: 'Requesting signed download…', variant: 'secondary' };
     case 'success':
-      return { label: 'Public URL reachable', variant: 'default' };
+      return { label: 'Access URL reachable', variant: 'default' };
     case 'error':
-      return { label: 'Public URL failed', variant: 'destructive' };
+      return { label: 'Access URL failed', variant: 'destructive' };
     case 'missing':
-      return { label: 'No public URL provided', variant: 'outline' };
+      return { label: 'No access URL provided', variant: 'outline' };
     default:
       return { label: 'Awaiting upload', variant: 'outline' };
   }
@@ -91,6 +93,8 @@ function UploadTestPage() {
   const [publicFetchStatus, setPublicFetchStatus] = useState('idle');
   const [publicFetchError, setPublicFetchError] = useState(null);
   const [publicCheckedAt, setPublicCheckedAt] = useState(null);
+  const [downloadPresignResult, setDownloadPresignResult] = useState(null);
+  const [resolvedPreviewUrl, setResolvedPreviewUrl] = useState(null);
 
   const previewUrl = useMemo(() => {
     if (!selectedFile) {
@@ -124,16 +128,22 @@ function UploadTestPage() {
     setPublicFetchError(null);
     setPublicCheckedAt(null);
     setUploadResponseDetails(null);
+    setDownloadPresignResult(null);
+    setResolvedPreviewUrl(null);
 
     if (!file) {
       setSelectedFile(null);
       setObjectKey('');
+      setDownloadPresignResult(null);
+      setResolvedPreviewUrl(null);
       return;
     }
 
     if (!file.type || !file.type.startsWith(ACCEPTED_IMAGE_PREFIX)) {
       setSelectedFile(null);
       setObjectKey('');
+      setDownloadPresignResult(null);
+      setResolvedPreviewUrl(null);
       setError('Please select a valid image file (PNG, JPG, GIF, or WebP).');
       return;
     }
@@ -153,40 +163,65 @@ function UploadTestPage() {
   }, [previewUrl, selectedFile]);
 
   const handlePublicPreviewError = useCallback(() => {
-    console.error('Public URL image failed to render in the upload test harness preview.', {
-      publicUrl: presignResult?.publicUrl,
+    console.error('Remote access URL image failed to render in the upload test harness preview.', {
+      previewUrl: resolvedPreviewUrl,
+      objectKey: presignResult?.objectKey,
+      signedDownloadUrl: downloadPresignResult?.url,
       verificationStatus: publicFetchStatus,
       verificationError: publicFetchError,
       verifiedAt: publicCheckedAt,
     });
     setPublicFetchStatus('error');
-    setPublicFetchError((previous) => previous || 'The public URL preview could not be rendered.');
-  }, [presignResult, publicFetchStatus, publicFetchError, publicCheckedAt]);
+    setPublicFetchError((previous) => previous || 'The access URL preview could not be rendered.');
+  }, [
+    resolvedPreviewUrl,
+    presignResult,
+    downloadPresignResult,
+    publicFetchStatus,
+    publicFetchError,
+    publicCheckedAt,
+  ]);
 
   const handlePublicPreviewLoad = useCallback(() => {
-    console.info('Public URL image rendered successfully in the upload test harness preview.', {
-      publicUrl: presignResult?.publicUrl,
+    console.info('Remote access URL image rendered successfully in the upload test harness preview.', {
+      previewUrl: resolvedPreviewUrl,
       verifiedAt: publicCheckedAt,
     });
-  }, [presignResult, publicCheckedAt]);
+  }, [resolvedPreviewUrl, publicCheckedAt]);
 
   const verifyPublicUrlAvailability = useCallback(
     async (publicUrl, objectKey) => {
-      if (!publicUrl) {
-        setPublicFetchStatus('missing');
-        setPublicFetchError('The presign payload did not include a public URL to verify.');
-        setPublicCheckedAt(new Date().toISOString());
-        console.warn('Skipped public URL verification because the presign payload lacked a public link.', {
-          objectKey,
-        });
-        return;
-      }
+      let urlToCheck = publicUrl || null;
 
-      setPublicFetchStatus('checking');
       setPublicFetchError(null);
+      setPublicCheckedAt(null);
+      setDownloadPresignResult(null);
+      setResolvedPreviewUrl(null);
 
       try {
-        const response = await fetch(publicUrl, {
+        if (!urlToCheck) {
+          setPublicFetchStatus('signing');
+          console.info('No public URL returned; requesting a signed download URL for verification.', {
+            objectKey,
+          });
+
+          const downloadPresign = await requestUploadPresign({
+            objectKey,
+            operation: 'get',
+          });
+
+          if (!downloadPresign?.url) {
+            throw new Error('The presign endpoint did not return a download URL.');
+          }
+
+          setDownloadPresignResult(downloadPresign);
+          urlToCheck = downloadPresign.url;
+        }
+
+        setPublicFetchStatus('checking');
+        setResolvedPreviewUrl(urlToCheck);
+
+        const response = await fetch(urlToCheck, {
           method: 'GET',
           cache: 'no-cache',
           mode: 'cors',
@@ -194,22 +229,22 @@ function UploadTestPage() {
 
         if (!response.ok) {
           if (response.status === 403) {
-            console.error('Access denied while fetching the public URL for the uploaded image.', {
-              publicUrl,
+            console.error('Access denied while fetching the access URL for the uploaded image.', {
+              accessUrl: urlToCheck,
               objectKey,
               status: response.status,
               statusText: response.statusText,
             });
           }
-          throw new Error(`Public URL responded with status ${response.status}.`);
+          throw new Error(`Access URL responded with status ${response.status}.`);
         }
 
         const contentType = response.headers.get('Content-Type');
         const contentLength = response.headers.get('Content-Length');
         setPublicFetchStatus('success');
         setPublicCheckedAt(new Date().toISOString());
-        console.info('Verified the uploaded image is reachable via the public URL.', {
-          publicUrl,
+        console.info('Verified the uploaded image is reachable via its access URL.', {
+          accessUrl: urlToCheck,
           objectKey,
           contentType,
           contentLength,
@@ -217,11 +252,11 @@ function UploadTestPage() {
       } catch (verificationError) {
         setPublicFetchStatus('error');
         setPublicFetchError(
-          verificationError?.message || 'Failed to fetch the image from the public URL.'
+          verificationError?.message || 'Failed to fetch the image from the access URL.'
         );
         setPublicCheckedAt(new Date().toISOString());
-        console.error('Unable to fetch the uploaded image from its public URL.', {
-          publicUrl,
+        console.error('Unable to fetch the uploaded image from its access URL.', {
+          accessUrl: urlToCheck,
           objectKey,
           error: verificationError,
         });
@@ -259,6 +294,8 @@ function UploadTestPage() {
       setPublicFetchStatus('idle');
       setPublicFetchError(null);
       setPublicCheckedAt(null);
+      setDownloadPresignResult(null);
+      setResolvedPreviewUrl(null);
 
       try {
         const presign = await requestUploadPresign({
@@ -344,20 +381,20 @@ function UploadTestPage() {
     [isSubmitting, objectKey, selectedFile, verifyPublicUrlAvailability]
   );
 
-  const handleCopyPublicUrl = useCallback(async () => {
-    if (!presignResult?.publicUrl || !navigator?.clipboard) {
+  const handleCopyAccessUrl = useCallback(async () => {
+    if (!resolvedPreviewUrl || !navigator?.clipboard) {
       return;
     }
 
     try {
-      await navigator.clipboard.writeText(presignResult.publicUrl);
-      setCopyNotice('Public URL copied to clipboard.');
+      await navigator.clipboard.writeText(resolvedPreviewUrl);
+      setCopyNotice('Access URL copied to clipboard.');
       setTimeout(() => setCopyNotice(null), 2000);
     } catch (copyError) {
       setCopyNotice('Unable to copy URL automatically.');
       setTimeout(() => setCopyNotice(null), 2000);
     }
-  }, [presignResult]);
+  }, [resolvedPreviewUrl]);
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-6">
@@ -457,9 +494,9 @@ function UploadTestPage() {
                 <Badge variant="outline">{presignResult.method}</Badge>
                 <span className="font-medium text-foreground">Expires:</span>
                 <span>{presignResult.expiresAt}</span>
-                {presignResult.publicUrl ? (
-                  <Button variant="ghost" size="sm" type="button" onClick={handleCopyPublicUrl}>
-                    Copy public URL
+                {resolvedPreviewUrl ? (
+                  <Button variant="ghost" size="sm" type="button" onClick={handleCopyAccessUrl}>
+                    Copy access URL
                   </Button>
                 ) : null}
                 {copyNotice ? <span className="text-xs text-secondary-foreground">{copyNotice}</span> : null}
@@ -469,6 +506,22 @@ function UploadTestPage() {
                 value={JSON.stringify(presignResult, null, 2)}
                 className="min-h-[220px] font-mono text-xs"
               />
+              {downloadPresignResult ? (
+                <>
+                  <Separator />
+                  <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                    <span className="font-medium text-foreground">Download method:</span>
+                    <Badge variant="outline">{downloadPresignResult.method}</Badge>
+                    <span className="font-medium text-foreground">Expires:</span>
+                    <span>{downloadPresignResult.expiresAt}</span>
+                  </div>
+                  <Textarea
+                    readOnly
+                    value={JSON.stringify(downloadPresignResult, null, 2)}
+                    className="min-h-[220px] font-mono text-xs"
+                  />
+                </>
+              ) : null}
             </>
           ) : (
             <p className="text-sm text-muted-foreground">
@@ -521,9 +574,9 @@ function UploadTestPage() {
 
       <Card>
         <CardHeader className="space-y-2">
-          <CardTitle>Public URL verification</CardTitle>
+          <CardTitle>Access URL verification</CardTitle>
           <CardDescription>
-            After uploading, the harness checks whether the public URL can be fetched and attempts to render the remote image.
+            After uploading, the harness resolves a public or signed access URL, verifies it, and attempts to render the remote image.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -531,15 +584,15 @@ function UploadTestPage() {
             <span className="font-medium text-foreground">Status:</span>
             <Badge variant={publicStatusDisplay.variant}>{publicStatusDisplay.label}</Badge>
             {publicCheckedAt ? <span>Checked at {new Date(publicCheckedAt).toLocaleString()}</span> : null}
-            {presignResult?.publicUrl ? (
+            {resolvedPreviewUrl ? (
               <Button
                 asChild
                 variant="ghost"
                 size="sm"
                 type="button"
               >
-                <a href={presignResult.publicUrl} target="_blank" rel="noreferrer">
-                  Open public URL
+                <a href={resolvedPreviewUrl} target="_blank" rel="noreferrer">
+                  Open access URL
                 </a>
               </Button>
             ) : null}
@@ -549,23 +602,23 @@ function UploadTestPage() {
             <p className="text-sm font-medium text-destructive">{publicFetchError}</p>
           ) : null}
 
-          {presignResult?.publicUrl ? (
+          {resolvedPreviewUrl ? (
             <div className="space-y-3">
-              <Label>Public URL preview</Label>
+              <Label>Access URL preview</Label>
               <div className="overflow-hidden rounded-xl border border-border bg-muted/30">
                 <img
-                  src={presignResult.publicUrl}
-                  alt="Uploaded image fetched via public URL"
+                  src={resolvedPreviewUrl}
+                  alt="Uploaded image fetched via resolved access URL"
                   className="h-64 w-full object-contain"
                   onError={handlePublicPreviewError}
                   onLoad={handlePublicPreviewLoad}
                 />
               </div>
-              <p className="text-xs text-muted-foreground break-all">{presignResult.publicUrl}</p>
+              <p className="text-xs break-all text-muted-foreground">{resolvedPreviewUrl}</p>
             </div>
           ) : (
             <p className="text-sm text-muted-foreground">
-              Upload an image to receive a public URL. Verification runs automatically after the upload completes.
+              Upload an image to resolve an access URL. When public links are disabled, the harness requests a signed download automatically.
             </p>
           )}
         </CardContent>
