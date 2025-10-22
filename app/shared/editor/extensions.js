@@ -7,6 +7,12 @@ import FileHandler from '@tiptap/extension-file-handler';
 // Ensure underline support is explicitly imported so the toolbar toggle functions in development builds.
 import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
+import Highlight from '@tiptap/extension-highlight';
+import Typography from '@tiptap/extension-typography';
+import Subscript from '@tiptap/extension-subscript';
+import Superscript from '@tiptap/extension-superscript';
+import TaskList from '@tiptap/extension-task-list';
+import TaskItem from '@tiptap/extension-task-item';
 import { ReactNodeViewRenderer } from '@tiptap/react';
 
 import {
@@ -347,6 +353,12 @@ export const createEditorExtensions = ({
       heading: {
         levels: [1, 2, 3, 4],
       },
+      bulletList: {
+        keepMarks: true,
+      },
+      orderedList: {
+        keepMarks: true,
+      },
     }),
     Underline,
     Link.configure({
@@ -367,6 +379,26 @@ export const createEditorExtensions = ({
     Audio,
     TextAlign.configure({
       types: ['heading', 'paragraph'],
+    }),
+    Highlight.configure({
+      multicolor: true,
+      HTMLAttributes: {
+        class: 'rich-text-highlight rounded px-1 py-0.5 text-inherit',
+      },
+    }),
+    Typography,
+    Subscript,
+    Superscript,
+    TaskList.configure({
+      HTMLAttributes: {
+        class: 'rich-text-task-list space-y-2',
+      },
+    }),
+    TaskItem.configure({
+      nested: true,
+      HTMLAttributes: {
+        class: 'rich-text-task-item flex items-start gap-2',
+      },
     }),
   ];
 

@@ -20,7 +20,7 @@ import {
   Textarea,
 } from '@components/ui';
 import { LucideIcon } from '@icons';
-import RichTextEditor from '@/components/RichTextEditor.jsx';
+import SimpleEditor from '@/components/SimpleEditor.jsx';
 import { useAuth } from '../auth/AuthProvider.jsx';
 import topicsApi from './api.js';
 import { DEFAULT_EDITOR_CONTENT } from '../../../../shared/editor/constants.js';
@@ -588,7 +588,7 @@ export default function TopicEditorPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col">
-                  <RichTextEditor
+                  <SimpleEditor
                     value={form.content}
                     valueFormat="json"
                     onChange={handleEditorChange}
@@ -602,7 +602,7 @@ export default function TopicEditorPage() {
                 </CardContent>
               </Card>
             ) : (
-              <RichTextEditor
+              <SimpleEditor
                 value={form.content}
                 valueFormat="json"
                 onChange={handleEditorChange}
