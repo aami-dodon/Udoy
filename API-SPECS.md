@@ -49,10 +49,10 @@
 | GET    | /api/topics                      | Lists topics with filters for workflow status, language, and tags. | Yes  |
 | POST   | /api/topics                      | Creates a new topic draft with rich text, media, and tagging.     | Yes  |
 | GET    | /api/topics/{id}                 | Retrieves a topic with revisions, workflow history, and comments. | Yes  |
-| PATCH  | /api/topics/{id}                 | Updates a topic draft or review copy in allowed workflow states.  | Yes  |
+| PATCH  | /api/topics/{id}                 | Updates a topic draft, review copy, or reopens a published topic. | Yes  |
 | POST   | /api/topics/{id}/submit          | Submits a draft topic for validator review.                       | Yes  |
 | POST   | /api/topics/{id}/review          | Records a validator decision (approve or request changes).        | Yes  |
-| POST   | /api/topics/{id}/publish         | Publishes an approved topic to the catalog.                       | Yes  |
+| POST   | /api/topics/{id}/publish         | Publishes an approved topic after teacher validation.             | Yes  |
 | POST   | /api/topics/{id}/comments        | Adds a workflow comment to the topic discussion thread.           | Yes  |
 
 ## Endpoints
@@ -903,12 +903,13 @@ Response 200:
 Response 404: Topic not found or user lacks `topic.view`.
 
 ### PATCH /api/topics/{id}
-Updates a topic while it is in `DRAFT`, `CHANGES_REQUESTED`, or `IN_REVIEW`.
+Updates a topic while it is in `DRAFT`, `CHANGES_REQUESTED`, or `IN_REVIEW`. Authors may also reopen a `PUBLISHED` topic. Reopening returns the record to `DRAFT`, clears approval metadata, and logs a workflow event for re-validation.
 
 Auth: Yes – requires `topic.edit`.
-Body: Same shape as `POST /api/topics`; omitted fields remain unchanged. Optional `changeNotes` annotate the revision.
+Body: Same shape as `POST /api/topics`; omitted fields remain unchanged. Optional `changeNotes` annotate the revision and, when reopening a published topic, are reused as the workflow note.
 Response 200: Updated topic resource.
 Response 400: Invalid payload or the topic is not in an editable status.
+Response 403: Only the original author can reopen a published topic.
 
 ### POST /api/topics/{id}/submit
 Submits a draft topic for validator review and transitions it to `IN_REVIEW`.
@@ -938,9 +939,10 @@ Response 200: Topic resource reflecting the new status.
 Response 400: Invalid decision keyword or topic is not in `IN_REVIEW`.
 
 ### POST /api/topics/{id}/publish
-Publishes an approved topic.
+Publishes an approved topic. Only the original author may publish, and the topic must have been validated by a teacher (i.e.
+`validatorId` is populated) before this step.
 
-Auth: Yes – requires `topic.publish`.
+Auth: Yes – requires `topic.publish` and the caller to be the author.
 Body (optional):
 ```json
 {
@@ -949,7 +951,8 @@ Body (optional):
 }
 ```
 Response 200: Topic resource with `status: "PUBLISHED"` and `publishedAt` set.
-Response 409: Topic has not been approved.
+Response 400: Topic has not been approved by a validator.
+Response 403: Caller is not the author.
 
 ### POST /api/topics/{id}/comments
 Adds a workflow comment to the topic review thread.

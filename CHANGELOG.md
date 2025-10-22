@@ -1,3 +1,16 @@
+## 2025-11-08 21:30 IST
+- Enabled topic authors to reopen published lessons, returning them to draft, clearing approvals, and logging the workflow reset so new validations can occur.
+- Restricted publishing to the original author after teacher approval and documented the tightened workflow in the API and route references.
+
+## 2025-11-08 16:20 IST
+- Added `MINIO_FORCE_SIGNED_DOWNLOADS` support on the server/client configuration layers so private buckets can force download presigned URLs.
+- Updated the shared editor upload helper to honour the new flag, request GET presigned URLs when required, and expose both signed and direct asset references for downstream consumers.
+- Documented the configuration toggle in `.env.example` and the config README to guide deployments that rely on restricted MinIO buckets.
+
+## 2025-10-22 04:13 IST
+- Enabled resizable TipTap image and video nodes with in-editor controls so topic authors can reposition uploads with industry-standard handles.
+- Normalized MinIO asset URLs in the shared upload helper to always use the configured public base domain.
+- Surfaced `VITE_MINIO_PUBLIC_BASE_URL` in environment templates to keep client and server media links aligned.
 ## 2025-11-09 11:20 IST
 - Extended the `/uploads/test` harness to verify public URLs after upload, logging access denials and preview failures while rendering the remote image inline for confirmation.
 
