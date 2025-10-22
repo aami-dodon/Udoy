@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import PostLoginLayout from '@/features/layouts/PostLoginLayout.jsx';
 import {
   Badge,
   Button,
@@ -29,6 +30,7 @@ import {
 } from '@components/ui';
 import { LucideIcon } from '@icons';
 import { useAuth } from '../auth/AuthProvider.jsx';
+import usePostLoginNavigation from '../navigation/usePostLoginNavigation.jsx';
 import profileApi from './api.js';
 
 const profileSchema = z.object({
@@ -236,8 +238,10 @@ function buildPayload(values, roles) {
 }
 
 function ProfilePage() {
-  const { user, updateUser, refreshSession } = useAuth();
-  const roles = Array.isArray(user?.roles) ? user.roles : [];
+  const auth = useAuth();
+  const { user, updateUser, refreshSession } = auth;
+  const roles = useMemo(() => (Array.isArray(user?.roles) ? user.roles : []), [user]);
+  const { navItems, userRoles } = usePostLoginNavigation(user);
 
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
@@ -343,7 +347,7 @@ function ProfilePage() {
     try {
       setServerMessage('');
       setServerMessageTone('neutral');
-      const payload = buildPayload(values, roles);
+      const payload = buildPayload(values, userRoles);
       const data = await profileApi.updateMyProfile(payload);
       const formValues = buildFormValuesFromProfile(data?.profile);
       form.reset(formValues);
@@ -378,7 +382,7 @@ function ProfilePage() {
     );
   };
 
-  const hasRole = (role) => roles.includes(role);
+  const hasRole = (role) => userRoles.includes(role);
   const showStudentSection = hasRole('student');
   const showCreatorSection = hasRole('creator') || hasRole('teacher');
   const showTeacherSection = hasRole('teacher');
@@ -386,8 +390,9 @@ function ProfilePage() {
   const showSponsorSection = hasRole('sponsor');
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-6 py-10">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <PostLoginLayout user={user} navItems={navItems} onSignOut={auth.logout}>
+      <div className="mx-auto w-full max-w-6xl">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-2">
           <div className="flex items-center gap-3 text-primary">
             <LucideIcon name="IdCard" size="md" />
@@ -966,7 +971,8 @@ function ProfilePage() {
           </form>
         </Form>
       ) : null}
-    </div>
+      </div>
+    </PostLoginLayout>
   );
 }
 

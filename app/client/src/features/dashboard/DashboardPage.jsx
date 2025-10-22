@@ -11,17 +11,9 @@ import {
   Separator,
 } from '@components/ui';
 import { LucideIcon } from '@icons';
-import DashboardLayout from './components/DashboardLayout.jsx';
+import PostLoginLayout from '@/features/layouts/PostLoginLayout.jsx';
+import usePostLoginNavigation from '../navigation/usePostLoginNavigation.jsx';
 import { useAuth } from '../auth/AuthProvider.jsx';
-
-const NAVIGATION_BLUEPRINT = [
-  { to: '/dashboard', label: 'Overview', icon: 'LayoutDashboard' },
-  { to: '/topics', label: 'Learning library', icon: 'BookOpen' },
-  { to: '/topics/new', label: 'Create a topic', icon: 'PenSquare', roles: ['creator', 'teacher', 'admin'] },
-  { to: '/uploads/test', label: 'Upload centre', icon: 'UploadCloud', roles: ['creator', 'teacher', 'admin'] },
-  { to: '/admin/users', label: 'User management', icon: 'Shield', roles: ['admin'] },
-  { to: '/profile', label: 'Profile & settings', icon: 'UserRound' },
-];
 
 const ROLE_DEFINITIONS = {
   student: {
@@ -166,30 +158,7 @@ export default function DashboardPage() {
   const auth = useAuth();
   const { user, session } = auth;
   const [refreshing, setRefreshing] = useState(false);
-
-  const userRoles = useMemo(() => {
-    if (!user?.roles) {
-      return [];
-    }
-
-    return Array.from(
-      new Set(
-        user.roles
-          .map((role) => (typeof role === 'string' ? role.toLowerCase() : ''))
-          .filter(Boolean)
-      )
-    );
-  }, [user?.roles]);
-
-  const navigationItems = useMemo(() => {
-    return NAVIGATION_BLUEPRINT.filter((item) => {
-      if (!item.roles || item.roles.length === 0) {
-        return true;
-      }
-
-      return item.roles.some((role) => userRoles.includes(role));
-    });
-  }, [userRoles]);
+  const { navItems: navigationItems, userRoles } = usePostLoginNavigation(user);
 
   const roleDefinitions = useMemo(() => {
     if (userRoles.length === 0) {
@@ -211,7 +180,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <DashboardLayout user={user} navItems={navigationItems} onSignOut={auth.logout}>
+    <PostLoginLayout user={user} navItems={navigationItems} onSignOut={auth.logout}>
       <div className="grid gap-6 xl:grid-cols-[1.6fr,1fr]">
         <div className="space-y-6">
           <Card className="border border-border/60 bg-gradient-to-r from-card to-muted/70">
@@ -407,6 +376,6 @@ export default function DashboardPage() {
           </Card>
         </div>
       </div>
-    </DashboardLayout>
+    </PostLoginLayout>
   );
 }
