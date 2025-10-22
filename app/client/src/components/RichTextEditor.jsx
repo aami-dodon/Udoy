@@ -634,18 +634,33 @@ const RichTextEditor = ({
   );
 
   useEffect(() => {
-    if (!editor) {
-      return;
-    }
-
-    if (editor.isDestroyed) {
+    if (!editor || editor.isDestroyed) {
       return;
     }
 
     const content = ensureContentShape(value, valueFormat);
-    if (!isEqualContent(editor, content, valueFormat)) {
-      editor.commands.setContent(content, false);
+    if (isEqualContent(editor, content, valueFormat)) {
+      return;
     }
+
+    let isCancelled = false;
+    const runUpdate = () => {
+      if (isCancelled || !editor || editor.isDestroyed) {
+        return;
+      }
+      editor.commands.setContent(content, false);
+    };
+
+    // Defer the update so React does not warn about flushSync inside lifecycle handlers.
+    if (typeof queueMicrotask === 'function') {
+      queueMicrotask(runUpdate);
+    } else {
+      Promise.resolve().then(runUpdate);
+    }
+
+    return () => {
+      isCancelled = true;
+    };
   }, [editor, value, valueFormat]);
 
   useEffect(() => {
