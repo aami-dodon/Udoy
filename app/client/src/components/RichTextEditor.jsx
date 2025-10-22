@@ -14,12 +14,10 @@ import {
 } from '../../../shared/editor/index.js';
 
 const buttonClassName = (isActive) => {
-  const base = RICH_TEXT_EDITOR_TOKENS.button;
-  if (isActive) {
-    return `${base} ${RICH_TEXT_EDITOR_TOKENS.buttonActive}`.trim();
-  }
+  const { button, buttonActive, buttonInactive } = RICH_TEXT_EDITOR_TOKENS;
+  const stateClassName = isActive ? buttonActive : buttonInactive;
 
-  return base;
+  return `${button} ${stateClassName}`.trim();
 };
 
 const ToolbarButton = ({ editor, action, isActive = false, children, ariaLabel, disabled = false }) => (
