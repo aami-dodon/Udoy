@@ -1,3 +1,9 @@
+## 2025-10-22 05:19 IST
+- Simplified the topic reader layout so published lessons render in a single container with the authored rich text content.
+- Ensured editing controls still expose the guided card layout while view-only roles see the streamlined presentation.
+
+## 2025-11-08 18:30 IST
+- Hid the topic editor guidance header for read-only viewers so students only see the published lesson content.
 ## 2025-11-10 09:10 IST
 - Enabled signed-download mode by default in `.env` and `.env.example` so self-hosted MinIO instances without public policies rely on `MINIO_FORCE_SIGNED_DOWNLOADS`.
 - Upgraded the `/uploads/test` harness to request GET presigns when public links are missing, surface the extra response payload, and drive previews plus copy actions via the resolved access URL.
