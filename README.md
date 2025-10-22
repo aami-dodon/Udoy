@@ -10,6 +10,7 @@ A unified platform designed to help underrepresented students access mentors, fu
   - [Engagement Paths](#engagement-paths)
   - [Frequently Asked Questions](#frequently-asked-questions)
 - [Platform Overview](#platform-overview)
+- [Screenshots](#screenshots)
 - [Architecture](#architecture)
   - [Tech Stack](#tech-stack)
   - [Key Packages](#key-packages)
@@ -55,6 +56,13 @@ The landing experience presents Udoy as a launchpad where learners emerge, rise,
 - **Server**: Express.js API with JWT auth, Casbin RBAC, Prisma ORM, and integrations for email, storage, and search.
 - **Shared**: Cross-cutting theme tokens, UI primitives (shadcn + Tailwind), editor integrations, and utility modules.
 - **Goal**: Sustain a transparent ecosystem that keeps students engaged, mentors supported, and sponsors informed.
+
+## Screenshots
+![Admin users dashboard](./images/admin-users.png)
+![Platform overview dashboard](./images/dashboard.png)
+![User profile](./images/profile.png)
+![Topics listing](./images/topics.png)
+![Upload test page](./images/upload-test.png)
 
 ## Architecture
 ### Tech Stack
