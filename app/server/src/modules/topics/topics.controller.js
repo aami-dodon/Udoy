@@ -132,7 +132,8 @@ export async function publishTopic(req, res, next) {
   try {
     const { id } = req.params;
     const actorId = req.user?.sub || null;
-    const topic = await publishTopicService(id, req.body || {}, { actorId });
+    const actorRoles = Array.isArray(req.user?.roles) ? req.user.roles : [];
+    const topic = await publishTopicService(id, req.body || {}, { actorId, actorRoles });
 
     return res.json({
       status: 'success',

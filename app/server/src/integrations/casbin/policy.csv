@@ -31,6 +31,7 @@ p, role:creator, topic, view
 p, role:creator, topic, create
 p, role:creator, topic, edit
 p, role:creator, topic, submit
+p, role:creator, topic, publish
 p, role:creator, topic-comment, manage
 p, role:creator, storage:uploads, read
 p, role:creator, storage:uploads, write

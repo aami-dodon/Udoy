@@ -231,6 +231,12 @@ export const ROLE_DEFINITIONS = [
         description: 'Submit drafts for validation workflows.',
       },
       {
+        name: 'topic.publish',
+        resource: 'topic',
+        action: 'publish',
+        description: 'Publish approved topics once validation is complete.',
+      },
+      {
         name: 'topic.comment',
         resource: 'topic-comment',
         action: 'manage',

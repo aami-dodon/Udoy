@@ -939,10 +939,9 @@ Response 200: Topic resource reflecting the new status.
 Response 400: Invalid decision keyword or topic is not in `IN_REVIEW`.
 
 ### POST /api/topics/{id}/publish
-Publishes an approved topic. Only the original author may publish, and the topic must have been validated by a teacher (i.e.
-`validatorId` is populated) before this step.
+Publishes an approved topic. The topic must have been validated by a teacher (i.e. `validatorId` is populated) before this step. Admins may publish any approved topic while creators may publish their own.
 
-Auth: Yes – requires `topic.publish` and the caller to be the author.
+Auth: Yes – requires `topic.publish`. Admins bypass the author check; other callers must be the topic author.
 Body (optional):
 ```json
 {
@@ -952,7 +951,7 @@ Body (optional):
 ```
 Response 200: Topic resource with `status: "PUBLISHED"` and `publishedAt` set.
 Response 400: Topic has not been approved by a validator.
-Response 403: Caller is not the author.
+Response 403: Caller is neither an admin nor the topic author.
 
 ### POST /api/topics/{id}/comments
 Adds a workflow comment to the topic review thread.
