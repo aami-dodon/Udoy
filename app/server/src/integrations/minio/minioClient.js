@@ -64,7 +64,7 @@ export function isMinioConfigured() {
 }
 
 export const DEFAULT_EXPIRY_SECONDS = 15 * 60;
-export const MAX_EXPIRY_SECONDS = 24 * 60 * 60;
+export const MAX_EXPIRY_SECONDS = 7 * 24 * 60 * 60; // 7 days
 
 function ensureMinioReady() {
   if (!minioConfig) {
@@ -89,10 +89,41 @@ function normalizeObjectKey(objectKey) {
 }
 
 function resolveExpirySeconds(expirySeconds) {
-  const parsed = Number(expirySeconds);
+  if (!expirySeconds) {
+    return DEFAULT_EXPIRY_SECONDS;
+  }
 
-  if (Number.isFinite(parsed) && parsed > 0) {
-    const clamped = Math.min(Math.max(Math.floor(parsed), 1), MAX_EXPIRY_SECONDS);
+  const str = String(expirySeconds).trim().toLowerCase();
+  const match = str.match(/^(\d+)([dhms])?$/);
+
+  if (match) {
+    const value = parseInt(match[1], 10);
+    const unit = match[2] || 's';
+
+    let seconds;
+    switch (unit) {
+      case 'd':
+        seconds = value * 24 * 60 * 60;
+        break;
+      case 'h':
+        seconds = value * 60 * 60;
+        break;
+      case 'm':
+        seconds = value * 60;
+        break;
+      case 's':
+      default:
+        seconds = value;
+        break;
+    }
+
+    const clamped = Math.min(Math.max(seconds, 1), MAX_EXPIRY_SECONDS);
+    return clamped;
+  }
+
+  const numeric = Number(str);
+  if (Number.isFinite(numeric) && numeric > 0) {
+    const clamped = Math.min(Math.max(Math.floor(numeric), 1), MAX_EXPIRY_SECONDS);
     return clamped;
   }
 

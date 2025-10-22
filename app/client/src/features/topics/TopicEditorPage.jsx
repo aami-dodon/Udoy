@@ -564,13 +564,15 @@ export default function TopicEditorPage() {
         <div className="grid gap-6 lg:grid-cols-[minmax(0,2.2fr)_minmax(320px,1fr)] lg:items-start">
           <section className="flex flex-col">
             <Card className="flex-1">
-              <CardHeader>
-                <CardTitle>Content</CardTitle>
-                <CardDescription>
-                  Build the lesson with rich text, embedded media, and attachments. Drag and drop images or videos to upload
-                  them to secure storage.
-                </CardDescription>
-              </CardHeader>
+              {canEdit ? (
+                <CardHeader>
+                  <CardTitle>Content</CardTitle>
+                  <CardDescription>
+                    Build the lesson with rich text, embedded media, and attachments. Drag and drop images or videos to
+                    upload them to secure storage.
+                  </CardDescription>
+                </CardHeader>
+              ) : null}
               <CardContent className="flex flex-col">
                 <RichTextEditor
                   value={form.content}
