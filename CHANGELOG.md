@@ -307,4 +307,3 @@
 ## 2025-10-22 11:45 IST
 - Ensured editor uploads fetch a presigned GET URL when MinIO public hosting is unavailable so newly inserted media render immediately.
 - Hardened the shared TipTap inserters to accept either `src` or `url` descriptors for images, videos, and audio embeds.
-

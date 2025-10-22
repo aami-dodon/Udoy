@@ -8,7 +8,7 @@ Loads environment variables via [`dotenv`](https://github.com/motdotla/dotenv) u
 
 - **Server runtime** – Captures `NODE_ENV`, coerces `SERVER_PORT` to a number with a `6005` fallback, and guarantees that `API_PREFIX` starts with `/`.
 - **CORS** – Splits `CORS_ALLOWED_ORIGINS` on commas, trims whitespace, and drops empty entries.
-- **MinIO storage** – Only emits a configuration object when `MINIO_ENDPOINT`, `MINIO_ACCESS_KEY`, and `MINIO_SECRET_KEY` are all present. Optional properties—`MINIO_PORT`, `MINIO_REGION`, `MINIO_BUCKET`, and `MINIO_PUBLIC_BASE_URL`—are attached after validating numeric ports and casting the `MINIO_USE_SSL` string to a boolean.
+- **MinIO storage** – Only emits a configuration object when `MINIO_ENDPOINT`, `MINIO_ACCESS_KEY`, and `MINIO_SECRET_KEY` are all present. Optional properties—`MINIO_PORT`, `MINIO_REGION`, `MINIO_BUCKET`, `MINIO_PUBLIC_BASE_URL`, and the boolean `MINIO_FORCE_SIGNED_DOWNLOADS`—are attached after validating numeric ports and casting the `MINIO_USE_SSL` string to a boolean.
 - **Email delivery** – Returns metadata (`EMAIL_FROM`, `EMAIL_VERIFICATION_URL`, `PASSWORD_RESET_URL`) and an SMTP block when `EMAIL_SMTP_HOST`, `EMAIL_SMTP_USER`, and `EMAIL_SMTP_PASS` exist. The SMTP block contains host, credentials, the optional numeric `EMAIL_SMTP_PORT`, and a boolean derived from `EMAIL_SMTP_SECURE`.
 - **JWT tokens** – Groups access and refresh token settings (`JWT_*_SECRET`, `JWT_*_EXPIRES_IN`, `JWT_*_COOKIE_NAME`) into a nested object consumed by authentication code.
 

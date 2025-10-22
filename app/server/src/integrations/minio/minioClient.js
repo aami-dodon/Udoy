@@ -16,6 +16,7 @@ export class MinioConfigError extends AppError {
 
 const minioConfig = env.minio || null;
 const bucketName = minioConfig?.bucket || null;
+const forceSignedDownloads = Boolean(minioConfig?.forceSignedDownloads);
 
 let minioClient = null;
 
@@ -99,6 +100,10 @@ function resolveExpirySeconds(expirySeconds) {
 }
 
 export function getMinioPublicUrl(objectKey) {
+  if (forceSignedDownloads) {
+    return null;
+  }
+
   const baseUrl = minioConfig?.publicBaseUrl;
   const normalizedKey = normalizeObjectKey(objectKey);
 
