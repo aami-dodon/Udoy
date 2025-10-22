@@ -85,6 +85,7 @@ function UploadTestPage() {
   const [status, setStatus] = useState('idle');
   const [error, setError] = useState(null);
   const [presignResult, setPresignResult] = useState(null);
+  const [uploadResponseDetails, setUploadResponseDetails] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [copyNotice, setCopyNotice] = useState(null);
   const [publicFetchStatus, setPublicFetchStatus] = useState('idle');
@@ -122,6 +123,7 @@ function UploadTestPage() {
     setPublicFetchStatus('idle');
     setPublicFetchError(null);
     setPublicCheckedAt(null);
+    setUploadResponseDetails(null);
 
     if (!file) {
       setSelectedFile(null);
@@ -253,6 +255,7 @@ function UploadTestPage() {
       setError(null);
       setCopyNotice(null);
       setPresignResult(null);
+      setUploadResponseDetails(null);
       setPublicFetchStatus('idle');
       setPublicFetchError(null);
       setPublicCheckedAt(null);
@@ -282,6 +285,31 @@ function UploadTestPage() {
           body: selectedFile,
         });
 
+        const responseHeaders = {};
+        uploadResponse.headers.forEach((value, key) => {
+          responseHeaders[key] = value;
+        });
+
+        let responseBody = null;
+        try {
+          const text = await uploadResponse.clone().text();
+          if (text && text.trim().length > 0) {
+            responseBody = text;
+          }
+        } catch (responseReadError) {
+          console.warn('Unable to read MinIO upload response body.', responseReadError);
+        }
+
+        const responseSummary = {
+          ok: uploadResponse.ok,
+          status: uploadResponse.status,
+          statusText: uploadResponse.statusText,
+          headers: responseHeaders,
+          body: responseBody,
+        };
+
+        setUploadResponseDetails(responseSummary);
+
         if (!uploadResponse.ok) {
           if (uploadResponse.status === 403) {
             console.error('Access denied while uploading to MinIO. Verify IAM policies and presign URL configuration.', {
@@ -299,6 +327,16 @@ function UploadTestPage() {
         setStatus('error');
         console.error('Image upload failed in the test harness.', uploadError);
         setError(uploadError?.message || 'Failed to upload the image.');
+        setUploadResponseDetails((previous) =>
+          previous || {
+            ok: false,
+            status: null,
+            statusText: null,
+            headers: {},
+            body: null,
+            error: uploadError?.message || 'Unknown upload error occurred.',
+          }
+        );
       } finally {
         setIsSubmitting(false);
       }
@@ -435,6 +473,47 @@ function UploadTestPage() {
           ) : (
             <p className="text-sm text-muted-foreground">
               Generate a presigned URL to view the structured response data, headers, and derived public link.
+            </p>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="space-y-2">
+          <CardTitle>MinIO upload response</CardTitle>
+          <CardDescription>
+            Inspect the direct response from MinIO after the presigned upload request completes.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {uploadResponseDetails ? (
+            <>
+              <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                <span className="font-medium text-foreground">Status:</span>
+                <Badge variant={uploadResponseDetails.ok ? 'default' : 'destructive'}>
+                  {uploadResponseDetails.ok ? 'Success' : 'Failed'}
+                </Badge>
+                {uploadResponseDetails.status !== null ? (
+                  <>
+                    <span className="font-medium text-foreground">Code:</span>
+                    <span>
+                      {uploadResponseDetails.status} {uploadResponseDetails.statusText}
+                    </span>
+                  </>
+                ) : null}
+                {uploadResponseDetails.error ? (
+                  <span className="text-destructive">{uploadResponseDetails.error}</span>
+                ) : null}
+              </div>
+              <Textarea
+                readOnly
+                value={JSON.stringify(uploadResponseDetails, null, 2)}
+                className="min-h-[220px] font-mono text-xs"
+              />
+            </>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              Request an upload to view the HTTP status, headers, and body returned by MinIO.
             </p>
           )}
         </CardContent>
