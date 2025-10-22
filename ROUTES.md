@@ -20,7 +20,7 @@
 | `/admin/users` | Admin | Admin role | Guarded by `RequireRole('admin')`; lists users, updates statuses, and manages role bindings. |
 | `/topics` | Topics | Authenticated | Topic library showing published topics to all signed-in users with workflow controls for creators, teachers, and admins. |
 | `/topics/new` | Topics | Creator / Admin | Topic authoring surface for drafting new content guarded by `RequireRole(['creator','admin'])`. |
-| `/topics/:topicId` | Topics | Authenticated | Topic workspace rendering published topics in read-only mode for general users and exposing authoring tools to creator, teacher, and admin roles. |
+| `/topics/:topicId` | Topics | Authenticated | Topic workspace rendering published topics in read-only mode for general users, exposing authoring tools to creator/teacher/admin roles, and letting authors reopen published drafts for re-validation. |
 | `/403` | Error Pages | Public | Forbidden access screen that guides users back to the home experience. |
 | `/500` | Error Pages | Public | Server error page surfaced when upstream systems fail unexpectedly. |
 | `/error` | Error Pages | Public | Generic fallback error experience shared by the global error boundary. |

@@ -1,3 +1,7 @@
+## 2025-11-08 21:30 IST
+- Enabled topic authors to reopen published lessons, returning them to draft, clearing approvals, and logging the workflow reset so new validations can occur.
+- Restricted publishing to the original author after teacher approval and documented the tightened workflow in the API and route references.
+
 ## 2025-11-08 16:20 IST
 - Added `MINIO_FORCE_SIGNED_DOWNLOADS` support on the server/client configuration layers so private buckets can force download presigned URLs.
 - Updated the shared editor upload helper to honour the new flag, request GET presigned URLs when required, and expose both signed and direct asset references for downstream consumers.

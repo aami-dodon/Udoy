@@ -796,10 +796,19 @@ export async function updateTopic(topicId, payload = {}, { actorId } = {}) {
   const existing = await fetchTopicOrThrow(topicId, { include: TOPIC_SUMMARY_INCLUDE });
 
   const allowedStatuses = [TopicStatus.DRAFT, TopicStatus.CHANGES_REQUESTED, TopicStatus.IN_REVIEW];
-  if (!allowedStatuses.includes(existing.status)) {
+  const isPublished = existing.status === TopicStatus.PUBLISHED;
+
+  if (!allowedStatuses.includes(existing.status) && !isPublished) {
     throw AppError.badRequest('Topic cannot be edited in its current status.', {
       code: 'TOPIC_UPDATE_STATUS_INVALID',
       details: { status: existing.status },
+    });
+  }
+
+  if (isPublished && existing.authorId !== actorId) {
+    throw AppError.forbidden('Only the original author can edit a published topic.', {
+      code: 'TOPIC_UPDATE_AUTHOR_MISMATCH',
+      details: { authorId: existing.authorId },
     });
   }
 
@@ -808,12 +817,23 @@ export async function updateTopic(topicId, payload = {}, { actorId } = {}) {
   const changeNotes = sanitizeString(payload.changeNotes, { field: 'Change notes', maxLength: 500 });
 
   const nextVersion = existing.version + 1;
+  const statusTransition = isPublished
+    ? {
+        status: TopicStatus.DRAFT,
+        submittedAt: null,
+        approvedAt: null,
+        publishedAt: null,
+        validatorId: null,
+      }
+    : {};
+  const workflowNote = changeNotes || 'Draft updated.';
 
   const topic = await prisma.$transaction(async (tx) => {
     const updated = await tx.topic.update({
       where: { id: topicId },
       data: {
         ...updates,
+        ...statusTransition,
         version: nextVersion,
       },
     });
@@ -822,7 +842,21 @@ export async function updateTopic(topicId, payload = {}, { actorId } = {}) {
       await applyTopicTags(topicId, Array.isArray(tags) ? tags : [], { actorId, prismaClient: tx });
     }
 
-    await createRevisionFromTopic(tx, updated, { actorId, changeNotes: changeNotes || 'Draft updated.' });
+    const revisionNotes = isPublished
+      ? changeNotes || 'Published topic reopened for edits.'
+      : workflowNote;
+    await createRevisionFromTopic(tx, updated, { actorId, changeNotes: revisionNotes });
+
+    if (isPublished) {
+      await recordWorkflowEvent(
+        tx,
+        topicId,
+        actorId,
+        existing.status,
+        TopicStatus.DRAFT,
+        changeNotes || 'Returned published topic to draft for author revisions.',
+      );
+    }
 
     return tx.topic.findUnique({
       where: { id: topicId },
@@ -972,6 +1006,19 @@ export async function publishTopic(topicId, payload = {}, { actorId } = {}) {
     throw AppError.badRequest('Only approved topics can be published.', {
       code: 'TOPIC_PUBLISH_INVALID_STATUS',
       details: { status: existing.status },
+    });
+  }
+
+  if (existing.authorId !== actorId) {
+    throw AppError.forbidden('Only the topic author can publish after approval.', {
+      code: 'TOPIC_PUBLISH_AUTHOR_REQUIRED',
+      details: { authorId: existing.authorId },
+    });
+  }
+
+  if (!existing.validatorId) {
+    throw AppError.badRequest('Topic must be validated by a teacher before publishing.', {
+      code: 'TOPIC_PUBLISH_VALIDATION_REQUIRED',
     });
   }
 
