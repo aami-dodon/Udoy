@@ -65,6 +65,12 @@ export default defineConfig(({ mode }) => {
         '@tiptap/extension-file-handler': path.resolve(clientNodeModules, '@tiptap/extension-file-handler'),
         '@tiptap/extension-underline': path.resolve(clientNodeModules, '@tiptap/extension-underline'),
         '@tiptap/extension-text-align': path.resolve(clientNodeModules, '@tiptap/extension-text-align'),
+        '@tiptap/extension-highlight': path.resolve(clientNodeModules, '@tiptap/extension-highlight'),
+        '@tiptap/extension-typography': path.resolve(clientNodeModules, '@tiptap/extension-typography'),
+        '@tiptap/extension-subscript': path.resolve(clientNodeModules, '@tiptap/extension-subscript'),
+        '@tiptap/extension-superscript': path.resolve(clientNodeModules, '@tiptap/extension-superscript'),
+        '@tiptap/extension-task-item': path.resolve(clientNodeModules, '@tiptap/extension-task-item'),
+        '@tiptap/extension-task-list': path.resolve(clientNodeModules, '@tiptap/extension-task-list'),
       },
     },
     server: {
