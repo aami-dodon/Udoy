@@ -176,6 +176,7 @@ export default function TopicEditorPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const roles = useMemo(() => user?.roles || [], [user]);
+  const userId = user?.id || user?.sub || null;
   const isAdmin = roles.includes('admin');
   const isCreator = roles.includes('creator') || isAdmin;
   const isValidator = roles.includes('teacher') || isAdmin;
@@ -221,12 +222,26 @@ export default function TopicEditorPage() {
     return isValidator && topic.status === 'IN_REVIEW';
   }, [topic, isValidator]);
 
+  const isTopicAuthor = useMemo(() => {
+    if (!topic || !userId) {
+      return false;
+    }
+    const topicAuthorId = topic?.author?.id || topic?.authorId || null;
+    if (!topicAuthorId) {
+      return false;
+    }
+    return topicAuthorId === userId;
+  }, [topic, userId]);
+
   const canPublish = useMemo(() => {
     if (!topic) {
       return false;
     }
-    return isAdmin && ['APPROVED', 'PUBLISHED'].includes(topic.status);
-  }, [topic, isAdmin]);
+    if (!['APPROVED', 'PUBLISHED'].includes(topic.status)) {
+      return false;
+    }
+    return isAdmin || isTopicAuthor;
+  }, [topic, isAdmin, isTopicAuthor]);
 
   const showMessage = useCallback((type, text) => {
     setMessage({ type, text, id: Date.now() });

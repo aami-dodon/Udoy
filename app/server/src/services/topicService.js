@@ -998,8 +998,10 @@ export async function reviewTopic(topicId, payload = {}, { actorId } = {}) {
   return toTopicResource(topic, { includeContent: true });
 }
 
-export async function publishTopic(topicId, payload = {}, { actorId } = {}) {
+export async function publishTopic(topicId, payload = {}, { actorId, actorRoles = [] } = {}) {
   assertActor(actorId);
+  const roles = Array.isArray(actorRoles) ? actorRoles : [];
+  const isAdmin = roles.includes('admin');
   const existing = await fetchTopicOrThrow(topicId, { include: TOPIC_SUMMARY_INCLUDE });
 
   if (![TopicStatus.APPROVED, TopicStatus.PUBLISHED].includes(existing.status)) {
@@ -1009,7 +1011,7 @@ export async function publishTopic(topicId, payload = {}, { actorId } = {}) {
     });
   }
 
-  if (existing.authorId !== actorId) {
+  if (existing.authorId !== actorId && !isAdmin) {
     throw AppError.forbidden('Only the topic author can publish after approval.', {
       code: 'TOPIC_PUBLISH_AUTHOR_REQUIRED',
       details: { authorId: existing.authorId },

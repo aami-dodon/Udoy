@@ -1,3 +1,11 @@
+## 2025-11-10 18:05 IST
+- Granted creators the `topic.publish` permission in RBAC so topic authors can publish after approval alongside admins.
+- Documented the publish endpoint to clarify the relaxed author requirement and updated Casbin seed policies.
+
+## 2025-11-10 15:45 IST
+- Allowed admins to publish approved topics even when they are not the original author, keeping workflows unblocked for escalations.
+- Updated the topic editor to show the publish action to the author of an approved topic in addition to admins.
+
 ## 2025-10-22 05:19 IST
 - Simplified the topic reader layout so published lessons render in a single container with the authored rich text content.
 - Ensured editing controls still expose the guided card layout while view-only roles see the streamlined presentation.
