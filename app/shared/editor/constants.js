@@ -42,6 +42,10 @@ export const RICH_TEXT_EDITOR_TOKENS = {
   editor: 'rich-text-editor prose max-w-none px-3 py-4 text-slate-800 focus:outline-none',
   bubbleMenu: 'rich-text-bubble flex items-center gap-1 rounded-md border border-slate-200 bg-white p-2 shadow-lg',
   floatingMenu: 'rich-text-floating-menu flex flex-col gap-1 rounded-md border border-slate-200 bg-white p-2 shadow-lg',
-  button: 'rich-text-button inline-flex items-center gap-1 rounded-md border border-transparent bg-white px-2 py-1 text-sm font-medium text-slate-600 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500',
-  buttonActive: 'rich-text-button-active bg-slate-900 text-white hover:bg-slate-800',
+  button:
+    'rich-text-button inline-flex items-center gap-1 rounded-md border border-transparent px-2 py-1 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 focus:ring-offset-transparent',
+  buttonInactive:
+    'rich-text-button-inactive bg-porcelain text-black-olive hover:bg-porcelain-tint dark:bg-black-olive dark:text-porcelain dark:hover:bg-black-olive/80',
+  buttonActive:
+    'rich-text-button-active bg-black-olive text-white hover:bg-black-olive/90 dark:bg-porcelain dark:text-black-olive dark:hover:bg-porcelain/80',
 };

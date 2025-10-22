@@ -14,6 +14,7 @@ const ProfilePage = lazy(() => import('./features/profile/ProfilePage.jsx'));
 const AdminUsersPage = lazy(() => import('./features/admin/AdminUsersPage.jsx'));
 const TopicsListPage = lazy(() => import('./features/topics/TopicsListPage.jsx'));
 const TopicEditorPage = lazy(() => import('./features/topics/TopicEditorPage.jsx'));
+const UploadTestPage = lazy(() => import('./features/uploads/UploadTestPage.jsx'));
 const ForbiddenPage = lazy(() => import('./features/errors/ForbiddenPage.jsx'));
 const ServerErrorPage = lazy(() => import('./features/errors/ServerErrorPage.jsx'));
 const GenericErrorPage = lazy(() => import('./features/errors/GenericErrorPage.jsx'));
@@ -46,6 +47,14 @@ const routes = [
       <RequireAuth>
         <TopicEditorPage />
       </RequireAuth>
+    ),
+  },
+  {
+    path: '/uploads/test',
+    element: (
+      <RequireRole roles={['admin', 'creator', 'teacher']}>
+        <UploadTestPage />
+      </RequireRole>
     ),
   },
   {
