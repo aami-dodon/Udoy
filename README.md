@@ -26,9 +26,9 @@ A unified platform designed to help underrepresented students access mentors, fu
 - [Community and Support](#community-and-support)
 
 ## Vision and Narrative
-The landing experience presents Udoy as a launchpad where learners emerge, rise, and thrive through a virtuous cycle of learning, mentorship, and reinvestment.
+Udoy is a launchpad where learners emerge, rise, and thrive through a virtuous cycle of learning, mentorship, and reinvestment.
 
-### Hero Promise
+### Promise
 - Introduces **Udoy** with the rallying cry **“Emerge, Rise, Thrive.”**
 - Highlights a bold statement: *“Udoy is being built as the launchpad for children ready to rise above circumstance.”*
 - Encourages immediate action with calls to **Join as a Sponsor**, **Become a Mentor**, or **Explore Learning Paths**, while surfacing trust signals like verified onboarding and transparent impact reporting.
