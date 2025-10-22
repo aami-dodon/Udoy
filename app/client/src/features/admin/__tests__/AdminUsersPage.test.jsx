@@ -1,4 +1,5 @@
 import { render, screen, waitFor, within } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import AdminUsersPage from '../AdminUsersPage.jsx';
 import adminApi from '../api.js';
@@ -7,8 +8,9 @@ vi.mock('../auth/AuthProvider.jsx', () => {
   const updateUser = vi.fn();
   return {
     useAuth: () => ({
-      user: { id: 'admin-1' },
+      user: { id: 'admin-1', roles: ['admin'] },
       updateUser,
+      logout: vi.fn(),
     }),
   };
 });
@@ -51,7 +53,11 @@ describe('AdminUsersPage confirmations', () => {
 
   it('shows a confirmation before changing status and defers the API call until confirmed', async () => {
     const user = userEvent.setup();
-    render(<AdminUsersPage />);
+    render(
+      <MemoryRouter>
+        <AdminUsersPage />
+      </MemoryRouter>,
+    );
 
     const statusButton = await screen.findByRole('button', { name: /active/i });
     await user.click(statusButton);
@@ -72,7 +78,11 @@ describe('AdminUsersPage confirmations', () => {
 
   it('confirms role updates before calling the API', async () => {
     const user = userEvent.setup();
-    render(<AdminUsersPage />);
+    render(
+      <MemoryRouter>
+        <AdminUsersPage />
+      </MemoryRouter>,
+    );
 
     const manageButton = await screen.findByRole('button', { name: /manage/i });
     await user.click(manageButton);

@@ -1,3 +1,8 @@
+## 2025-11-11 09:15 IST
+- Introduced a reusable post-login layout shell with unified header, sidebar navigation, and footer for authenticated screens.
+- Centralised the role-aware navigation blueprint and hook so feature pages filter menu items consistently.
+- Applied the shared layout to dashboard, topics library, profile, uploads test bench, and admin users pages; updated tests to account for the layout shell.
+
 ## 2025-11-10 20:30 IST
 - Refreshed the root `README.md` with a narrative-driven overview of the landing page, platform architecture, onboarding flows, and documentation index for new contributors.
 

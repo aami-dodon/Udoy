@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import {
   Button,
@@ -13,8 +12,9 @@ import {
 } from '@components/ui';
 import { LucideIcon } from '@icons';
 import { cn } from '@/lib/utils';
+import { useMemo } from 'react';
 
-function DashboardHeader({ user, navItems, onSignOut }) {
+function PostLoginHeader({ user, navItems, onSignOut }) {
   const userInitials = useMemo(() => {
     if (!user) {
       return '';
@@ -124,7 +124,7 @@ function DashboardHeader({ user, navItems, onSignOut }) {
   );
 }
 
-function DashboardSidebar({ navItems }) {
+function PostLoginSidebar({ navItems }) {
   return (
     <aside className="hidden w-72 flex-col border-r border-border/60 bg-card/70 backdrop-blur supports-[backdrop-filter]:bg-card/60 lg:flex">
       <div className="flex h-16 items-center border-b border-border/60 px-6">
@@ -155,19 +155,23 @@ function DashboardSidebar({ navItems }) {
         </nav>
       </ScrollArea>
       <div className="border-t border-border/60 px-6 py-4 text-xs text-muted-foreground">
-        <p>Need help? Email <a href="mailto:support@udoy.in" className="font-semibold text-primary">support@udoy.in</a>.</p>
+        <p>
+          Need help? Email <a href="mailto:support@udoy.in" className="font-semibold text-primary">support@udoy.in</a>.
+        </p>
       </div>
     </aside>
   );
 }
 
-function DashboardFooter() {
+function PostLoginFooter() {
   return (
     <footer className="border-t border-border/60 bg-card/70 backdrop-blur supports-[backdrop-filter]:bg-card/60">
       <div className="flex flex-col gap-2 px-4 py-4 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6">
         <span>© {new Date().getFullYear()} Udoy Platform. All rights reserved.</span>
         <div className="flex flex-wrap items-center gap-3">
-          <a href="/docs/roadmap" className="hover:text-foreground">Roadmap</a>
+          <a href="/docs/roadmap" className="hover:text-foreground">
+            Roadmap
+          </a>
           <Separator orientation="vertical" className="hidden h-4 bg-border sm:inline" />
           <a href="mailto:support@udoy.in" className="hover:text-foreground">
             Contact support
@@ -178,15 +182,15 @@ function DashboardFooter() {
   );
 }
 
-export default function DashboardLayout({ user, navItems, onSignOut, children }) {
+export default function PostLoginLayout({ user, navItems, onSignOut, children }) {
   return (
     <div className="min-h-screen bg-muted/40">
       <div className="mx-auto flex min-h-screen w-full max-w-[1400px] flex-col lg:flex-row">
-        <DashboardSidebar navItems={navItems} />
+        <PostLoginSidebar navItems={navItems} />
         <div className="flex min-h-screen flex-1 flex-col">
-          <DashboardHeader user={user} navItems={navItems} onSignOut={onSignOut} />
+          <PostLoginHeader user={user} navItems={navItems} onSignOut={onSignOut} />
           <main className="flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">{children}</main>
-          <DashboardFooter />
+          <PostLoginFooter />
         </div>
       </div>
     </div>

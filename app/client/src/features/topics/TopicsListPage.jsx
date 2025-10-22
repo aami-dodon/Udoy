@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import PostLoginLayout from '@/features/layouts/PostLoginLayout.jsx';
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@components/ui';
 import DataTable from '@components/data-table.jsx';
 import { LucideIcon } from '@icons';
 import { useAuth } from '../auth/AuthProvider.jsx';
+import usePostLoginNavigation from '../navigation/usePostLoginNavigation.jsx';
 import { STATUS_FILTER_OPTIONS, createTopicColumns } from './components/topic-columns.jsx';
 import topicsApi from './api.js';
 
@@ -12,10 +14,10 @@ const STATUS_ALL_VALUE = 'ALL';
 const MANAGEMENT_ROLES = new Set(['admin', 'creator', 'teacher']);
 
 export default function TopicsListPage() {
-  const { user } = useAuth();
-  const roles = useMemo(() => user?.roles || [], [user]);
-  const isManager = useMemo(() => roles.some((role) => MANAGEMENT_ROLES.has(role)), [roles]);
-  const canCreate = roles.includes('creator') || roles.includes('admin');
+  const auth = useAuth();
+  const { navItems, userRoles } = usePostLoginNavigation(auth.user);
+  const isManager = useMemo(() => userRoles.some((role) => MANAGEMENT_ROLES.has(role)), [userRoles]);
+  const canCreate = userRoles.includes('creator') || userRoles.includes('admin');
 
   const initialStatus = isManager ? STATUS_ALL_VALUE : 'PUBLISHED';
   const [filters, setFilters] = useState(() => ({ status: initialStatus, search: '' }));
@@ -151,12 +153,13 @@ export default function TopicsListPage() {
     : 'Browse published topics ready for learners across the Udoy network.';
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-6 p-6">
-      <div className="flex flex-col gap-2">
-        <h1 className="font-display text-3xl font-semibold text-slate-900">{title}</h1>
-        <p className="text-sm text-neutral-600">{description}</p>
-      </div>
-      <Card>
+    <PostLoginLayout user={auth.user} navItems={navItems} onSignOut={auth.logout}>
+      <div className="mx-auto flex max-w-6xl flex-col gap-6">
+        <div className="flex flex-col gap-2">
+          <h1 className="font-display text-3xl font-semibold text-slate-900">{title}</h1>
+          <p className="text-sm text-neutral-600">{description}</p>
+        </div>
+        <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0">
           <div>
             <CardTitle>Topic library</CardTitle>
@@ -216,8 +219,9 @@ export default function TopicsListPage() {
             footerContent={footerContent}
           />
         </CardContent>
-      </Card>
-    </div>
+        </Card>
+      </div>
+    </PostLoginLayout>
   );
 }
 

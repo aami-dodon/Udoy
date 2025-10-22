@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import PostLoginLayout from '@/features/layouts/PostLoginLayout.jsx';
 import {
   Badge,
   Button,
@@ -13,6 +14,8 @@ import {
   Textarea,
 } from '@components/ui';
 import { LucideIcon } from '@icons';
+import { useAuth } from '../auth/AuthProvider.jsx';
+import usePostLoginNavigation from '../navigation/usePostLoginNavigation.jsx';
 import { requestUploadPresign } from './api.js';
 
 const ACCEPTED_IMAGE_PREFIX = 'image/';
@@ -82,6 +85,8 @@ function normalizeHeaders(headers) {
 }
 
 function UploadTestPage() {
+  const auth = useAuth();
+  const { navItems } = usePostLoginNavigation(auth.user);
   const [selectedFile, setSelectedFile] = useState(null);
   const [objectKey, setObjectKey] = useState('');
   const [status, setStatus] = useState('idle');
@@ -397,7 +402,8 @@ function UploadTestPage() {
   }, [resolvedPreviewUrl]);
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-6">
+    <PostLoginLayout user={auth.user} navItems={navItems} onSignOut={auth.logout}>
+      <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-display text-3xl font-semibold text-foreground">Image Upload Test Bench</h1>
@@ -623,7 +629,8 @@ function UploadTestPage() {
           )}
         </CardContent>
       </Card>
-    </div>
+      </div>
+    </PostLoginLayout>
   );
 }
 
