@@ -15,7 +15,7 @@ describe('App routing', () => {
         name: /Udoy is being built as the launchpad for children ready to rise above circumstance\./i,
       })
     ).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Join as a sponsor/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Join as a sponsor/i })).toBeInTheDocument();
   });
 
   it('falls back to the not found page for unknown routes', async () => {

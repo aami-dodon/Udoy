@@ -21,6 +21,7 @@ This integration encapsulates connectivity with the MinIO object storage service
 | `region` | Optional region identifier (for S3-compatible deployments). |
 | `bucket` | Default bucket used for uploads. |
 | `publicBaseUrl` | Optional base URL for constructing publicly accessible object URLs. |
+| `forceSignedDownloads` | Boolean flag that disables direct URLs and forces GET presigned URLs for downloads. |
 
 Missing configuration triggers descriptive log messages and causes helper functions to throw a `MinioConfigError` when critical pieces are unavailable. This prevents silent failures while keeping the application boot sequence resilient.
 
@@ -47,6 +48,6 @@ import {
 - `isMinioConfigured()` evaluates whether the client and bucket information are ready for use.
 - `getPresignedPutUrl(objectKey, options)` generates a time-bound upload URL. Optional `contentType` is converted into required headers.
 - `getPresignedGetUrl(objectKey, options)` produces a time-limited download URL. Optional `responseHeaders` are passed through to control content disposition.
-- `getMinioPublicUrl(objectKey)` crafts a direct URL when `publicBaseUrl` is configured.
+- `getMinioPublicUrl(objectKey)` crafts a direct URL when `publicBaseUrl` is configured and `forceSignedDownloads` is disabled.
 
 Both presigned helpers normalize object keys and clamp expirations between `MINIO_DEFAULT_EXPIRY_SECONDS` (15 minutes) and `MINIO_MAX_EXPIRY_SECONDS` (24 hours). Errors are logged and rethrown to aid troubleshooting.

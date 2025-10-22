@@ -1,11 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import PostLoginLayout from '@/features/layouts/PostLoginLayout.jsx';
+import DataTable from '@components/data-table.jsx';
 import { useAuth } from '../auth/AuthProvider.jsx';
+import usePostLoginNavigation from '../navigation/usePostLoginNavigation.jsx';
 import adminApi from './api.js';
-import DataTable from './components/data-table.jsx';
 import { createUserColumns } from './components/user-columns.jsx';
 
 export default function AdminUsersPage() {
   const auth = useAuth();
+  const { navItems } = usePostLoginNavigation(auth.user);
   const [users, setUsers] = useState([]);
   const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -100,7 +103,8 @@ export default function AdminUsersPage() {
   const toolbarFeedback = showToolbarLoader ? 'Refreshing roster…' : '';
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-6xl flex-col gap-6 bg-background px-6 py-10">
+    <PostLoginLayout user={auth.user} navItems={navItems} onSignOut={auth.logout}>
+      <div className="mx-auto flex max-w-6xl flex-col gap-6">
       <header className="flex flex-col gap-2">
         <h1 className="text-3xl font-semibold text-foreground">User management</h1>
         <p className="max-w-2xl text-sm text-muted-foreground">
@@ -117,8 +121,15 @@ export default function AdminUsersPage() {
         <p className="rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p>
       ) : null}
       <section className="grid gap-6">
-        <DataTable columns={columns} data={tableData} loading={showLoaderRow} emptyMessage={emptyMessage} />
+        <DataTable
+          columns={columns}
+          data={tableData}
+          loading={showLoaderRow}
+          emptyMessage={emptyMessage}
+          loadingMessage="Loading users..."
+        />
       </section>
-    </div>
+      </div>
+    </PostLoginLayout>
   );
 }

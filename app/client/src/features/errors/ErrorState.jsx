@@ -58,7 +58,14 @@ const resolveToneConfig = (tone) => {
   return TONE_CONFIG[tone] ?? TONE_CONFIG.neutral;
 };
 
-function ErrorState({ statusCode, title, description, badgeTone, actions, children }) {
+function ErrorState({
+  statusCode = null,
+  title,
+  description,
+  badgeTone = 'danger',
+  actions = [],
+  children = null,
+}) {
   const tone = resolveToneConfig(badgeTone);
 
   return (
@@ -143,13 +150,6 @@ ErrorState.propTypes = {
     })
   ),
   children: PropTypes.node,
-};
-
-ErrorState.defaultProps = {
-  statusCode: null,
-  badgeTone: 'danger',
-  actions: [],
-  children: null,
 };
 
 export default ErrorState;

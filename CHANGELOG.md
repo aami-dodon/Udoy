@@ -1,3 +1,62 @@
+## 2025-11-11 09:15 IST
+- Introduced a reusable post-login layout shell with unified header, sidebar navigation, and footer for authenticated screens.
+- Centralised the role-aware navigation blueprint and hook so feature pages filter menu items consistently.
+- Applied the shared layout to dashboard, topics library, profile, uploads test bench, and admin users pages; updated tests to account for the layout shell.
+
+## 2025-11-10 20:30 IST
+- Refreshed the root `README.md` with a narrative-driven overview of the landing page, platform architecture, onboarding flows, and documentation index for new contributors.
+
+## 2025-11-10 18:05 IST
+- Granted creators the `topic.publish` permission in RBAC so topic authors can publish after approval alongside admins.
+- Documented the publish endpoint to clarify the relaxed author requirement and updated Casbin seed policies.
+
+## 2025-11-10 15:45 IST
+- Allowed admins to publish approved topics even when they are not the original author, keeping workflows unblocked for escalations.
+- Updated the topic editor to show the publish action to the author of an approved topic in addition to admins.
+
+## 2025-10-22 05:19 IST
+- Simplified the topic reader layout so published lessons render in a single container with the authored rich text content.
+- Ensured editing controls still expose the guided card layout while view-only roles see the streamlined presentation.
+
+## 2025-11-08 18:30 IST
+- Hid the topic editor guidance header for read-only viewers so students only see the published lesson content.
+## 2025-11-10 09:10 IST
+- Enabled signed-download mode by default in `.env` and `.env.example` so self-hosted MinIO instances without public policies rely on `MINIO_FORCE_SIGNED_DOWNLOADS`.
+- Upgraded the `/uploads/test` harness to request GET presigns when public links are missing, surface the extra response payload, and drive previews plus copy actions via the resolved access URL.
+
+## 2025-11-08 21:30 IST
+- Enabled topic authors to reopen published lessons, returning them to draft, clearing approvals, and logging the workflow reset so new validations can occur.
+- Restricted publishing to the original author after teacher approval and documented the tightened workflow in the API and route references.
+
+## 2025-11-08 16:20 IST
+- Added `MINIO_FORCE_SIGNED_DOWNLOADS` support on the server/client configuration layers so private buckets can force download presigned URLs.
+- Updated the shared editor upload helper to honour the new flag, request GET presigned URLs when required, and expose both signed and direct asset references for downstream consumers.
+- Documented the configuration toggle in `.env.example` and the config README to guide deployments that rely on restricted MinIO buckets.
+
+## 2025-10-22 04:13 IST
+- Enabled resizable TipTap image and video nodes with in-editor controls so topic authors can reposition uploads with industry-standard handles.
+- Normalized MinIO asset URLs in the shared upload helper to always use the configured public base domain.
+- Surfaced `VITE_MINIO_PUBLIC_BASE_URL` in environment templates to keep client and server media links aligned.
+## 2025-11-09 11:20 IST
+- Extended the `/uploads/test` harness to verify public URLs after upload, logging access denials and preview failures while rendering the remote image inline for confirmation.
+
+## 2025-10-22 05:06 IST
+- Added a gated `/uploads/test` client harness that walks admins, creators, and teachers through requesting MinIO presigned URLs, uploading images, and reviewing the response payload.
+
+## 2025-11-08 16:45 IST
+- Hardened the topic experience so non-manager roles are redirected when attempting to open unpublished drafts and receive clear guidance to browse published lessons instead.
+- Locked the topic library requests to published-only filters for learner roles and hid review collaboration controls when the viewer lacks comment permissions.
+
+## 2025-10-22 04:30 IST
+- Opened the `/topics` experience to all authenticated roles while restricting non-authors to published topics via Casbin policies and service guards.
+- Rebuilt the topics list with the shared shadcn data table, role-aware copy, and server-driven pagination footer so published content is discoverable alongside creator workflows.
+- Granted `topic.view` permissions to students, coaches, and sponsors with updated documentation to reflect the broader viewing access.
+
+## 2025-11-07 11:30 IST
+- Launched the Topic Management System with Prisma models for topics, tags, revisions, workflow events, and review comments plus a dedicated migration and regenerated client.
+- Added `/api/topics` endpoints with Swagger docs, RBAC, and Casbin policies covering draft, review, publish, and comment workflows.
+- Delivered a shadcn-powered Topic Manager in the client featuring the TipTap editor with MinIO uploads, status-aware actions, workflow history, and comment collaboration.
+
 ## 2025-11-06 14:00 IST
 - Unified all transactional emails behind the responsive Udoy template so verification, password reset, and guardian approval messages now mirror the home page hero header and SiteFooter experience.
 - Matched the template tagline and footer copy to the home page language and documented the shared email shell in the server services guide.
@@ -176,6 +235,11 @@
 ## 2025-10-22 10:20 IST
 - Added class name annotations to the `/theme` showcase so developers can copy the exact utility tokens for colors, typography, buttons, and badges.
 
+## 2025-10-22 03:53 IST
+- Granted admin, creator, and teacher roles `storage:uploads` read/write permissions in the RBAC service so editor uploads can request MinIO presigned URLs.
+- Synced the Casbin seed policy with the new storage permissions to avoid 403 errors on presign requests.
+- Documented the additional storage capabilities in `RBAC.md` for future RBAC updates.
+
 ## 2025-10-20 01:59 IST
 - Introduced a `/theme` client route that renders the centralized token and component catalog, replacing the standalone HTML preview.
 - Documented the new showcase path in the theme README and updated the route registry for developer discovery.
@@ -279,3 +343,6 @@
 
 ## 2025-10-19 07:13 IST
 - Updated the Vite client configuration to read the allowed host list and port from environment variables, enabling `CLIENT_ALLOWED_HOSTS` overrides.
+## 2025-10-22 11:45 IST
+- Ensured editor uploads fetch a presigned GET URL when MinIO public hosting is unavailable so newly inserted media render immediately.
+- Hardened the shared TipTap inserters to accept either `src` or `url` descriptors for images, videos, and audio embeds.

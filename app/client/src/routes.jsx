@@ -12,6 +12,9 @@ const VerifyTokenPage = lazy(() => import('./features/auth/VerifyTokenPage.jsx')
 const DashboardPage = lazy(() => import('./features/dashboard/DashboardPage.jsx'));
 const ProfilePage = lazy(() => import('./features/profile/ProfilePage.jsx'));
 const AdminUsersPage = lazy(() => import('./features/admin/AdminUsersPage.jsx'));
+const TopicsListPage = lazy(() => import('./features/topics/TopicsListPage.jsx'));
+const TopicEditorPage = lazy(() => import('./features/topics/TopicEditorPage.jsx'));
+const UploadTestPage = lazy(() => import('./features/uploads/UploadTestPage.jsx'));
 const ForbiddenPage = lazy(() => import('./features/errors/ForbiddenPage.jsx'));
 const ServerErrorPage = lazy(() => import('./features/errors/ServerErrorPage.jsx'));
 const GenericErrorPage = lazy(() => import('./features/errors/GenericErrorPage.jsx'));
@@ -21,6 +24,38 @@ const routes = [
   {
     path: '/',
     element: <HomePage />,
+  },
+  {
+    path: '/topics',
+    element: (
+      <RequireAuth>
+        <TopicsListPage />
+      </RequireAuth>
+    ),
+  },
+  {
+    path: '/topics/new',
+    element: (
+      <RequireRole roles={['creator', 'admin']}>
+        <TopicEditorPage />
+      </RequireRole>
+    ),
+  },
+  {
+    path: '/topics/:topicId',
+    element: (
+      <RequireAuth>
+        <TopicEditorPage />
+      </RequireAuth>
+    ),
+  },
+  {
+    path: '/uploads/test',
+    element: (
+      <RequireRole roles={['admin', 'creator', 'teacher']}>
+        <UploadTestPage />
+      </RequireRole>
+    ),
   },
   {
     path: '/health',

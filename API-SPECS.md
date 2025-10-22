@@ -46,6 +46,14 @@
 | POST   | /api/notifications/dispatch      | Dispatches notifications across the configured channels.          | Yes  |
 | GET    | /api/notifications               | Searches notification history with filters.                       | Yes  |
 | GET    | /api/notifications/{id}          | Retrieves a notification with delivery logs.                      | Yes  |
+| GET    | /api/topics                      | Lists topics with filters for workflow status, language, and tags. | Yes  |
+| POST   | /api/topics                      | Creates a new topic draft with rich text, media, and tagging.     | Yes  |
+| GET    | /api/topics/{id}                 | Retrieves a topic with revisions, workflow history, and comments. | Yes  |
+| PATCH  | /api/topics/{id}                 | Updates a topic draft, review copy, or reopens a published topic. | Yes  |
+| POST   | /api/topics/{id}/submit          | Submits a draft topic for validator review.                       | Yes  |
+| POST   | /api/topics/{id}/review          | Records a validator decision (approve or request changes).        | Yes  |
+| POST   | /api/topics/{id}/publish         | Publishes an approved topic after teacher validation.             | Yes  |
+| POST   | /api/topics/{id}/comments        | Adds a workflow comment to the topic discussion thread.           | Yes  |
 
 ## Endpoints
 
@@ -790,3 +798,185 @@ Response 200:
 }
 ```
 Response 404: Notification not found.
+
+### GET /api/topics
+Lists topics with pagination and filters for workflow status, language, tags, or linked base topics.
+
+Auth: Yes – requires `topic.view`.
+Query Parameters:
+- `status` *(optional string)* – Comma-separated `TopicStatus` values (`DRAFT`, `IN_REVIEW`, `CHANGES_REQUESTED`, `APPROVED`, `PUBLISHED`, `ARCHIVED`).
+- `language` *(optional string)* – Comma-separated ISO language codes such as `en` or `en-US`.
+- `tag` *(optional string)* – Comma-separated tag slugs to match.
+- `search` *(optional string)* – Case-insensitive match on title and summary.
+- `baseTopicId` *(optional string)* – Include the specified topic and any translations referencing it.
+- `page` *(optional integer, default `1`)* – Page number (1-indexed).
+- `pageSize` *(optional integer, default `20`, max `100`)* – Page size.
+- `includeContent` *(optional boolean, default `false`)* – Include the `content` payload in list results when `true`.
+
+Response 200:
+```json
+{
+  "status": "success",
+  "data": {
+    "total": 42,
+    "page": 1,
+    "pageSize": 20,
+    "items": [
+      {
+        "id": "topic_123",
+        "title": "Understanding Fractions",
+        "summary": "Introduce unit fractions through visual models.",
+        "language": "en",
+        "status": "DRAFT",
+        "version": 2,
+        "author": { "id": "usr_1", "email": "creator@example.com" },
+        "tags": [ { "slug": "numeracy", "label": "Numeracy" } ],
+        "updatedAt": "2025-11-07T05:50:00.000Z"
+      }
+    ]
+  }
+}
+```
+
+### POST /api/topics
+Creates a new topic draft with rich text content, tagging, accessibility, and optional metadata.
+
+Auth: Yes – requires `topic.create`.
+Body:
+```json
+{
+  "title": "Understanding Fractions",
+  "summary": "Introduce unit fractions through manipulatives and stories.",
+  "language": "en",
+  "contentFormat": "JSON",
+  "content": { "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Hello" }] }] },
+  "tags": [
+    { "label": "Numeracy" },
+    { "label": "Grade 4", "kind": "CURRICULUM" }
+  ],
+  "accessibility": { "notes": "Includes captions for every video." },
+  "metadata": { "gradeBand": "Grades 4-5", "durationMinutes": 45 },
+  "changeNotes": "Initial draft created from scope & sequence meeting."
+}
+```
+
+Response 201: Topic resource identical to `GET /api/topics/{id}`.
+Response 400: Validation errors such as missing title, invalid language, or malformed content.
+
+### GET /api/topics/{id}
+Retrieves a topic. When `full=true` (default) the response includes revisions, workflow events, and comments.
+
+Auth: Yes – requires `topic.view`.
+Query Parameters:
+- `full` *(optional boolean, default `true`)* – Include revisions, workflow events, and comments.
+
+Response 200:
+```json
+{
+  "status": "success",
+  "data": {
+    "topic": {
+      "id": "topic_123",
+      "title": "Understanding Fractions",
+      "summary": "Introduce unit fractions through manipulatives.",
+      "language": "en",
+      "status": "IN_REVIEW",
+      "version": 3,
+      "contentFormat": "JSON",
+      "content": { "type": "doc", "content": [] },
+      "tags": [ { "slug": "numeracy", "label": "Numeracy" } ],
+      "author": { "id": "usr_1", "email": "creator@example.com" },
+      "validator": { "id": "usr_2", "email": "teacher@example.com" },
+      "workflow": [
+        { "toStatus": "IN_REVIEW", "note": "Ready for validation", "createdAt": "2025-11-07T05:30:00.000Z" }
+      ],
+      "comments": [
+        { "body": "Please expand the practice section.", "type": "CHANGE_REQUEST" }
+      ],
+      "revisions": [
+        { "version": 3, "status": "IN_REVIEW", "createdAt": "2025-11-07T05:25:00.000Z" }
+      ]
+    }
+  }
+}
+```
+Response 404: Topic not found or user lacks `topic.view`.
+
+### PATCH /api/topics/{id}
+Updates a topic while it is in `DRAFT`, `CHANGES_REQUESTED`, or `IN_REVIEW`. Authors may also reopen a `PUBLISHED` topic. Reopening returns the record to `DRAFT`, clears approval metadata, and logs a workflow event for re-validation.
+
+Auth: Yes – requires `topic.edit`.
+Body: Same shape as `POST /api/topics`; omitted fields remain unchanged. Optional `changeNotes` annotate the revision and, when reopening a published topic, are reused as the workflow note.
+Response 200: Updated topic resource.
+Response 400: Invalid payload or the topic is not in an editable status.
+Response 403: Only the original author can reopen a published topic.
+
+### POST /api/topics/{id}/submit
+Submits a draft topic for validator review and transitions it to `IN_REVIEW`.
+
+Auth: Yes – requires `topic.submit`.
+Body (optional):
+```json
+{ "note": "Aligned to updated curriculum map." }
+```
+Response 200: Topic resource in review status.
+Response 409: Topic is not currently submittable.
+
+### POST /api/topics/{id}/review
+Records a validator decision to approve or request changes.
+
+Auth: Yes – requires `topic.review`.
+Body:
+```json
+{
+  "decision": "approve",
+  "notes": "Ready for publish after minor typo fixes."
+}
+```
+`decision` accepts `approve`, `approved`, `changes_requested`, or `request_changes`. Optional `notes` and nested `updates` (same shape as the draft payload) are recorded in workflow history.
+
+Response 200: Topic resource reflecting the new status.
+Response 400: Invalid decision keyword or topic is not in `IN_REVIEW`.
+
+### POST /api/topics/{id}/publish
+Publishes an approved topic. The topic must have been validated by a teacher (i.e. `validatorId` is populated) before this step. Admins may publish any approved topic while creators may publish their own.
+
+Auth: Yes – requires `topic.publish`. Admins bypass the author check; other callers must be the topic author.
+Body (optional):
+```json
+{
+  "metadata": { "publishedAt": "2025-11-07T06:00:00.000Z" },
+  "note": "Scheduled for cohort rollout."
+}
+```
+Response 200: Topic resource with `status: "PUBLISHED"` and `publishedAt` set.
+Response 400: Topic has not been approved by a validator.
+Response 403: Caller is neither an admin nor the topic author.
+
+### POST /api/topics/{id}/comments
+Adds a workflow comment to the topic review thread.
+
+Auth: Yes – requires `topic-comment.manage`.
+Body:
+```json
+{
+  "body": "Please attach the manipulatives handout.",
+  "type": "CHANGE_REQUEST"
+}
+```
+
+Response 201:
+```json
+{
+  "status": "success",
+  "data": {
+    "comment": {
+      "id": "comment_789",
+      "type": "CHANGE_REQUEST",
+      "body": "Please attach the manipulatives handout.",
+      "createdAt": "2025-11-07T05:45:00.000Z"
+    }
+  }
+}
+```
+Response 400: Missing comment body or unsupported comment type.

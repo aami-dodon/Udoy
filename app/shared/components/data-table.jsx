@@ -1,5 +1,12 @@
 import * as React from 'react';
-import { flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
+import {
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
 
 import {
   Button,
@@ -14,8 +21,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@components/ui';
-import { LucideIcon } from '@icons';
+} from './ui';
+import { LucideIcon } from '../icons';
 
 const getVisibleColumnCount = (table) => table.getVisibleLeafColumns().length || table.getAllLeafColumns().length;
 
@@ -25,6 +32,10 @@ export default function DataTable({
   filterColumn = 'email',
   emptyMessage = 'No results found.',
   loading = false,
+  loadingMessage = 'Loading records...',
+  enableInternalPagination = true,
+  showSelectionSummary = true,
+  footerContent = null,
 }) {
   const [sorting, setSorting] = React.useState([]);
   const [columnFilters, setColumnFilters] = React.useState([]);
@@ -45,20 +56,56 @@ export default function DataTable({
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    initialState: {
-      pagination: {
-        pageSize: 10,
-      },
-    },
+    ...(enableInternalPagination ? { getPaginationRowModel: getPaginationRowModel() } : {}),
+    initialState: enableInternalPagination
+      ? {
+          pagination: {
+            pageSize: 10,
+          },
+        }
+      : {},
   });
 
   const filterableColumn = table.getColumn(filterColumn);
   const hideableColumns = table.getAllColumns().filter((column) => column.getCanHide());
   const selectedRowCount = table.getFilteredSelectedRowModel().rows.length;
   const totalRowCount = table.getFilteredRowModel().rows.length;
+  const visibleColumnCount = getVisibleColumnCount(table);
+
+  const renderFooter = () => {
+    if (footerContent) {
+      return footerContent;
+    }
+
+    if (!enableInternalPagination) {
+      return null;
+    }
+
+    return (
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        {showSelectionSummary ? (
+          <div className="text-sm text-muted-foreground">{selectedRowCount} of {totalRowCount} row(s) selected.</div>
+        ) : (
+          <div />
+        )}
+        <div className="flex items-center justify-end gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+            Next
+          </Button>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="space-y-4">
@@ -66,7 +113,7 @@ export default function DataTable({
         {filterableColumn ? (
           <Input
             placeholder={`Filter ${filterColumn}...`}
-            value={(filterableColumn.getFilterValue() ?? '')}
+            value={filterableColumn.getFilterValue() ?? ''}
             onChange={(event) => filterableColumn.setFilterValue(event.target.value)}
             className="max-w-xs"
           />
@@ -112,10 +159,10 @@ export default function DataTable({
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={getVisibleColumnCount(table)} className="h-24 text-center text-muted-foreground">
+                <TableCell colSpan={visibleColumnCount} className="h-24 text-center text-muted-foreground">
                   <div className="flex items-center justify-center gap-2 text-sm">
                     <LucideIcon name="Loader" className="h-4 w-4 animate-spin" />
-                    Loading users...
+                    {loadingMessage}
                   </div>
                 </TableCell>
               </TableRow>
@@ -129,7 +176,7 @@ export default function DataTable({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={getVisibleColumnCount(table)} className="h-24 text-center text-muted-foreground">
+                <TableCell colSpan={visibleColumnCount} className="h-24 text-center text-muted-foreground">
                   {emptyMessage}
                 </TableCell>
               </TableRow>
@@ -137,24 +184,7 @@ export default function DataTable({
           </TableBody>
         </Table>
       </div>
-      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <div className="text-sm text-muted-foreground">
-          {selectedRowCount} of {totalRowCount} row(s) selected.
-        </div>
-        <div className="flex items-center justify-end gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-            Next
-          </Button>
-        </div>
-      </div>
+      {renderFooter()}
     </div>
   );
 }
