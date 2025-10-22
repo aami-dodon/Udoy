@@ -1,3 +1,6 @@
+## 2025-11-10 20:30 IST
+- Refreshed the root `README.md` with a narrative-driven overview of the landing page, platform architecture, onboarding flows, and documentation index for new contributors.
+
 ## 2025-11-10 18:05 IST
 - Granted creators the `topic.publish` permission in RBAC so topic authors can publish after approval alongside admins.
 - Documented the publish endpoint to clarify the relaxed author requirement and updated Casbin seed policies.
